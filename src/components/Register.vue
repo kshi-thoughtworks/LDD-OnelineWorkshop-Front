@@ -6,12 +6,20 @@
         h3 注册新账号
         div.line
         form
-            label 昵称
-            input(type='text').input-box
-            label 邮箱
-            input(type='email').input-box
-            label 密码
-            input(type='password').input-box
+            <a-form-model :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+              <a-form-model-item label="昵称">
+                <a-input v-model="form.username" />
+              </a-form-model-item>
+              <a-form-model-item label="邮箱">
+                <a-input v-model="form.email" />
+              </a-form-model-item>
+              <a-form-model-item label="密码">
+                <a-input v-model="form.password" type="password"/>
+              </a-form-model-item>
+              <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+                <a-button type="primary" @click="onSubmit">注册</a-button>
+              </a-form-model-item>
+            </a-form-model>
             p.agreement
                 input(type='checkbox')
                 span 我已阅读并同意
@@ -25,8 +33,30 @@
 </template>
 
 <script>
+    import { Input, Button } from 'ant-design-vue';
+
     export default {
-        name: 'Register'
+        name: 'Register',
+        components: {
+            'a-input': Input,
+            'a-button': Button
+        },
+        data() {
+            return {
+                labelCol: {span: 4},
+                wrapperCol: {span: 14},
+                form: {
+                    username: '',
+                    email: '',
+                    password: '',
+                },
+            }
+        },
+        methods: {
+            onSubmit() {
+                console.log('submit!', this.form);
+            },
+        },
     }
 </script>
 
