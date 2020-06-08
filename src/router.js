@@ -1,9 +1,8 @@
 import VueRouter from 'vue-router'
-import HelloWorld from './components/HelloWorld'
 import Register from './components/Register'
 
 const routes = [
-    { path: '/', component: HelloWorld },
+    { path: '/', redirect: '/register' },
     { path: '/register', component: Register }
 ]
 
