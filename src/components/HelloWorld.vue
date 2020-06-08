@@ -1,5 +1,7 @@
 <template lang="pug">
-  div.hello {{ msg }}
+  <div>
+    <p>Hello World</p>
+  </div>
 </template>
 
 <script>
