@@ -1,4 +1,5 @@
 <template lang="pug">
+<<<<<<< HEAD
   div.register-container
     h1 欢迎使用精益数据工作坊
     h2 Lean Data Discovery
@@ -30,6 +31,29 @@
             p.to-login
                 span 已有账号？请
                 a.login 登录
+=======
+  <div class="page">
+    <div class="panel-container">
+      <h1>欢迎使用精益数据工作坊</h1>
+      <h2>Lean Data Discovery</h2>
+      <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-model-item label="昵称" prop="username">
+          <a-input v-model="form.username" />
+        </a-form-model-item>
+        <a-form-model-item label="邮箱" prop="email">
+          <a-input v-model="form.email" />
+        </a-form-model-item>
+        <a-form-model-item label="密码" prop="password">
+          <a-input v-model="form.password" type="password"/>
+        </a-form-model-item>
+        <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+          <a-button type="primary" @click="onSubmit">注册</a-button>
+        </a-form-model-item>
+      </a-form-model>
+    </div>
+  </div>
+
+>>>>>>> 9682f1b... [wanlu] add login page
 </template>
 
 <script>
@@ -50,11 +74,24 @@
                     email: '',
                     password: '',
                 },
+                rules: {
+                    username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+                    email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+                    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+                }
             }
         },
         methods: {
             onSubmit() {
-                console.log('submit!', this.form);
+                this.$refs.ruleForm.validate(valid => {
+                    console.log('submit!', this.form);
+                    if (valid) {
+                        alert('submit!');
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
             },
         },
     }
