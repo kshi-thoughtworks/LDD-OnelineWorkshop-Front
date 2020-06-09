@@ -5,32 +5,25 @@
     div.form-container
       h3 注册新账号
       div.line
-        <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-model-item label="昵称" prop="username">
-            <a-input v-model="form.username" />
-          </a-form-model-item>
-          <a-form-model-item label="邮箱" prop="email">
-            <a-input v-model="form.email" />
-          </a-form-model-item>
-          <a-form-model-item label="密码" prop="password">
-            <a-input v-model="form.password" type="password"/>
-          </a-form-model-item>
-          <a-form-model-item prop="agree">
-            <a-checkbox value="1" name="type">
+        a-form-model(ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol")
+          a-form-model-item(label="昵称" prop="username")
+            a-input(v-model="form.username")
+          a-form-model-item(label="邮箱" prop="email")
+            a-input(v-model="form.email")
+          a-form-model-item(label="密码" prop="password")
+            a-input(v-model="form.password" type="password")
+          a-form-model-item(prop="agree")
+            a-checkbox(value="1" name="type")
               p.agreement
                 span 我已阅读并同意
                 a 《LDD网络服务使用协议》
                 span 和
                 a 《LDD用户隐私条款》
-            </a-checkbox>
-          </a-form-model-item>
-          <a-form-model-item>
-            <a-button type="primary" @click="onSubmit">注册</a-button>
-          </a-form-model-item>
-        </a-form-model>
+          a-form-model-item
+            a-button(type="primary" @click="onSubmit") 注册
         p.to-login
           span 已有账号？请
-            a.login 登录
+            a(href='/login').login 登录
 </template>
 
 <script>
