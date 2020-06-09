@@ -83,7 +83,6 @@
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
     .register-container {
         background-color: #37115a;
@@ -95,25 +94,24 @@
         min-height: 100%;
         width: 100%;
         padding-top: 50px;
+        padding-left: 26%;
     }
 
     h1, h2 {
-        color: #ffffff;
+        color: var(--white);
     }
 
     .line {
-        width: 560px;
         height: 1px;
         background-color: #dedede;
     }
 
     .form-container {
-        width: 620px;
-        height: 664px;
-        padding: 30px;
+        width: 540px;
+        height: 620px;
         border-radius: 8px;
         box-shadow: 0 3px 20px 0 rgba(40, 29, 50, 0.4);
-        background-color: #ffffff;
+        background-color: var(--white);
         margin: auto;
         display: flex;
         flex-direction: column;
@@ -122,66 +120,76 @@
         h3 {
             font-size: 24px;
             font-weight: 600;
-            color: #6c0dbc;
+            color: var(--violet-blue);
+            margin-top: 30px;
         }
 
-        form {
-            width: 560px;
 
-            label {
-                display: block;
-                text-align: left;
-                font-size: 14px;
+        label {
+            display: block;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .ant-input {
+            width: 100%;
+            height: 50px;
+            border-radius: 4px;
+            background-color: #f5f3f6;
+            border: none;
+
+        }
+
+
+        .agreement {
+            display: inline;
+            text-align: left;
+            margin: 35px 0;
+            font-size: 14px;
+
+            span {
                 font-weight: 600;
-                margin-top: 30px;
-                margin-bottom: 10px;
+                color: #000000;
             }
 
-            .ant-input {
-                width: 100%;
-                height: 60px;
-                border-radius: 4px;
-                background-color: #f5f3f6;
-                border: none;
+            a {
+                color: var(--slate-grey);
             }
+        }
 
-            .agreement {
-                display: inline;
-                text-align: left;
-                margin: 35px 0;
-                font-size: 14px;
+        button {
+            width: 100%;
+            height: 50px;
+            border-radius: 4px;
+            border: none;
+            background-color: var(--violet-blue);
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 10px;
+        }
 
-                span {
-                    font-weight: 600;
-                    color: #000000;
-                }
-
-                a {
-                    color: #6d6e71;
-                }
-            }
-
-            button {
-                width: 100%;
-                height: 50px;
-                border-radius: 4px;
-                border: none;
-                background-color: var(--violet-blue);
-                color: #ffffff;
-                font-size: 16px;
-                font-weight: 600;
-                letter-spacing: 10px;
-            }
+        .ant-form-item {
+            margin: 20px 0;
         }
 
         .to-login {
             text-align: center;
             font-size: 14px;
-            color: #6d6e71;
+            color: var(--slate-grey);
 
             .login {
                 font-weight: 600;
-                color: #6c0dbc;
+                color: var(--violet-blue);
+            }
+        }
+
+        .has-error {
+            .ant-input {
+                border: 1px solid var(--pastel-red);
             }
         }
     }
