@@ -29,7 +29,7 @@
                 labelCol: {span: 4},
                 wrapperCol: {span: 14},
                 form: {
-                    email: '',
+                    name_or_email: '',
                     password: '',
                 },
                 rules: {
@@ -51,7 +51,7 @@
                             .then(() => {
                                 alert('submit!')
                             })
-                            .catch(error => console.log(error))
+                            .catch(error => this.$message.error(error.response.data))
                     } else {
                         console.log('error submit!!');
                         return false;

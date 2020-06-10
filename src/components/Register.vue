@@ -72,7 +72,7 @@
                             .then(() => {
                                 alert('submit!')
                             })
-                            .catch(error => console.log(error))
+                            .catch(error => this.$message.error(error.response.data))
                     } else {
                         console.log('error submit!!');
                         return false;
