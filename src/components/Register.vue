@@ -50,7 +50,8 @@
                 rules: {
                     username: [
                         {required: true, message: '请输入用户名', trigger: 'change'},
-                        {min: 4, max: 20, message: '用户名长度在4到20位', trigger: 'change'}
+                        {min: 4, max: 10, message: '用户名长度在4到10位', trigger: 'change'},
+                        {pattern: '^[0-9a-zA-Z\u4e00-\u9fa5]+$', message: '仅可包含数字、字母、中文', trigger: 'change'}
                         ],
                     email: [
                         {required: true, message: '请输入邮箱', trigger: 'change'},
@@ -58,7 +59,8 @@
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'change'},
-                        {min: 6, max: 20, message: '密码长度在6到20位', trigger: 'change'}
+                        {min: 8, max: 20, message: '密码长度在8到20位', trigger: 'change'},
+                        {pattern: '^(?![^a-zA-Z]+$)(?!\\D+$)', message: '有且必须包含数字、字母', trigger: 'change'}
                         ],
                     agree: [{required: true, message: '请勾选', trigger: 'change'}],
                 }
