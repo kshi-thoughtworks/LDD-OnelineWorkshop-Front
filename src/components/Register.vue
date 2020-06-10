@@ -13,7 +13,7 @@
           a-form-model-item(label="密码" prop="password")
             a-input(v-model="form.password" type="password")
           a-form-model-item(prop="agree")
-            a-checkbox(value="1" name="type")
+            a-checkbox(v-model="form.agree" value="1" name="type")
               p.agreement
                 span 我已阅读并同意
                 a 《LDD网络服务使用协议》
