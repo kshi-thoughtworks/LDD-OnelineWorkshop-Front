@@ -37,8 +37,13 @@
                     password: '',
                 },
                 rules: {
-                    name_or_email: [{required: true, message: '请输入邮箱或昵称', trigger: 'blur'}],
-                    password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+                    name_or_email: [
+                        {required: true, message: '请输入邮箱或昵称', trigger: 'change'}
+                    ],
+                    password: [
+                        {required: true, message: '请输入密码', trigger: 'change'},
+                        {min: 6, max: 20, message: '密码长度在6到20位', trigger: 'change'}
+                    ],
                 }
             }
         },

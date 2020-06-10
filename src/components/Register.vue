@@ -48,13 +48,19 @@
                     password: '',
                 },
                 rules: {
-                    username: [{required: true, message: '请输入用户名', trigger: 'blur'}],
+                    username: [
+                        {required: true, message: '请输入用户名', trigger: 'change'},
+                        {min: 4, max: 20, message: '用户名长度在4到20位', trigger: 'change'}
+                        ],
                     email: [
-                        {required: true, message: '请输入邮箱', trigger: 'blur'},
-                        {pattern: '^\\S+@\\S+$', message: '请输入正确的邮箱格式', trigger: 'blur'}
+                        {required: true, message: '请输入邮箱', trigger: 'change'},
+                        {pattern: '^\\S+@\\S+$', message: '请输入正确的邮箱格式', trigger: 'change'}
                     ],
-                    password: [{required: true, message: '请输入密码', trigger: 'blur'}],
-                    agree: [{required: true, message: '请勾选', trigger: 'blur'}],
+                    password: [
+                        {required: true, message: '请输入密码', trigger: 'change'},
+                        {min: 6, max: 20, message: '密码长度在6到20位', trigger: 'change'}
+                        ],
+                    agree: [{required: true, message: '请勾选', trigger: 'change'}],
                 }
             }
         },
@@ -70,7 +76,8 @@
                         }
                         axios.post('/workshop/users/register', data)
                             .then(() => {
-                                alert('submit!')
+                                this.$message.success('注册成功，请登录')
+                                this.$router.push('/login')
                             })
                             .catch(error => this.$message.error(error.response.data))
                     } else {
