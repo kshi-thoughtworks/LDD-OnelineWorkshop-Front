@@ -26,7 +26,7 @@ module.exports = merge(baseWebpack, {
     proxy: [
       {
         context: [
-          '/workshop'
+          '/api/workshop'
         ],
         target: 'http://localhost:8000',
         changeOrigin: true
