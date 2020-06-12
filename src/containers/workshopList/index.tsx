@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import axios from 'axios';
+import axios from 'axios'
+import './index.scss'
 
 @Component
 export default class WorkshopList extends Vue{
@@ -24,13 +25,16 @@ export default class WorkshopList extends Vue{
 
     render(h){
         return (
-          <div>
-            <ul>
-                <li>
-                    <p>工作坊000</p>
-                </li>
-            </ul>
-            {this.workshop_list.map(value => <p>{value.name}</p>)}
+          <div class="bench">
+            {this.workshop_list.map(value => 
+                <div class="bench-card">
+                    <div class="bench-card-bg">
+                        <p>{value.description}</p>
+                    </div>
+                    <p class="bench-card-name">{value.name}</p>
+                    <p class="bench-card-date">{value.created_at}</p>
+                </div>
+            )}
           </div>
         )
       }
