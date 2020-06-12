@@ -25,11 +25,10 @@ module.exports = merge(baseWebpack, {
     overlay: true,
     proxy: [
       {
-        context: [
-          '/api/workshop'
-        ],
-        target: 'http://localhost:8000',
-        changeOrigin: true
+        context: ['/api'],
+        target: 'http://localhost:8000/workshop',
+        changeOrigin: true,
+        pathRewrite: {'^/api' : ''}
       }
     ]
   }

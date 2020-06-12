@@ -76,7 +76,7 @@
                             email: this.form.email,
                             password: this.form.password
                         }
-                        axios.post('/workshop/users/register', data)
+                        axios.post('/api/users/register', data)
                             .then(() => {
                                 this.$message.success('注册成功，请登录')
                                 this.$router.push('/login')

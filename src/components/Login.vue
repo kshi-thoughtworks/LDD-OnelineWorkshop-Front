@@ -56,7 +56,7 @@
                             name_or_email: this.form.name_or_email,
                             password: this.form.password
                         }
-                        axios.post('/workshop/users/login', data)
+                        axios.post('/api/users/login', data)
                             .then(() => {
                                 alert('submit!')
                             })
