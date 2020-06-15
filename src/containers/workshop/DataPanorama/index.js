@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
 import Stage from '../../../components/Stage'
+import EditStickerModal from '../EditStickerModal'
 import './index.scss'
 
 const operations = [
@@ -12,20 +13,37 @@ const operations = [
   { type: 'zoom', tooltip: 'zoom' },
   { type: 'export', tooltip: 'export' },
 ]
+
 @Component
 export default class DataPanorama extends Vue{
-  stage?: Stage
+  addStickerModalVisibility = false
   constructor(props) {
     super(props)
     window.addEventListener('resize', this.onResize)
   }
   onResize() {
-    this.stage!.resize()
+    this.stage.resize()
+  }
+  onAddSticker(text, color){
+    this.addStickerModalVisibility = false
+    const stickerOptions = {
+      type: 'StickyNoteSprite',
+      content: text,
+      backgroundColor: color,
+      x: 100,
+      y: 100,
+      width: 400,
+      height: 400
+    }
+    this.stage.addSprite(stickerOptions)
+  }
+  onCloseAddStickerModal(){
+    this.addStickerModalVisibility = false
   }
   onSelector(){}
   onText(){}
-  onStick(){
-    
+  onShowAddStickerModal(){
+    this.addStickerModalVisibility = true
   }
   onCard(){}
   onZoom(){}
@@ -37,7 +55,7 @@ export default class DataPanorama extends Vue{
       case 'text':
         return this.onText;
       case 'stick':
-        return this.onStick;
+        return this.onShowAddStickerModal;
       case 'card':
         return this.onCard;
       case 'zoom':
@@ -48,7 +66,7 @@ export default class DataPanorama extends Vue{
   }
   mounted(){
     const { stage } = this.$refs
-    this.stage = new Stage(stage as HTMLDivElement)
+    this.stage = new Stage(stage)
   }
   beforeDestory(){
     window.removeEventListener('resize', this.onResize)
@@ -75,6 +93,8 @@ export default class DataPanorama extends Vue{
         <div class="data-panorama-wrapper">
           <div ref="stage" class="data-panorama-stage"></div>
         </div>
+        { this.addStickerModalVisibility 
+          && <EditStickerModal onConfirm={this.onAddSticker} onClose={this.onCloseAddStickerModal} />}
       </div>
     )
   }
