@@ -3,14 +3,52 @@
   height: calc(100vh - 120px);
   background-color: #f9f9f9;
   &-menu{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     position: absolute;
     top: 30px;
     left: 60px;
     width: 60px;
     height: 284px;
+    margin: 0;
+    padding: 0;
     border-radius: 8px;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
     background-color: var(--white);
+
+    &-item{
+      width: 21px;
+      height: 21px;
+      margin-top: 18px;
+      list-style: none;
+      &:first-child{
+        margin-top: 26px;
+      }
+      &.operation-selector{
+        width: 23px;
+        height: 28px;
+        background-image: url(../../../assets/images/icons/selector.svg);
+      }
+      &.operation-text{
+        width: 19px;
+        background-image: url(../../../assets/images/icons/text.svg);
+      }
+      &.operation-stick{
+        background-image: url(../../../assets/images/icons/stick.svg);
+      }
+      &.operation-card{
+        background-image: url(../../../assets/images/icons/card.svg);
+      }
+      &.operation-zoom{
+        width: 22px;
+        height: 23px;
+        background-image: url(../../../assets/images/icons/zoom.svg);
+      }
+      &.operation-export{
+        background-image: url(../../../assets/images/icons/export.svg);
+      }
+    }
   }
   &-wrapper{
     position: absolute;
