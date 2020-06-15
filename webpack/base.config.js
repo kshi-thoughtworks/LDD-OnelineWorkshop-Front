@@ -3,6 +3,7 @@ const projectDir = path.resolve(__dirname, '../')
 const distDir = path.resolve(__dirname, '../dist')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 
@@ -23,7 +24,8 @@ module.exports = {
   },
   output: {
     path: distDir,
-    filename: '[name].js'
+    filename: '[name].js',
+    publicPath: '/'
   },
   resolve: {
     alias: {
@@ -87,15 +89,11 @@ module.exports = {
         use: 'pug-html-loader'
       },
       {
-        test: /\.png|\.jpg|\.svg/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              limit: 8192
-            }
-          }
-        ]
+        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 8192,
+        }
       }
     ]
   },
@@ -105,6 +103,14 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',
       filename: 'index.html'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, '../public/square.png'),
+          to: path.resolve(__dirname, '../dist')
+        }
+      ]
     })
   ]
 }

@@ -18,11 +18,11 @@ module.exports = merge(baseWebpack, {
   devServer: {
     publicPath: '/',
     host: 'localhost',
-    historyApiFallback: true,
     port: 8080,
-    open: true,
+    open: false,
     hot: true,
     overlay: true,
+    historyApiFallback: true,
     proxy: [
       {
         context: ['/api'],
