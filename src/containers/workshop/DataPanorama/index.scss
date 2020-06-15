@@ -1,3 +1,12 @@
 .data-panorama{
-  
+  position: relative;
+  height: calc(100vh - 120px);
+  background-color: #f9f9f9;
+  &-menu{
+    width: 60px;
+    height: 284px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+    background-color: var(--white);
+  }
 }

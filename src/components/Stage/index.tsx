@@ -1,4 +1,8 @@
 export type CanvasContext = CanvasRenderingContext2D | null
+const stageBox = {
+  width: 3840,
+  height: 2160
+}
 
 export default class Stage{
   private container: HTMLDivElement
@@ -18,7 +22,8 @@ export default class Stage{
   }
 
   init() {
-    
+    this.canvas.width = stageBox.width
+    this.canvas.height = stageBox.height
   }
 
   resize() {

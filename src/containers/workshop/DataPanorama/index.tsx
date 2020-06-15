@@ -7,7 +7,9 @@ export default class DataPanorama extends Vue{
   render(h){
     return (
       <div class="data-panorama">
-        <div class="data-panorama-menu"></div>
+        <ul class="data-panorama-menu">
+
+        </ul>
         <div class="data-panorama-content">workshop</div>
       </div>
     )
