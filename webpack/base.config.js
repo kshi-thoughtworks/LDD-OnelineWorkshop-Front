@@ -25,7 +25,7 @@ module.exports = {
   output: {
     path: distDir,
     filename: '[name].js',
-    publicPath: '/'
+    publicPath: '/static/'
   },
   resolve: {
     alias: {
