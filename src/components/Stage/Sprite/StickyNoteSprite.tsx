@@ -1,6 +1,5 @@
 import Sprite from './index';
 import { SpriteBox } from './index'
-import { registerSprite } from '../SpriteRegister'
 
 type StickyNoteProps = SpriteBox & {
   type: 'StickyNoteSprite',
@@ -103,7 +102,7 @@ export default class StickyNoteSprite extends Sprite{
       for(let index = 0; index < rowsLength; index++) {
         const row = rows[index]
         const isLastRow = index === rowsLength  - 1
-        if(index === rowsLength - 1) {
+        if(isLastRow) {
           context.textAlign = 'left'
           context.fillText(row, padding, textTop + fontSize * (index + 0.5))
         }else {
