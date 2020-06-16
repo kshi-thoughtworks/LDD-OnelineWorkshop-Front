@@ -19,7 +19,15 @@ export default class EditStickerModal extends Vue{
     }
   }
   onChangeText(event){
-    this.text = event.target.value
+    const text = event.target.value
+    this.text = text.replace(/\n/g, '')
+  }
+  onKeydown(event) {
+    const enterKeyCode = 13
+    if(event.keyCode === enterKeyCode) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
   }
   onConfirm(){
     const { confirm } = this.$listeners
@@ -50,8 +58,10 @@ export default class EditStickerModal extends Vue{
           </ul>
           <div class="sticker-content">
             <textarea 
+              value={this.text}
               style={{backgroundColor: this.currentColor}}
               maxlength={100}
+              onKeydown={this.onKeydown}
               onKeyup={this.onChangeText}></textarea>
             <span>{this.text.length}/100</span>
           </div>

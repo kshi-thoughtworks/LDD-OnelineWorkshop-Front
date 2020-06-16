@@ -72,6 +72,7 @@ export default class Stage{
 
   resize() {
     this.updateBoxRect()
+    this.draw()
   }
 
 }

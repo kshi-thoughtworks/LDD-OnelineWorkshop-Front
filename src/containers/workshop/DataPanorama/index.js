@@ -32,8 +32,8 @@ export default class DataPanorama extends Vue{
       backgroundColor: color,
       x: 100,
       y: 100,
-      width: 400,
-      height: 400
+      width: 480,
+      height: 480
     }
     this.stage.addSprite(stickerOptions)
   }
