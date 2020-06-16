@@ -18,8 +18,8 @@ export default class StickyNoteSprite extends Sprite{
   calculateText(width, height, content): {fontSize: number, rows: Array<string>} {
     const context = this.stage!.context!
     context.save()
-    let minFontSize = 35
-    let maxFontSize = 288
+    let minFontSize = 40
+    let maxFontSize = 320
 
     let fontSize = minFontSize
     context.font = `bold ${fontSize}px Montserrat, sans-serif`
