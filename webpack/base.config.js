@@ -72,7 +72,12 @@ module.exports = {
             loader: 'babel-loader',
           },
           {
-            loader: 'awesome-typescript-loader'
+            loader: 'awesome-typescript-loader',
+            options : {
+              reportFiles: [
+                  'src/**/*.{ts,tsx}'
+              ]
+            },
           }
         ]
       },

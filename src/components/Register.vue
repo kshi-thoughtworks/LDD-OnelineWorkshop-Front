@@ -23,7 +23,7 @@
             a-button(type="primary" @click="onSubmit") 注册
         p.to-login
           span 已有账号？请
-            a(href='/login').login 登录
+            router-link(to='/login').login 登录
 </template>
 
 <script>

@@ -15,7 +15,7 @@
             a-button(type="primary" @click="onSubmit") 登录
         p.to-login
             span 还没有账号？请
-              a(href='/register').login 申请开通
+              router-link(to='/register').login 申请开通
 </template>
 
 <script>
