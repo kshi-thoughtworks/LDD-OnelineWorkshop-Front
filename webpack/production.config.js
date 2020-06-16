@@ -7,6 +7,9 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 module.exports = merge(baseWebpack, {
   mode: 'production',
+  output: {
+    publicPath: '/static/'
+  },
   plugins: [
     new webpack.EnvironmentPlugin({
       'NODE_ENV': '"production"'
