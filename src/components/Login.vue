@@ -42,7 +42,7 @@
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'change'},
-                        {min: 8, max: 20, message: '密码长度在6到20位', trigger: 'change'}
+                        {min: 8, max: 20, message: '密码长度在8到20位', trigger: 'change'}
                     ],
                 }
             }
@@ -58,7 +58,7 @@
                         }
                         axios.post('/api/users/login', data)
                             .then(() => {
-                                alert('submit!')
+                                this.$router.push('/workshops')
                             })
                             .catch(error => this.$message.error(error.response.data))
                     } else {
