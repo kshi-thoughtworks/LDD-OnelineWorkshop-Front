@@ -2,10 +2,14 @@
 
 .bench {
     display: flex;
+    height: calc(100vh - 60px);
+    background-color: #f9f9f9;
+    padding: 40px 60px;
 
     &-card {
         display: inline-block;
         width: 308px;
+        height: 236px;
         border-radius: 8px;
         margin: 16px;
         overflow: auto;
@@ -13,12 +17,18 @@
 
         &-bg {
             height: 160px;
+            background-image: url(../../assets/images/sticker-bg.jpeg);
+            background-size: contain;
+        }
+
+        &-cover {
+            height: 100%;
             display: flex;
             justify-content: center;
             flex-direction: column;
             opacity: 0.4;
             background-color: var(--midnight-purple);
-
+            
             p {
                 color: var(--white);
                 opacity: 0;
@@ -45,4 +55,25 @@
             margin: 0 0 16px 16px;
         }
     }
+
+    &-header {
+        display: flex;
+        align-items: center;
+        height: 60px;
+        justify-content: space-between;
+        padding: 0 30px;
+
+        &-title {
+            color: var(--violet-blue);
+            font-weight: 600;
+        }
+    }
+}
+
+
+.logo {
+    height: 46px;
+    width: 30px;
+    background-image: url(../../assets/images/icons/logo.svg);
+    background-size: cover;
 }
