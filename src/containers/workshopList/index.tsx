@@ -24,9 +24,15 @@ export default class WorkshopList extends Vue{
     created() {
         axios.get('/api/workbenches')
             .then((response) => {
-                this.workshop_list = response.data
+                this.workshop_list = response.data.sort(function(a:workshopItem, b:workshopItem) {
+                    return b.created_at.localeCompare(a.created_at);
+                })
             })
             .catch(error => this.$message.error(error.response.data))
+    }
+
+    goToWorkshopDetail() {
+        this.$router.push("/workshop")
     }
 
     render_workshop_list(h) {
@@ -34,7 +40,7 @@ export default class WorkshopList extends Vue{
             return (
                 <div class="bench-list">
                     {this.workshop_list.map(value => 
-                        <div class="bench-card">
+                        <div class="bench-card" onClick={this.goToWorkshopDetail}>
                             <div class="bench-card-bg">
                                 <div class="bench-card-cover">
                                     <p>{value.description}</p>
