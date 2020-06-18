@@ -18,7 +18,7 @@
         overflow: auto;
         box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
         cursor: pointer;
-
+        overflow: hidden;
         &-bg {
             height: 160px;
             background-image: url(../../assets/images/sticker-bg.jpeg);

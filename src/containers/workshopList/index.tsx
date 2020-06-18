@@ -31,8 +31,9 @@ export default class WorkshopList extends Vue{
             .catch(error => this.$message.error(error.response.data))
     }
 
-    goToWorkshopDetail() {
-        this.$router.push("/workshop")
+    goToWorkshopDetail(event) {
+        const { workshopId } = event.currentTarget.dataset
+        this.$router.push(`/workshops/${workshopId}`)
     }
 
     render_workshop_list(h) {
@@ -40,7 +41,7 @@ export default class WorkshopList extends Vue{
             return (
                 <div class="bench-list">
                     {this.workshop_list.map(value => 
-                        <div class="bench-card" onClick={this.goToWorkshopDetail}>
+                        <div class="bench-card" data-workshop-id={value.id} onClick={this.goToWorkshopDetail}>
                             <div class="bench-card-bg">
                                 <div class="bench-card-cover">
                                     <p>{value.description}</p>
