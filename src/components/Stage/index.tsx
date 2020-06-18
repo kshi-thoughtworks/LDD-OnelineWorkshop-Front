@@ -41,15 +41,31 @@ export default class Stage{
     forEach(this.sprites, (sprite: Sprite) => sprite.draw())
   }
 
+  readSprites(spriteProps) {
+    forEach(spriteProps, props => {
+      const spriteInstance = this.buildSprite(props)
+      
+      spriteInstance.setStage(this)
+      this.sprites.push(spriteInstance)
+    })
+    this.draw()
+  }
+
   addSprite(props){
+    const spriteInstance: Sprite = this.buildSprite(props)
+    spriteInstance.setStage(this)
+    this.sprites.push(spriteInstance)
+
+    this.draw()
+  }
+
+  buildSprite(props) {
     const { type } = props
     const spriteMap = getSpriteResiters()
     const spriteClass: SpriteClass = spriteMap[type]
     const spriteInstance: Sprite = spriteClass.build(props)
     spriteInstance.setStage(this)
-    this.sprites.push(spriteInstance)
-
-    this.draw()
+    return spriteInstance
   }
 
   updateBoxRect(){

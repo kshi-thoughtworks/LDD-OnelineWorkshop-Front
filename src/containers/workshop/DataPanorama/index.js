@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import { map } from 'lodash'
-import { Component } from 'vue-property-decorator'
+import { Component, Prop } from 'vue-property-decorator'
 import Stage from '../../../components/Stage'
 import EditStickerModal from '../EditStickerModal'
-import { loadDataPanora } from '../service'
+import { loadElements, createElement, updateElement } from '../service'
 import './index.scss'
 
 const operations = [
@@ -17,7 +17,9 @@ const operations = [
 
 @Component
 export default class DataPanorama extends Vue{
+  @Prop() stepId
   addStickerModalVisibility = false
+  sprites = []
   constructor(props) {
     super(props)
     window.addEventListener('resize', this.onResize)
@@ -29,18 +31,23 @@ export default class DataPanorama extends Vue{
   onResize() {
     this.stage.resize()
   }
-  onAddSticker(text, color){
-    this.addStickerModalVisibility = false
-    const stickerOptions = {
-      type: 'StickyNoteSprite',
-      content: text,
-      backgroundColor: color,
+  onAddSticker(content, color){
+    const meta = {
+      color,
       x: 100,
       y: 100,
       width: 480,
       height: 480
     }
-    this.stage.addSprite(stickerOptions)
+    createElement(this.stepId, content, meta).then(({ element_id }) => {
+      const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
+      this.stage.addSprite(spriteProps)
+      
+      this.addStickerModalVisibility = false
+
+      this.sprites.push({ id: element_id, content, type: 'sticky', meta})
+    })
+    
   }
   onCloseAddStickerModal(){
     this.addStickerModalVisibility = false
@@ -73,7 +80,14 @@ export default class DataPanorama extends Vue{
     const { stage } = this.$refs
     this.stage = new Stage(stage)
     
-    loadDataPanora(this.workshopId)
+    loadElements(this.stepId).then(elements => {
+      const sprites = map(elements, element => {
+        const { id, type, content, meta } = element
+        return { id, type, content, ...meta }
+      })
+      this.stage.readSprites(sprites)
+      this.sprites = elements
+    })
   }
   beforeDestory(){
     window.removeEventListener('resize', this.onResize)

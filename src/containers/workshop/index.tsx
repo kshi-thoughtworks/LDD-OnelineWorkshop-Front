@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
 import DataPanorama from './DataPanorama'
+import { loadWorkshop } from './service'
 
 import './index.scss'
 
@@ -21,6 +22,7 @@ type TypeItem = {
 export default class Workshop extends Vue{
   types: Array<TypeItem>
   currentType: string
+  workshop: any = null
   constructor(props){
     super(props)
     this.types = [
@@ -37,13 +39,20 @@ export default class Workshop extends Vue{
       this.currentType = typeItem.type
     }
   }
+  mounted() {
+    loadWorkshop(this.$route.params.workshopId).then(workshop => {
+      this.workshop = workshop
+    })
+  }
   renderByType(h){
     const { currentType } = this
+    const steps = this.workshop.steps
     switch(currentType) {
       case TypeEnum.dataPanorama:
+        const stepId = steps[0].id
+        return h(DataPanorama, { props: { stepId}})
       case TypeEnum.divergenceScene:
       case TypeEnum.convergenceScene:
-        return <DataPanorama />
       case TypeEnum.technologyCard:
       case TypeEnum.generateReport:
         return <div>敬请期待...</div>
@@ -68,7 +77,7 @@ export default class Workshop extends Vue{
     )
   }
   render(h){
-    return (
+    return this.workshop && (
       <div class="workshop">
         <header class="workshop-header">
           <a-icon type="left" style={{ fontSize: '12px', color: '#6d6e71' }} />

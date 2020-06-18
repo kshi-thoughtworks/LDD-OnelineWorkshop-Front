@@ -3,7 +3,7 @@ import { forEach } from 'lodash'
 
 const methods = ['get', 'post', 'put', 'delete', 'patch']
 export default class Http {
-  axios = null
+  axios: any
   constructor() {
     this.axios = axios.create({
       baseURL: '/',
@@ -13,7 +13,7 @@ export default class Http {
 
     forEach(methods, method => {
       this[method] = (...args) => {
-        this.axios[method](...args)
+        return this.axios[method](...args)
       }
     })
   }
@@ -40,11 +40,11 @@ export default class Http {
     if (error) {
       return Promise.reject(error)
     }
-    return response
+    return response.data
   }
 
   httpErrorHandler = error => {
-    let errorMessage = null
+    let errorMessage: string = ''
     if (error.message.indexOf('Network Error') !== -1) {
       errorMessage = '网络异常，请检查当前设备网络状况。'
     } else if (error.message.indexOf('timeout') !== -1) {
@@ -59,11 +59,11 @@ export default class Http {
     return Promise.reject(errorMessage)
   }
 
-  get(...args){}
-  put(...args){}
-  post(...args){}
-  delete(...args){}
-  patch(...args){}
+  get(...args): any{}
+  put(...args): any{}
+  post(...args): any{}
+  delete(...args): any{}
+  patch(...args): any{}
 
 }
 

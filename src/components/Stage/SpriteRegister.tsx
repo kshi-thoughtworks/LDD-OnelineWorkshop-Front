@@ -10,4 +10,4 @@ export const registerSprite = (type, spriteClass) => {
 export const getSpriteResiters = () => spriteMap
 
 
-registerSprite('StickyNoteSprite', StickyNoteSprite)
+registerSprite(StickyNoteSprite.type, StickyNoteSprite)

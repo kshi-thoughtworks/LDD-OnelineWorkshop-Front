@@ -2,13 +2,14 @@ import Sprite from './index';
 import { SpriteBox } from './index'
 
 type StickyNoteProps = SpriteBox & {
-  type: 'StickyNoteSprite',
+  type: 'sticky',
   content: string;
-  backgroundColor: string;
+  color: string;
 }
 
 export default class StickyNoteSprite extends Sprite{
   props: StickyNoteProps
+  static type: string = 'sticky'
   constructor(props: StickyNoteProps) {
     const { x, y } = props
     super(props)
@@ -76,12 +77,12 @@ export default class StickyNoteSprite extends Sprite{
   }
   drawBackground(){
     const context = this.stage!.context!
-    const { backgroundColor, x, y, width, height } = this.props
+    const { color, x, y, width, height } = this.props
     context.save()
 
     context.shadowBlur = 4
     context.shadowColor = 'rgba(0, 0, 0, 0.6)'
-    context.fillStyle = backgroundColor
+    context.fillStyle = color
     context.fillRect(0, 0, width, height)
     
     context.restore()
