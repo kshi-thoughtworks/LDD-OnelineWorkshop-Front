@@ -3,6 +3,7 @@ import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
 import Stage from '../../../components/Stage'
 import EditStickerModal from '../EditStickerModal'
+import { loadDataPanora } from '../service'
 import './index.scss'
 
 const operations = [
@@ -20,6 +21,10 @@ export default class DataPanorama extends Vue{
   constructor(props) {
     super(props)
     window.addEventListener('resize', this.onResize)
+  }
+  get workshopId(){
+    const { params: { workshopId } } = this.$route
+    return workshopId
   }
   onResize() {
     this.stage.resize()
@@ -67,6 +72,8 @@ export default class DataPanorama extends Vue{
   mounted(){
     const { stage } = this.$refs
     this.stage = new Stage(stage)
+    
+    loadDataPanora(this.workshopId)
   }
   beforeDestory(){
     window.removeEventListener('resize', this.onResize)

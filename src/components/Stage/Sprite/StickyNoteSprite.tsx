@@ -78,8 +78,12 @@ export default class StickyNoteSprite extends Sprite{
     const context = this.stage!.context!
     const { backgroundColor, x, y, width, height } = this.props
     context.save()
+
+    context.shadowBlur = 4
+    context.shadowColor = 'rgba(0, 0, 0, 0.6)'
     context.fillStyle = backgroundColor
     context.fillRect(0, 0, width, height)
+    
     context.restore()
   }
   drawText() {
@@ -90,24 +94,19 @@ export default class StickyNoteSprite extends Sprite{
     const maxWidth = width - padding * 2
     const maxHeight = height - padding * 2
     const { fontSize, rows } = this.calculateText(maxWidth, maxHeight, content)
-    context.textBaseline = 'middle'
     context.textAlign = 'center'
     context.font = `bold ${fontSize}px Montserrat, sans-serif`
     if(rows.length === 1) {
+      context.textBaseline = 'middle'
       context.fillText(rows[0], width/2, height/2)
     }else {
       const rowsLength = rows.length
       const textHeight = fontSize * rowsLength
       const textTop = (height - textHeight)/2
+      context.textAlign = 'left'
       for(let index = 0; index < rowsLength; index++) {
         const row = rows[index]
-        const isLastRow = index === rowsLength  - 1
-        if(isLastRow) {
-          context.textAlign = 'left'
-          context.fillText(row, padding, textTop + fontSize * (index + 0.5))
-        }else {
-          context.fillText(row, width/2, textTop + fontSize * (index + 0.5))
-        }
+        context.fillText(row, padding, textTop + fontSize * (index + 0.5))
       }
     }
     
