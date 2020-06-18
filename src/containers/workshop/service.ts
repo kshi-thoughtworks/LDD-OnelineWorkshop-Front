@@ -29,3 +29,7 @@ export const createElement = (stepId, content, meta) => {
 export const updateElement = (elementId, content, meta) => {
   return http.put(`/api/elements/${elementId}`, { content, meta })
 }
+
+export const loadCards = () => {
+  return http.get('/api/cards')
+}

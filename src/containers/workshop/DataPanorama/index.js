@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import { map } from 'lodash'
+import { filter, find, map, some } from 'lodash'
 import { Component, Prop } from 'vue-property-decorator'
 import Stage from '../../../components/Stage'
 import EditStickerModal from '../EditStickerModal'
-import { loadElements, createElement, updateElement } from '../service'
+import { loadCards, loadElements, createElement, updateElement } from '../service'
 import './index.scss'
 
 const operations = [
@@ -20,6 +20,7 @@ export default class DataPanorama extends Vue{
   @Prop() stepId
   addStickerModalVisibility = false
   sprites = []
+  cards = []
   constructor(props) {
     super(props)
     window.addEventListener('resize', this.onResize)
@@ -57,8 +58,12 @@ export default class DataPanorama extends Vue{
   onShowAddStickerModal(){
     this.addStickerModalVisibility = true
   }
-  onCard(){}
-  onZoom(){}
+  onCard(card){
+    console.log(card.name)
+  }
+  onZoom(){
+    
+  }
   onExport(){}
   onOperation(type){
     switch(type) {
@@ -68,13 +73,16 @@ export default class DataPanorama extends Vue{
         return this.onText;
       case 'stick':
         return this.onShowAddStickerModal;
-      case 'card':
-        return this.onCard;
       case 'zoom':
         return this.onZoom;
       case 'export':
         return this.onExport;
     }
+  }
+  onClickMenu(event){
+    const { key } = event
+    const card = find(this.cards, card => card.id === key)
+    this.onCard(card)
   }
   mounted(){
     const { stage } = this.$refs
@@ -88,15 +96,58 @@ export default class DataPanorama extends Vue{
       this.stage.readSprites(sprites)
       this.sprites = elements
     })
+    loadCards().then(cards => {
+      this.cards = cards
+    })
   }
   beforeDestory(){
     window.removeEventListener('resize', this.onResize)
+  }
+  renderCardMenu(h, operation) {
+    const { cards } = this
+    const rootCards = filter(cards, card => card.sub_type == 'root')
+    const hasChild = card => {
+      const { type } = card
+      return some(cards, card => card.sub_type === type)
+    }
+    const getCardChildren = card => {
+      return filter(cards, item => item.sub_type == card.type) 
+    }
+    const renderCard = card => {
+      if(hasChild(card)) {
+        const childrenCards = getCardChildren(card)
+        return (
+          <a-sub-menu title={card.name} key={card.id}>
+            {
+              map(childrenCards, card => renderCard(card))
+            }
+          </a-sub-menu>
+        )
+      } else {
+        return (<a-menu-item key={card.id}>{card.name}</a-menu-item>)
+      }
+    }
+    return (
+      <a-dropdown>
+        <li class={`data-panorama-menu-item operation-${operation.type}`} />
+        <a-menu slot="overlay" class="card-menu" onClick={this.onClickMenu}>
+          {
+            map(rootCards, card => {
+              return renderCard(card)
+            })
+          }
+        </a-menu>
+      </a-dropdown>
+    )
   }
   renderOperations(h){
     return (
       <ul class="data-panorama-menu">
         {
           map(operations, operation => {
+            if(operation.type === 'card') {
+              return this.renderCardMenu(h, operation)
+            }
             return (
               <li 
                 class={`data-panorama-menu-item operation-${operation.type}`} 
