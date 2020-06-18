@@ -3,6 +3,7 @@ import { filter, find, map, some } from 'lodash'
 import { Component, Prop } from 'vue-property-decorator'
 import Stage from '../../../components/Stage'
 import EditStickerModal from '../EditStickerModal'
+import EditCardModal from '../EditCardModal'
 import { loadCards, loadElements, createElement, updateElement } from '../service'
 import './index.scss'
 
@@ -18,9 +19,10 @@ const operations = [
 @Component
 export default class DataPanorama extends Vue{
   @Prop() stepId
-  addStickerModalVisibility = false
+  toggleStickerModalVisibility = false
   sprites = []
   cards = []
+  selectedCard = null
   constructor(props) {
     super(props)
     window.addEventListener('resize', this.onResize)
@@ -44,23 +46,18 @@ export default class DataPanorama extends Vue{
       const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
       this.stage.addSprite(spriteProps)
       
-      this.addStickerModalVisibility = false
+      this.toggleStickerModalVisibility = false
 
       this.sprites.push({ id: element_id, content, type: 'sticky', meta})
     })
     
   }
-  onCloseAddStickerModal(){
-    this.addStickerModalVisibility = false
+  onEditCard(title, description, color){
+    console.log(title, description, color)
+    this.selectedCard = null
   }
   onSelector(){}
   onText(){}
-  onShowAddStickerModal(){
-    this.addStickerModalVisibility = true
-  }
-  onCard(card){
-    console.log(card.name)
-  }
   onZoom(){
     
   }
@@ -72,7 +69,7 @@ export default class DataPanorama extends Vue{
       case 'text':
         return this.onText;
       case 'stick':
-        return this.onShowAddStickerModal;
+        return () => this.toggleStickerModalVisibility = true;
       case 'zoom':
         return this.onZoom;
       case 'export':
@@ -82,7 +79,7 @@ export default class DataPanorama extends Vue{
   onClickMenu(event){
     const { key } = event
     const card = find(this.cards, card => card.id === key)
-    this.onCard(card)
+    this.selectedCard = card
   }
   mounted(){
     const { stage } = this.$refs
@@ -165,8 +162,18 @@ export default class DataPanorama extends Vue{
         <div class="data-panorama-wrapper">
           <div ref="stage" class="data-panorama-stage"></div>
         </div>
-        { this.addStickerModalVisibility 
-          && <EditStickerModal onConfirm={this.onAddSticker} onClose={this.onCloseAddStickerModal} />}
+        { this.toggleStickerModalVisibility 
+          && <EditStickerModal 
+              onConfirm={this.onAddSticker} 
+              onClose={() => this.toggleStickerModalVisibility = false } />
+        }
+        {
+          this.selectedCard 
+            && <EditCardModal
+                card={this.selectedCard}
+                onConfirm={this.onEditCard} 
+                onClose={()=> this.selectedCard = null} />
+        }
       </div>
     )
   }

@@ -1,0 +1,69 @@
+.edit-card-modal{
+  .ant-modal-header{
+    border-bottom: none;
+  }
+  .ant-modal-body{
+    box-sizing: border-box;
+    width: 620px;
+    padding: 0 30px;
+    .colors{
+      margin: 0;
+      padding: 0;
+      text-align: left;
+      .color-item{
+        display: inline-block;
+        list-style: none;
+        width: 30px;
+        height: 30px;
+        margin-right: 17px;
+        vertical-align: top;
+        text-align: center;
+        .anticon{
+          margin-top: 7px;
+        }
+      }
+    }
+    .ant-input{
+      margin-top: 12px;
+    }
+    .card-content{
+      position: relative;
+      height: 260px;
+      margin-top: 12px;
+      textarea{
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        border: none;
+        resize: none;
+        outline: none;
+        font-size: 16px;
+        color: var(--midnight-purple);
+      }
+      span{
+        position: absolute;
+        right: 18px;
+        bottom: 14px;
+        font-size: 12px;
+        color: var(--slate-grey);
+      }
+    }
+  }
+  .ant-modal-footer{
+    border-top: none;
+    padding: 30px;
+    .ant-btn{
+      width: 90px;
+      height: 50px;
+      border: 1px solid var(--violet-blue);
+      border-radius: 4px;
+      font-size: 16px;
+      color: var(--violet-blue);
+      &.ant-btn-primary{
+        color: var(--white);
+        background-color: var(--violet-blue);
+      }
+    }
+  }
+}
