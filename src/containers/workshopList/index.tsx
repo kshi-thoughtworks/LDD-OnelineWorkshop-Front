@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import axios from 'axios'
-import {Avatar, Icon} from 'ant-design-vue';
+import { Avatar, Icon } from 'ant-design-vue'
+import CreateWorkshopModal from './CreateWorkshopModal'
 import './index.scss'
 
 interface workshopItem {
@@ -15,16 +16,18 @@ interface workshopItem {
     components: {
         'a-avatar': Avatar,
         'a-icon': Icon,
+        'create-workshop-Modal': CreateWorkshopModal
     }
 })
 export default class WorkshopList extends Vue{
 
-    workshop_list:workshopItem[] = []
+    workshopList:workshopItem[] = []
+    addWorkshopModalVisibility = false
 
     created() {
         axios.get('/api/workbenches')
             .then((response) => {
-                this.workshop_list = response.data.sort(function(a:workshopItem, b:workshopItem) {
+                this.workshopList = response.data.sort(function(a:workshopItem, b:workshopItem) {
                     return b.created_at.localeCompare(a.created_at);
                 })
             })
@@ -36,11 +39,29 @@ export default class WorkshopList extends Vue{
         this.$router.push(`/workshops/${workshopId}`)
     }
 
+    showModal() {
+        this.addWorkshopModalVisibility = true
+    }
+
+    getWorkshopList() {
+        axios.get('/api/workbenches')
+            .then((response) => {
+                this.workshopList = response.data.sort(function(a:workshopItem, b:workshopItem) {
+                    return b.created_at.localeCompare(a.created_at);
+                })
+            })
+            .catch(error => this.$message.error(error.response.data))
+    }
+
+    hiddenModal() {
+        this.addWorkshopModalVisibility = false
+    }
+
     render_workshop_list(h) {
-        if (this.workshop_list.length > 0) {
+        if (this.workshopList.length > 0) {
             return (
                 <div class="bench-list">
-                    {this.workshop_list.map(value => 
+                    {this.workshopList.map(value => 
                         <div class="bench-card" data-workshop-id={value.id} onClick={this.goToWorkshopDetail}>
                             <div class="bench-card-bg">
                                 <div class="bench-card-cover">
@@ -76,8 +97,11 @@ export default class WorkshopList extends Vue{
             </header>
             <div class="bench">
                 {this.render_workshop_list(h)}
-                <a-icon type="plus-circle" style="fontSize: 90px; color: #6c0dbc" theme="filled" class="bench-plus"/>
+                <a-icon type="plus-circle" style="fontSize: 90px; color: #6c0dbc" theme="filled" class="bench-plus"
+                        onClick={this.showModal}/>
             </div>
+            { this.addWorkshopModalVisibility &&
+             <create-workshop-Modal onConfirm={this.getWorkshopList} onCancel={this.hiddenModal}/>  }       
           </div>
         )
       }

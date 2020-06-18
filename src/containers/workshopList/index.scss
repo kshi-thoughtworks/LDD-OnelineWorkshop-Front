@@ -6,16 +6,17 @@
 
     &-list {
         display: flex;
+        flex-wrap: wrap;
         padding: 40px 60px;
     }
 
     &-card {
         display: inline-block;
-        width: 308px;
+        width: 22%;
         height: 236px;
         border-radius: 8px;
         margin: 16px;
-        overflow: auto;
+        overflow: hidden;
         box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
         cursor: pointer;
         overflow: hidden;

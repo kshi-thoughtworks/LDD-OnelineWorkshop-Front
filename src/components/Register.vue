@@ -69,7 +69,6 @@
         methods: {
             onSubmit() {
                 this.$refs.ruleForm.validate(valid => {
-                    console.log(this.form)
                     if (valid) {
                         let data = {
                             username: this.form.username,
