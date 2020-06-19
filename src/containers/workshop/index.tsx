@@ -2,7 +2,8 @@ import Vue from 'vue'
 import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
 import DataPanorama from './DataPanorama'
-import { loadWorkshop } from '../service'
+import WorkshopModal from '../../components/WorkshopModal'
+import { loadWorkshop, updateWorkshop } from '../service'
 
 import './index.scss'
 
@@ -18,11 +19,18 @@ type TypeItem = {
   type: TypeEnum;
   name: string;
 }
-@Component
+
+@Component({
+  components: {
+      'workshop-modal': WorkshopModal
+  }
+})
 export default class Workshop extends Vue{
   types: Array<TypeItem>
   currentType: string
   workshop: any = null
+  addWorkshopModalVisibility = false
+
   constructor(props){
     super(props)
     this.types = [
@@ -76,6 +84,26 @@ export default class Workshop extends Vue{
       </ul>
     )
   }
+
+  confirmWorkshopModal(name, description) {
+    updateWorkshop(this.workshop.id, name, description)
+      .then(() => {
+          this.$message.success('更新成功')
+          this.hiddenModal()
+          this.workshop.name = name
+          this.workshop.description = description
+      })
+      .catch(error => this.$message.error(error))
+  }
+
+  showModal() {
+    this.addWorkshopModalVisibility = true
+  }
+
+  hiddenModal() {
+    this.addWorkshopModalVisibility = false
+  }
+
   render(h){
     return this.workshop && (
       <div class="workshop">
@@ -83,12 +111,15 @@ export default class Workshop extends Vue{
           <a-icon type="left" style={{ fontSize: '12px', color: '#6d6e71' }} />
           <router-link to="/workshops" class="workshop-header-title">我的工作台</router-link>
           <div class="workshop-header-info">
-            <p class="workshop-header-info-brif">{this.workshop.name}(<span>{this.workshop.description}</span>)</p>
+            <p class="workshop-header-info-brif" onClick={this.showModal}>{this.workshop.name}(<span>{this.workshop.description}</span>)</p>
             <p class="workshop-header-info-detail">{this.workshop.name + '(' + this.workshop.description + ')'}</p>
           </div>
         </header>
         { this.renderTypes(h) }
         { this.renderByType(h) }
+        { this.addWorkshopModalVisibility &&
+          <workshop-modal onConfirm={this.confirmWorkshopModal} onCancel={this.hiddenModal} 
+            modalTitle="编辑工作坊信息" workshopName={this.workshop.name} workshopDescription={this.workshop.description}/>  }       
       </div>
     )
   }

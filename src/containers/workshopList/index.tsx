@@ -2,7 +2,9 @@ import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import axios from 'axios'
 import { Avatar, Icon } from 'ant-design-vue'
-import CreateWorkshopModal from './CreateWorkshopModal'
+import WorkshopModal from '../../components/WorkshopModal'
+import { createWorkshop, loadWorkshops } from '../service'
+
 import './index.scss'
 
 interface workshopItem {
@@ -16,7 +18,7 @@ interface workshopItem {
     components: {
         'a-avatar': Avatar,
         'a-icon': Icon,
-        'create-workshop-Modal': CreateWorkshopModal
+        'workshop-modal': WorkshopModal
     }
 })
 export default class WorkshopList extends Vue{
@@ -25,13 +27,13 @@ export default class WorkshopList extends Vue{
     addWorkshopModalVisibility = false
 
     created() {
-        axios.get('/api/workbenches')
-            .then((response) => {
-                this.workshopList = response.data.sort(function(a:workshopItem, b:workshopItem) {
+        loadWorkshops()
+            .then((workshops) => {
+                this.workshopList = workshops.sort(function(a:workshopItem, b:workshopItem) {
                     return b.created_at.localeCompare(a.created_at);
                 })
             })
-            .catch(error => this.$message.error(error.response.data))
+            .catch(error => this.$message.error(error))
     }
 
     goToWorkshopDetail(event) {
@@ -43,14 +45,18 @@ export default class WorkshopList extends Vue{
         this.addWorkshopModalVisibility = true
     }
 
-    getWorkshopList() {
-        axios.get('/api/workbenches')
-            .then((response) => {
-                this.workshopList = response.data.sort(function(a:workshopItem, b:workshopItem) {
-                    return b.created_at.localeCompare(a.created_at);
+    getWorkshopList(name, description) {
+        createWorkshop(name, description)
+            .then(() => {
+                this.$message.success('创建成功')
+                this.hiddenModal()
+                loadWorkshops().then(workshops => {
+                        this.workshopList = workshops.sort(function(a:workshopItem, b:workshopItem) {
+                            return b.created_at.localeCompare(a.created_at);
+                    })
                 })
             })
-            .catch(error => this.$message.error(error.response.data))
+            .catch(error => this.$message.error(error))
     }
 
     hiddenModal() {
@@ -101,7 +107,7 @@ export default class WorkshopList extends Vue{
                         onClick={this.showModal}/>
             </div>
             { this.addWorkshopModalVisibility &&
-             <create-workshop-Modal onConfirm={this.getWorkshopList} onCancel={this.hiddenModal}/>  }       
+             <workshop-modal onConfirm={this.getWorkshopList} onCancel={this.hiddenModal} modalTitle="创建新的工作坊"/>  }       
           </div>
         )
       }

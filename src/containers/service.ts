@@ -37,6 +37,14 @@ export const createWorkshop = (name, description) => {
   return http.post('/api/workbenches', { name, description })
 }
 
+export const updateWorkshop = (workshopId, name, description) => {
+  return http.put(`/api/workbenches/${workshopId}`, { name, description })
+}
+
+export const loadWorkshops = () => {
+  return http.get('/api/workbenches')
+}
+
 export const register = (username, email, password) => {
   return http.post('/api/users/register', { username, email, password })
 }

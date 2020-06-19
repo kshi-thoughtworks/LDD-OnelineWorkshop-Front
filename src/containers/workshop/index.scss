@@ -17,6 +17,7 @@
         margin-bottom: 0;
         margin-left: 40px;
         color: var(--violet-blue);
+        white-space: nowrap;
         cursor: pointer;
         span {
           max-width: 140px;
@@ -42,6 +43,7 @@
         top: 40px;
         padding: 12px;
         opacity: 0;
+        z-index: 2;
       }
     }
   }

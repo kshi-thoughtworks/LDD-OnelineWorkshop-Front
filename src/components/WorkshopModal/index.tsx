@@ -1,14 +1,17 @@
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
+import { Component, Prop } from 'vue-property-decorator'
 import { Input } from 'ant-design-vue'
-import { createWorkshop } from '../../service'
 
 @Component({
     components: {
         'a-input': Input
     }
 })
-export default class CreateWorkshopModal extends Vue {
+export default class WorkshopModal extends Vue {
+
+    @Prop(String) modalTitle!: string;
+    @Prop(String) workshopName?: string;
+    @Prop(String) workshopDescription?: string;
 
     form = {
         name: '',
@@ -26,7 +29,12 @@ export default class CreateWorkshopModal extends Vue {
             ],
         }
 
-    onClickCreate() {
+    mounted() {
+        this.form.name = this.$props.workshopName
+        this.form.description = this.$props.workshopDescription
+    }
+
+    onClickConfirm() {
         if (this.form.name.length == 0) {
             this.$message.error('请输入工作坊名称')
             return
@@ -40,27 +48,19 @@ export default class CreateWorkshopModal extends Vue {
             this.$message.error('工作坊介绍不可超过200个字符')
             return
         }
-        createWorkshop(this.form.name.trim(), this.form.description.trim())
-            .then(() => {
-                this.$message.success('创建成功')
-                const {confirm, cancel} = this.$listeners
-                if (cancel instanceof Function) {
-                    cancel()
-                }
-                if (confirm instanceof Function) {
-                    confirm()
-                }
-            })
-            .catch(error => this.$message.error(error))
+        const {confirm} = this.$listeners
+        if (confirm instanceof Function) {
+            confirm(this.form.name.trim(), this.form.description.trim())
+        }
     }
 
     render(h) {
-        const { cancel} = this.$listeners
+        const { cancel } = this.$listeners
         return (
             <a-modal
-                title="创建新的工作坊"
+                title={this.$props.modalTitle}
                 visible={true}
-                onOk={this.onClickCreate}
+                onOk={this.onClickConfirm}
                 onCancel={cancel}
                 okText="完成"
                 cancelText="取消"
