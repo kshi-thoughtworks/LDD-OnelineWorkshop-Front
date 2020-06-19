@@ -40,7 +40,7 @@ export default class CreateWorkshopModal extends Vue {
             this.$message.error('工作坊介绍不可超过200个字符')
             return
         }
-        createWorkshop(this.form.name, this.form.description)
+        createWorkshop(this.form.name.trim(), this.form.description.trim())
             .then(() => {
                 this.$message.success('创建成功')
                 const {confirm, cancel} = this.$listeners
@@ -51,6 +51,7 @@ export default class CreateWorkshopModal extends Vue {
                     confirm()
                 }
             })
+            .catch(error => this.$message.error(error))
     }
 
     render(h) {

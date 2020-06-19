@@ -11,6 +11,39 @@
       font-size: 14px;
       color: var(--slate-grey)
     }
+    &-info {
+      position: relative;
+      &-brif {
+        margin-bottom: 0;
+        margin-left: 40px;
+        color: var(--violet-blue);
+        cursor: pointer;
+        span {
+          max-width: 140px;
+          overflow: hidden;
+          display: inline-block;
+          word-break: keep-all;
+          text-overflow: ellipsis;
+          vertical-align: bottom;
+        }
+        &:hover {
+          + .workshop-header-info-detail {
+            opacity: 1;
+          }
+        }
+      }
+      &-detail {
+        position: absolute;
+        width: 300px;
+        color: var(--white);
+        border-radius: 4px;
+        box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.4);
+        background-color: var(--violet-blue);
+        top: 40px;
+        padding: 12px;
+        opacity: 0;
+      }
+    }
   }
   &-types{
     display: flex;
