@@ -27,8 +27,8 @@
 </template>
 
 <script>
-    import {Card, Input, Button, Checkbox} from 'ant-design-vue';
-    import axios from 'axios';
+    import { Card, Input, Button, Checkbox } from 'ant-design-vue'
+    import { register } from './service'
 
     export default {
         name: 'Register',
@@ -70,17 +70,12 @@
             onSubmit() {
                 this.$refs.ruleForm.validate(valid => {
                     if (valid) {
-                        let data = {
-                            username: this.form.username,
-                            email: this.form.email,
-                            password: this.form.password
-                        }
-                        axios.post('/api/users/register', data)
+                        register(this.form.username, this.form.email, this.form.password)
                             .then(() => {
                                 this.$message.success('注册成功，请登录')
                                 this.$router.push('/login')
                             })
-                            .catch(error => this.$message.error(error.response.data))
+                            .catch(error => this.$message.error(error))
                     } else {
                         console.log('error submit!!');
                         return false;
@@ -148,7 +143,6 @@
             border-radius: 4px;
             background-color: #f5f3f6;
             border: none;
-
         }
 
 

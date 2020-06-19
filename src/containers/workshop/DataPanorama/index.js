@@ -4,7 +4,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import Stage from '../../../components/Stage'
 import EditStickerModal from '../EditStickerModal'
 import EditCardModal from '../EditCardModal'
-import { loadCards, loadElements, createElement, updateElement } from '../service'
+import { loadCards, loadElements, createElement, updateElement } from '../../service'
 import './index.scss'
 
 const operations = [

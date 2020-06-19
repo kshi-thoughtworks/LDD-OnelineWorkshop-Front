@@ -13,6 +13,7 @@
 
 <style lang="scss">
     @import './assets/styles/variables.css';
+    @import './assets/styles/normal.scss';
 
     html, body {
         margin: 0;

@@ -1,7 +1,7 @@
 import VueRouter from 'vue-router'
-import NotFount from './components/NotFount'
-import Register from './components/Register'
-import Login from './components/Login'
+import NotFount from './containers/NotFount'
+import Register from './containers/Register'
+import Login from './containers/Login'
 import Workshop from './containers/workshop'
 import WorkshopList from './containers/workshopList'
 

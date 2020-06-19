@@ -19,8 +19,8 @@
 </template>
 
 <script>
-    import {Input, Button} from 'ant-design-vue';
-    import axios from 'axios';
+    import { Input, Button } from 'ant-design-vue'
+    import { login } from './service'
 
     export default {
         name: 'Register',
@@ -56,11 +56,11 @@
                             name_or_email: this.form.name_or_email,
                             password: this.form.password
                         }
-                        axios.post('/api/users/login', data)
+                        login(this.form.name_or_email, this.form.password)
                             .then(() => {
                                 this.$router.push('/workshops')
                             })
-                            .catch(error => this.$message.error(error.response.data))
+                            .catch(error => this.$message.error(error))
                     } else {
                         console.log('error submit!!');
                         return false;

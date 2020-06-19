@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
 import DataPanorama from './DataPanorama'
-import { loadWorkshop } from './service'
+import { loadWorkshop } from '../service'
 
 import './index.scss'
 

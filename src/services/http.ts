@@ -51,9 +51,11 @@ export default class Http {
       errorMessage = '网络超时，请稍后重试。'
     } else {
       const { response = {} } = error
-      const { status } = response
+      const { status, data } = response
       if (status >= 500 || status === 404) {
         errorMessage = `服务器异常，错误码：${response.status}, 地址：${response.config.url}`
+      } else {
+        errorMessage = data
       }
     }
     return Promise.reject(errorMessage)

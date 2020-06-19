@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import { Component, Prop } from 'vue-property-decorator'
-import {Input} from 'ant-design-vue';
-import axios from 'axios';
+import { Component } from 'vue-property-decorator'
+import { Input } from 'ant-design-vue'
+import { createWorkshop } from '../../service'
 
 @Component({
     components: {
@@ -26,7 +26,7 @@ export default class CreateWorkshopModal extends Vue {
             ],
         }
 
-    createWorkshop() {
+    onClickCreate() {
         if (this.form.name.length == 0) {
             this.$message.error('请输入工作坊名称')
             return
@@ -40,7 +40,7 @@ export default class CreateWorkshopModal extends Vue {
             this.$message.error('工作坊介绍不可超过200个字符')
             return
         }
-        axios.post('/api/workbenches', this.form)
+        createWorkshop(this.form.name, this.form.description)
             .then(() => {
                 this.$message.success('创建成功')
                 const {confirm, cancel} = this.$listeners
@@ -51,24 +51,25 @@ export default class CreateWorkshopModal extends Vue {
                     confirm()
                 }
             })
-            .catch(error => this.$message.error(error.response.data))
     }
 
     render(h) {
         const { cancel} = this.$listeners
         return (
             <a-modal
-                title="编辑工作坊信息"
+                title="创建新的工作坊"
                 visible={true}
-                onOk={this.createWorkshop}
+                onOk={this.onClickCreate}
                 onCancel={cancel}
+                okText="完成"
+                cancelText="取消"
             >
                 <a-form-model ref="ruleForm" rules={this.rules} v-model={this.form}>
-                    <a-form-model-item label="工作方名称">
+                    <a-form-model-item label="工作坊名称">
                         <a-input v-model={this.form.name} />
                     </a-form-model-item>
                     <a-form-model-item label="工作坊介绍">
-                        <a-input v-model={this.form.description} />
+                        <a-input v-model={this.form.description} type="textarea" />
                     </a-form-model-item>
                 </a-form-model>
             </a-modal>
