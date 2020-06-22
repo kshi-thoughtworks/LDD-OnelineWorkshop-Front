@@ -3,13 +3,13 @@ import Sprite, { SpriteClass, SpriteBox } from './Sprite'
 import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
 export type CanvasContext = CanvasRenderingContext2D | null
-const stageBox = {
+export const stageBox = {
   width: 3840,
   height: 2160
 }
 const stageRatio = stageBox.width/stageBox.height
 
-export default class Stage{
+export default class Stage {
   container: HTMLDivElement
   canvas: HTMLCanvasElement
   frontendCanvas: HTMLCanvasElement
@@ -17,9 +17,9 @@ export default class Stage{
   context: CanvasContext
   frontendContext: CanvasContext
 
-  sprites: Array<Sprite>
+  sprites: Array<Sprite<SpriteBox>>
 
-  dragManager: DragManager
+  dragManager?: DragManager
 
   constructor(container: HTMLDivElement) {
     this.container = container
@@ -30,41 +30,31 @@ export default class Stage{
     this.frontendContext = this.canvas.getContext('2d')
     this.container.append(this.canvas)
 
-    this.dragManager = new DragManager(this)
-
     this.sprites = []
 
     this.init()
   }
 
-  init() {
-    this.dragManager.setup()
-    this.updateBoxRect()
-  }
   get ratio() {
     const { width }: DOMRect = this.container.getBoundingClientRect()
     return width / stageBox.width
   }
-  findSpriteByPoint(left: number, top: number) {
-    const { width }: DOMRect = this.container.getBoundingClientRect()
-    const ratio = this.ratio
-    const sprite = findLast(this.sprites, (sprite: Sprite) => {
-      const { width, height, x, y } = sprite
-      const realX = x * ratio
-      const realY = y * ratio
-      const realWidth = width * ratio
-      const realHeight = height * ratio
-      return left <= realX + realWidth && left >= realX && top >= realY && top <= realY + realHeight
-    })
-    return sprite
+
+  setDragManager(dragManager: DragManager){
+    this.dragManager = dragManager
+    this.dragManager.setup()
   }
 
-  draw(){
-    this.context!.clearRect(0, 0, stageBox.width, stageBox.height)
-    forEach(this.sprites, (sprite: Sprite) => sprite.draw())
+  init() {
+    this.updateBoxRect()
+  }
+  
+  findSpriteByPoint(left: number, top: number) : Sprite<SpriteBox>{
+    return findLast(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.pointInSprite(left, top))
   }
 
   readSprites(spriteProps) {
+    this.sprites = []
     forEach(spriteProps, props => {
       const spriteInstance = this.buildSprite(props)
       
@@ -75,7 +65,7 @@ export default class Stage{
   }
 
   addSprite(props){
-    const spriteInstance: Sprite = this.buildSprite(props)
+    const spriteInstance: Sprite<SpriteBox> = this.buildSprite(props)
     spriteInstance.setStage(this)
     this.sprites.push(spriteInstance)
 
@@ -86,7 +76,7 @@ export default class Stage{
     const { type } = props
     const spriteMap = getSpriteResiters()
     const spriteClass: SpriteClass = spriteMap[type]
-    const spriteInstance: Sprite = spriteClass.build(props)
+    const spriteInstance: Sprite<SpriteBox> = spriteClass.build(props)
     spriteInstance.setStage(this)
     return spriteInstance
   }
@@ -109,9 +99,18 @@ export default class Stage{
     this.canvas.height = stageBox.height
   }
 
+  draw(){
+    this.context!.clearRect(0, 0, stageBox.width, stageBox.height)
+    forEach(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.draw())
+  }
+
   resize() {
     this.updateBoxRect()
     this.draw()
+  }
+
+  destroy() {
+    this.dragManager?.teardown()
   }
 
 }

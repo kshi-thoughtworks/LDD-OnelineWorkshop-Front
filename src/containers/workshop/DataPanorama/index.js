@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { filter, find, map, some } from 'lodash'
 import { Component, Prop } from 'vue-property-decorator'
 import Stage from '../../../components/Stage'
+import DragManager from '../../../components/Stage/DragManager'
 import EditStickerModal from '../EditStickerModal'
 import EditCardModal from '../EditCardModal'
 import { loadCards, loadElements, createElement, updateElement } from '../../service'
@@ -20,7 +21,6 @@ const operations = [
 export default class DataPanorama extends Vue{
   @Prop() stepId
   toggleStickerModalVisibility = false
-  sprites = []
   cards = []
   selectedCard = null
   constructor(props) {
@@ -33,6 +33,15 @@ export default class DataPanorama extends Vue{
   }
   onResize() {
     this.stage.resize()
+  }
+  onDragStart = sprite => {
+    
+  }
+  onDragEnd = sprite => {
+
+  }
+  onClickSprite = sprite => {
+
   }
   onAddSticker(content, color){
     const meta = {
@@ -47,8 +56,6 @@ export default class DataPanorama extends Vue{
       this.stage.addSprite(spriteProps)
       
       this.toggleStickerModalVisibility = false
-
-      this.sprites.push({ id: element_id, content, type: 'sticky', meta})
     })
     
   }
@@ -84,6 +91,11 @@ export default class DataPanorama extends Vue{
   mounted(){
     const { stage } = this.$refs
     this.stage = new Stage(stage)
+    const dragManager = new DragManager(this.stage)
+    dragManager.addEventListener('dragstart', this.onDragStart)
+    dragManager.addEventListener('dragend', this.onDragEnd)
+    dragManager.addEventListener('click', this.onClickSprite)
+    
     
     loadElements(this.stepId).then(elements => {
       const sprites = map(elements, element => {
@@ -91,7 +103,6 @@ export default class DataPanorama extends Vue{
         return { id, type, content, ...meta }
       })
       this.stage.readSprites(sprites)
-      this.sprites = elements
     })
     loadCards().then(cards => {
       this.cards = cards
