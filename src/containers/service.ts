@@ -33,12 +33,8 @@ export const createCard = (stepId, title, content, meta, card_id) => {
   return http.post(`/api/elements/card`, element)
 }
 
-export const updateStickyNote = (elementId, title, content, meta) => {
+export const updateElement = (elementId, title, content, meta) => {
   return http.put(`/api/elements/${elementId}`, { title, content, meta })
-}
-
-export const updateCard = (elementId, title, content, meta, card_id) => {
-  return http.put(`/api/elements/${elementId}`, title, { content, meta }, card_id)
 }
 
 export const loadCards = () => {

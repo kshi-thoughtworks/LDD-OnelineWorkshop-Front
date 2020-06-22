@@ -58,7 +58,7 @@ export default class Workshop extends Vue{
     switch(currentType) {
       case TypeEnum.dataPanorama:
         const stepId = steps[0].id
-        return h(DataPanorama, { props: { stepId}})
+        return h(DataPanorama, { props: { stepId, name: this.workshop.name}})
       case TypeEnum.divergenceScene:
       case TypeEnum.convergenceScene:
       case TypeEnum.technologyCard:

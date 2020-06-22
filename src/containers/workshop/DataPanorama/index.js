@@ -10,8 +10,7 @@ import {
   loadElements, 
   createStickyNote, 
   createCard, 
-  updateStickyNote, 
-  updateCard 
+  updateElement
 } from '../../service'
 import './index.scss'
 
@@ -27,6 +26,7 @@ const operations = [
 @Component
 export default class DataPanorama extends Vue{
   @Prop() stepId
+  @Prop() name
   toggleStickerModalVisibility = false
   cards = []
   selectedCard = null
@@ -48,7 +48,7 @@ export default class DataPanorama extends Vue{
     const { id, title, content, ...meta } = sprite.props
     const metaProps = { ...meta }
     delete metaProps.type
-    updateStickyNote(id, title, content, metaProps)
+    updateElement(id, title, content, metaProps)
   }
   onClickSprite = sprite => {
 
@@ -82,7 +82,17 @@ export default class DataPanorama extends Vue{
   onZoom(){
     
   }
-  onExport(){}
+  onExport(){
+    console.log('export')
+    const aTag = document.createElement('a')
+    aTag.target = '_blank'
+    aTag.href = this.stage.canvas.toDataURL('image/png')
+    aTag.download = this.name
+    aTag.className='download-canvas-link'
+    document.body.append(aTag)
+    aTag.click()
+    document.body.removeChild(aTag)
+  }
   onOperation(type){
     switch(type) {
       case 'selector':
