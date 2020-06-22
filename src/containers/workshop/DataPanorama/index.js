@@ -5,7 +5,14 @@ import Stage from '../../../components/Stage'
 import DragManager from '../../../components/Stage/DragManager'
 import EditStickerModal from '../EditStickerModal'
 import EditCardModal from '../EditCardModal'
-import { loadCards, loadElements, createElement, updateElement } from '../../service'
+import { 
+  loadCards, 
+  loadElements, 
+  createStickyNote, 
+  createCard, 
+  updateStickyNote, 
+  updateCard 
+} from '../../service'
 import './index.scss'
 
 const operations = [
@@ -35,10 +42,12 @@ export default class DataPanorama extends Vue{
     this.stage.resize()
   }
   onDragStart = sprite => {
-    
+
   }
   onDragEnd = sprite => {
-
+    const { id, content, ...meta } = sprite.props
+    console.log(sprite.props)
+    updateStickyNote(id, content, meta)
   }
   onClickSprite = sprite => {
 
@@ -51,7 +60,7 @@ export default class DataPanorama extends Vue{
       width: 480,
       height: 480
     }
-    createElement(this.stepId, content, meta).then(({ element_id }) => {
+    createStickyNote(this.stepId, content, meta).then(({ element_id }) => {
       const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
       this.stage.addSprite(spriteProps)
       
@@ -60,7 +69,11 @@ export default class DataPanorama extends Vue{
     
   }
   onEditCard(title, description, color){
-    console.log(title, description, color)
+    const meta = { color, x: 100, y: 100, width: 480, height: 480 }
+    createCard(this.stepId, title, description, meta, this.selectedCard.id).then(({ element_id }) => {
+      const spriteProps = { ...meta, id: element_id, content: description, type: 'sticky' }
+      this.stage.addSprite(spriteProps)
+    })
     this.selectedCard = null
   }
   onSelector(){}
@@ -99,8 +112,8 @@ export default class DataPanorama extends Vue{
     
     loadElements(this.stepId).then(elements => {
       const sprites = map(elements, element => {
-        const { id, type, content, meta } = element
-        return { id, type, content, ...meta }
+        const { id, type, title, content, meta, card } = element
+        return { id, type, title, content, ...meta, card }
       })
       this.stage.readSprites(sprites)
     })

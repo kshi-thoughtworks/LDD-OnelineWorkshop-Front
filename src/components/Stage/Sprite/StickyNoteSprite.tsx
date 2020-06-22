@@ -1,9 +1,9 @@
 import Sprite, { SpriteBox } from './index';
 
 const stickyNoteType = 'sticky'
-type StickyNoteType = 'sticky'
+export type StickyNoteType = 'sticky'
 export class StickyNoteProps {
-  type: StickyNoteType = stickyNoteType
+  type: string = stickyNoteType
   id?: number
   x!: number
   y!: number
@@ -53,7 +53,7 @@ export class StickyNoteProps {
 }
 
 export default class StickyNoteSprite extends Sprite<StickyNoteProps>{
-  static type: StickyNoteType = 'sticky'
+  static type: string = 'sticky'
   constructor(props: StickyNoteProps) {
     super(props)
     this.props = props
