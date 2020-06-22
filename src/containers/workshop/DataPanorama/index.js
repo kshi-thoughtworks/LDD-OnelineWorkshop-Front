@@ -45,9 +45,10 @@ export default class DataPanorama extends Vue{
 
   }
   onDragEnd = sprite => {
-    const { id, content, ...meta } = sprite.props
-    console.log(sprite.props)
-    updateStickyNote(id, content, meta)
+    const { id, title, content, ...meta } = sprite.props
+    const metaProps = { ...meta }
+    delete metaProps.type
+    updateStickyNote(id, title, content, metaProps)
   }
   onClickSprite = sprite => {
 
@@ -71,7 +72,7 @@ export default class DataPanorama extends Vue{
   onEditCard(title, description, color){
     const meta = { color, x: 100, y: 100, width: 480, height: 480 }
     createCard(this.stepId, title, description, meta, this.selectedCard.id).then(({ element_id }) => {
-      const spriteProps = { ...meta, id: element_id, content: description, type: 'sticky' }
+      const spriteProps = { ...meta, id: element_id, content: description, type: 'card' }
       this.stage.addSprite(spriteProps)
     })
     this.selectedCard = null

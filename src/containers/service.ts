@@ -13,8 +13,8 @@ export const loadElements =  stepId => {
       const metaJson = meta ? JSON.parse(meta) : defaultProps
       return {
         id,
+        type,
         title,
-        type: card ? 'card' : type,
         content,
         meta: metaJson,
         card
@@ -24,17 +24,17 @@ export const loadElements =  stepId => {
 }
 
 export const createStickyNote = (stepId, content, meta, ) => {
-  const element = { step_id: stepId, content, meta, title: '-' } 
-  return http.post(`/api/elements`, element)
+  const element = { step_id: stepId, content, meta } 
+  return http.post(`/api/elements/sticker`, element)
 }
 
 export const createCard = (stepId, title, content, meta, card_id) => {
-  const element = { step_id: stepId, content, meta, card_id, title } 
-  return http.post(`/api/elements`, element)
+  const element = { step_id: stepId, title, content, meta, card_id } 
+  return http.post(`/api/elements/card`, element)
 }
 
-export const updateStickyNote = (elementId, content, meta) => {
-  return http.put(`/api/elements/${elementId}`, { title: '-', content, meta })
+export const updateStickyNote = (elementId, title, content, meta) => {
+  return http.put(`/api/elements/${elementId}`, { title, content, meta })
 }
 
 export const updateCard = (elementId, title, content, meta, card_id) => {
