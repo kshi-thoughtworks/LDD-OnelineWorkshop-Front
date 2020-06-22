@@ -76,7 +76,8 @@ module.exports = {
             options : {
               reportFiles: [
                   'src/**/*.{ts,tsx}'
-              ]
+              ],
+              appendTsSuffixTo: [/\.vue$/]
             },
           }
         ]

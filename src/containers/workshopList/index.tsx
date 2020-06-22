@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import axios from 'axios'
 import { Avatar, Icon } from 'ant-design-vue'
-import WorkshopModal from '../../components/WorkshopModal'
+import NewWorkshopModal from '../../components/WorkshopModal.vue'
 import { createWorkshop, loadWorkshops } from '../service'
 
 import './index.scss'
@@ -18,7 +18,7 @@ interface workshopItem {
     components: {
         'a-avatar': Avatar,
         'a-icon': Icon,
-        'workshop-modal': WorkshopModal
+        'workshop-modal': NewWorkshopModal
     }
 })
 export default class WorkshopList extends Vue{

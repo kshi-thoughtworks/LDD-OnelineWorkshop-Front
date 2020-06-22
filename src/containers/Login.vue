@@ -52,18 +52,14 @@
                 this.$refs.ruleForm.validate(valid => {
                     console.log(this.form)
                     if (valid) {
-                        let data = {
-                            name_or_email: this.form.name_or_email,
-                            password: this.form.password
-                        }
                         login(this.form.name_or_email, this.form.password)
                             .then(() => {
                                 this.$router.push('/workshops')
                             })
                             .catch(error => this.$message.error(error))
                     } else {
-                        console.log('error submit!!');
-                        return false;
+                        console.log('error submit!!')
+                        return false
                     }
                 });
             },

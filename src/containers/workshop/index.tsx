@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
 import DataPanorama from './DataPanorama'
-import WorkshopModal from '../../components/WorkshopModal'
+import WorkshopModal from '../../components/WorkshopModal.vue'
 import { loadWorkshop, updateWorkshop } from '../service'
 
 import './index.scss'
