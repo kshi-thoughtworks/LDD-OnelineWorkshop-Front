@@ -1,5 +1,6 @@
-import { forEach } from 'lodash'
-import Sprite, { SpriteClass } from './Sprite'
+import { findLast, forEach } from 'lodash'
+import Sprite, { SpriteClass, SpriteBox } from './Sprite'
+import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
 export type CanvasContext = CanvasRenderingContext2D | null
 const stageBox = {
@@ -9,7 +10,7 @@ const stageBox = {
 const stageRatio = stageBox.width/stageBox.height
 
 export default class Stage{
-  private container: HTMLDivElement
+  container: HTMLDivElement
   canvas: HTMLCanvasElement
   frontendCanvas: HTMLCanvasElement
 
@@ -17,6 +18,8 @@ export default class Stage{
   frontendContext: CanvasContext
 
   sprites: Array<Sprite>
+
+  dragManager: DragManager
 
   constructor(container: HTMLDivElement) {
     this.container = container
@@ -27,13 +30,33 @@ export default class Stage{
     this.frontendContext = this.canvas.getContext('2d')
     this.container.append(this.canvas)
 
+    this.dragManager = new DragManager(this)
+
     this.sprites = []
 
     this.init()
   }
 
   init() {
+    this.dragManager.setup()
     this.updateBoxRect()
+  }
+  get ratio() {
+    const { width }: DOMRect = this.container.getBoundingClientRect()
+    return width / stageBox.width
+  }
+  findSpriteByPoint(left: number, top: number) {
+    const { width }: DOMRect = this.container.getBoundingClientRect()
+    const ratio = this.ratio
+    const sprite = findLast(this.sprites, (sprite: Sprite) => {
+      const { width, height, x, y } = sprite
+      const realX = x * ratio
+      const realY = y * ratio
+      const realWidth = width * ratio
+      const realHeight = height * ratio
+      return left <= realX + realWidth && left >= realX && top >= realY && top <= realY + realHeight
+    })
+    return sprite
   }
 
   draw(){

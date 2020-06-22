@@ -115,7 +115,7 @@ export default class StickyNoteSprite extends Sprite{
   }
   draw() {
     const context = this.stage!.context!
-    const { x, y } = this.props
+    const { x, y } = this
     context.save()
     context.translate(x, y)
 
