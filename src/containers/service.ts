@@ -57,6 +57,10 @@ export const loadUsers = () => {
   return http.get('/api/users')
 }
 
+export const addUsersToWorkshop = (workshopId, userIds) => {
+  return http.post(`/api/workbenches/${workshopId}/users`, { user_ids: userIds })
+}
+
 export const register = (username, email, password) => {
   return http.post('/api/users/register', { username, email, password })
 }

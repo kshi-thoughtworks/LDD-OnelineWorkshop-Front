@@ -3,14 +3,13 @@
         a-form-model(ref="ruleForm" :model="form" :rules="rules" hide-required-mark=true)
             a-form-model-item(label="工作坊名称" prop="name")
                 a-input(v-model="form.name")
-            a-form-model-item(label="邀请工作坊成员" prop="members")
-                <a-select mode="multiple" :value="form.selectedList" placeholder="Please select" @change="handleChange">
-                </a-select>
-                ul(multiple v-model="form.selected").select-dropdown
-                    li(v-for="member in this.form.members" :key="member.key" :value="member.value" @click="selectChange(member.value)").select-item
-                        <a-avatar>{{member.value[0]}}</a-avatar>
+            a-form-model-item(label="邀请工作坊成员")
+                a-select(mode="multiple" :value="form.selectedList" placeholder="Please select" @change="handleChange" @search="searchUsers")
+                ul.select-dropdown
+                    li(v-for="member in this.form.filteredUsers" :key="member.id" :value="member.username" @click="selectChange(member.username)").select-item
+                        <a-avatar>{{member.username[0]}}</a-avatar>
                         span.select-item-content 
-                            p {{member.value}}
+                            p {{member.username}}
                             p {{member.email}}
             a-form-model-item(label="工作坊介绍" prop="description")
                 a-input(v-model="form.description" type="textarea")
@@ -34,8 +33,8 @@
                 form: {
                     name: '',
                     description: '',
-                    members: [],
-                    selected: [],
+                    allUsers: [],
+                    filteredUsers: [],
                     selectedList: []
                 },
                 rules: {
@@ -53,24 +52,21 @@
         mounted() {
             this.form.name = this.$props.workshopName
             this.form.description = this.$props.workshopDescription
-            this.form.selectedList = []
             loadUsers().then(users => {
-                this.form.members = users.map(user => {
-                    return {
-                    'key': user.id,
-                    'value': user.username,
-                    'email': user.email
-                    }
-                })
-                this.form.selectedList = []
+                this.form.allUsers = users
+                this.form.filteredUsers = this.form.allUsers
             })
         },
         methods: {
             onSubmit() {
                 this.$refs.ruleForm.validate(valid => {
-                    if (valid) {
+                    if (valid) { 
+                        const userIds = this.form.selectedList.map(selectedUserName => {
+                            const user = this.form.allUsers.find(user => user.username == selectedUserName)
+                            return user.id
+                        })
                         const {confirm} = this.$listeners
-                        confirm(this.form.name.trim(), this.form.description.trim())
+                        confirm(this.form.name.trim(), this.form.description.trim(), userIds)
                     } else {
                         return false
                     }
@@ -88,6 +84,11 @@
             handleChange(value) {
                 this.form.selectedList = value
             },
+            searchUsers(value) {
+                this.form.filteredUsers = this.form.allUsers.filter(user => {
+                    return user.username.includes(value) || user.email.includes(value)
+                })
+            }
         },
     }
 </script>
@@ -102,7 +103,7 @@
     border-radius: 4px;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
     border: none;
-    height: 160px;
+    height: 224px;
     overflow: auto;
     list-style-type: none;
     padding: 0;

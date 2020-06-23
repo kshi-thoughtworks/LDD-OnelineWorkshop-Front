@@ -3,7 +3,7 @@ import { Component } from 'vue-property-decorator'
 import axios from 'axios'
 import { Avatar, Icon } from 'ant-design-vue'
 import NewWorkshopModal from '../../components/WorkshopModal.vue'
-import { createWorkshop, loadWorkshops } from '../service'
+import { createWorkshop, loadWorkshops, addUsersToWorkshop } from '../service'
 
 import './index.scss'
 
@@ -45,9 +45,14 @@ export default class WorkshopList extends Vue{
         this.addWorkshopModalVisibility = true
     }
 
-    getWorkshopList(name, description) {
+    getWorkshopList(name, description, userIds = []) {
         createWorkshop(name, description)
-            .then(() => {
+            .then(response => {
+                const workbenchId = response.workbench_id
+                if (userIds.length > 0) {
+                    addUsersToWorkshop(workbenchId, userIds)
+                        .catch(error => this.$message.error(error))
+                }
                 this.$message.success('创建成功')
                 this.hiddenModal()
                 loadWorkshops().then(workshops => {
