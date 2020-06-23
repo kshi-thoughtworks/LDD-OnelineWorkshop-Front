@@ -138,13 +138,13 @@ export default class DataPanorama extends Vue{
   }
   renderCardMenu(h, operation) {
     const { cards } = this
-    const rootCards = filter(cards, card => card.sub_type == 'root')
+    const rootCards = filter(cards, card => card.sup_type == 'root')
     const hasChild = card => {
       const { type } = card
-      return some(cards, card => card.sub_type === type)
+      return some(cards, card => card.sup_type === type)
     }
     const getCardChildren = card => {
-      return filter(cards, item => item.sub_type == card.type) 
+      return filter(cards, item => item.sup_type == card.type)
     }
     const renderCard = card => {
       if(hasChild(card)) {
