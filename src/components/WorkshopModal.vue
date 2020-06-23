@@ -6,16 +6,19 @@
             a-form-model-item(label="邀请工作坊成员" prop="members")
                 <a-select mode="multiple" :value="form.selectedList" placeholder="Please select" @change="handleChange">
                 </a-select>
-                <select multiple class="chosen-select" @change="selectChange" v-model="form.selected">
-                    <option v-for="member in this.form.members" :key="member.key" :value="member.value">{{member.value}}</option>
-                </select>
+                ul(multiple v-model="form.selected").select-dropdown
+                    li(v-for="member in this.form.members" :key="member.key" :value="member.value" @click="selectChange(member.value)").select-item
+                        <a-avatar>{{member.value[0]}}</a-avatar>
+                        span.select-item-content 
+                            p {{member.value}}
+                            p {{member.email}}
             a-form-model-item(label="工作坊介绍" prop="description")
                 a-input(v-model="form.description" type="textarea")
                 span {{form.description ? form.description.length : 0}}/200
 </template>
 
 <script>
-    import { Input, Select } from 'ant-design-vue'
+    import { Input, Select, Avatar } from 'ant-design-vue'
     import { loadUsers } from '../containers/service'
 
     export default {
@@ -23,6 +26,7 @@
         components: {
             'a-input': Input,
             'a-select': Select,
+            'a-avatar': Avatar,
         },
         props: ['modalTitle', 'workshopName', 'workshopDescription'],
         data() {
@@ -54,7 +58,8 @@
                 this.form.members = users.map(user => {
                     return {
                     'key': user.id,
-                    'value': user.username
+                    'value': user.username,
+                    'email': user.email
                     }
                 })
                 this.form.selectedList = []
@@ -75,8 +80,7 @@
                 const { cancel } = this.$listeners
                 cancel()
             },
-            selectChange(val) {
-                const selectedValue = this.form.selected['0']
+            selectChange(selectedValue) {
                 if (!(this.form.selectedList.includes(selectedValue))) {
                     this.form.selectedList.push(selectedValue)
                 }
@@ -88,8 +92,46 @@
     }
 </script>
 
-<style>
+<style lang="scss">
 .ant-select-dropdown {
-    display: none
+    display: none;
+}
+
+.select-dropdown {
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+    border: none;
+    height: 160px;
+    overflow: auto;
+    list-style-type: none;
+    padding: 0;
+    margin-top: 2px;
+    color: #000000;
+    option {
+        height: 56px;
+    }
+}
+.select-item {
+    display: flex;
+    height: 56px;
+    padding: 10px 16px;
+    &:hover {
+        background-color: #f5f3f6;
+    }
+    .ant-avatar {
+        font-size: 16px;
+        width: 36px;
+        height: 36px;
+        margin-right: 10px;
+    }
+    &-content {
+        display: inline-block;
+        p {
+            margin: 0;
+            font-size: 12px;
+            line-height: 17px;
+        }
+    }
 }
 </style>
