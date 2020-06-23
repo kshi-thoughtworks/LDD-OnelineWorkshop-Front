@@ -72,25 +72,27 @@ export default class StickyNoteSprite extends Sprite<StickyNoteProps>{
       const getFirstRow = contentString => {
         let startIndex = 0
         let endIndex = contentString.length - 1
-        let middleIndex = 0
         while(startIndex < endIndex) {
-          middleIndex = Math.round((endIndex - startIndex)/2) + startIndex
-          const rowContent = content.substring(0, middleIndex)
-          if(context.measureText(rowContent).width > width) {
-            if(middleIndex >= endIndex) {
-              break
-            }
+          const middleIndex = Math.round((endIndex - startIndex)/2) + startIndex
+          const rowContent = contentString.substring(0, middleIndex)
+          const rowContentWidth = context.measureText(rowContent).width
+          if(middleIndex >= endIndex) {
+            break
+          } 
+          
+          if(rowContentWidth > width) {
             endIndex = middleIndex
           }else {
             startIndex = middleIndex
           }
         }
-        return middleIndex
+        return startIndex
       }
       
       let contentString = content
       while(contentString.length > 0) {
-        if(context.measureText(contentString).width > width) {
+        const contentWidth = context.measureText(contentString).width
+        if(contentWidth > width) {
           const splitIndex = getFirstRow(contentString)
           const rowContent = contentString.substring(0, splitIndex)
           contentString = contentString.substring(splitIndex, contentString.length)
@@ -105,7 +107,8 @@ export default class StickyNoteSprite extends Sprite<StickyNoteProps>{
       while(fontSize < maxFontSize) {
         const size = Math.round((maxFontSize - fontSize)/2) + fontSize
         context.font = `bold ${size}px Montserrat, sans-serif`
-        if(context.measureText(content).width > width) {
+        const contentWidth = context.measureText(content).width
+        if(contentWidth > width) {
           if(size >= maxFontSize) {
             break
           }
