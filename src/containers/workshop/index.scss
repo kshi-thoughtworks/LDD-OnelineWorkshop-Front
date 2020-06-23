@@ -16,7 +16,8 @@
       &-brif {
         margin-bottom: 0;
         margin-left: 40px;
-        color: var(--violet-blue);
+        color: var(--midnight-purple);
+        font-weight: 600;
         white-space: nowrap;
         cursor: pointer;
         span {
@@ -27,6 +28,9 @@
           text-overflow: ellipsis;
           vertical-align: bottom;
         }
+        .anticon-edit {
+          vertical-align: middle;
+        }
         &:hover {
           + .workshop-header-info-detail {
             opacity: 1;
@@ -35,6 +39,7 @@
       }
       &-detail {
         position: absolute;
+        left: 40px;
         width: 300px;
         color: var(--white);
         border-radius: 4px;

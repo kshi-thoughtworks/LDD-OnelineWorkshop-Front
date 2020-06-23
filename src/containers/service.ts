@@ -53,6 +53,10 @@ export const loadWorkshops = () => {
   return http.get('/api/workbenches')
 }
 
+export const loadUsers = () => {
+  return http.get('/api/users')
+}
+
 export const register = (username, email, password) => {
   return http.post('/api/users/register', { username, email, password })
 }

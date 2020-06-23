@@ -6,12 +6,11 @@
       h3 邮箱登录
       div.line
         a-form-model(ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol")
-          a-form-model-item(label="邮箱/昵称" prop="name_or_email")
+          a-form-model-item(label="邮箱/用户名" prop="name_or_email")
             a-input(v-model="form.name_or_email")
           a-form-model-item(label="密码" prop="password")
             a-input(v-model="form.password" type="password")
-          p.forgot 忘记密码？
-          a-form-model-item
+          a-form-model-item.register-button
             a-button(type="primary" @click="onSubmit") 登录
         p.to-login
             span 还没有账号？请
@@ -19,14 +18,15 @@
 </template>
 
 <script>
-    import { Input, Button } from 'ant-design-vue'
+    import { Input, Button, Select } from 'ant-design-vue'
     import { login } from './service'
 
     export default {
         name: 'Register',
         components: {
             'a-input': Input,
-            'a-button': Button
+            'a-button': Button,
+            'a-select': Select
         },
         data() {
             return {
@@ -38,7 +38,7 @@
                 },
                 rules: {
                     name_or_email: [
-                        {required: true, message: '请输入邮箱或昵称', trigger: 'change'}
+                        {required: true, message: '请输入邮箱或用户名', trigger: 'change'}
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'change'},
@@ -181,8 +181,8 @@
 
         }
 
-        .forgot {
-            float: right;
+        .register-button {
+            margin-top: 40px;
         }
     }
 </style>

@@ -111,7 +111,9 @@ export default class Workshop extends Vue{
           <a-icon type="left" style={{ fontSize: '12px', color: '#6d6e71' }} />
           <router-link to="/workshops" class="workshop-header-title">我的工作台</router-link>
           <div class="workshop-header-info">
-            <p class="workshop-header-info-brif" onClick={this.showModal}>{this.workshop.name}(<span>{this.workshop.description}</span>)</p>
+            <p class="workshop-header-info-brif" onClick={this.showModal}>
+              {this.workshop.name}(<span>{this.workshop.description}</span>)<a-icon type="edit" theme="filled"/>
+            </p>
             <p class="workshop-header-info-detail">{this.workshop.name + '(' + this.workshop.description + ')'}</p>
           </div>
         </header>

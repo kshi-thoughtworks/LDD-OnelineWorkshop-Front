@@ -6,20 +6,13 @@
       h3 注册新账号
       div.line
         a-form-model(ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol")
-          a-form-model-item(label="昵称" prop="username")
+          a-form-model-item(label="用户名" prop="username")
             a-input(v-model="form.username")
           a-form-model-item(label="邮箱" prop="email")
             a-input(v-model="form.email")
           a-form-model-item(label="密码" prop="password")
             a-input(v-model="form.password" type="password")
-          a-form-model-item(prop="agree")
-            a-checkbox(v-model="form.agree" value="1" name="type")
-              p.agreement
-                span 我已阅读并同意
-                a 《LDD网络服务使用协议》
-                span 和
-                a 《LDD用户隐私条款》
-          a-form-model-item
+          a-form-model-item.register-button
             a-button(type="primary" @click="onSubmit") 注册
         p.to-login
           span 已有账号？请
@@ -62,7 +55,6 @@
                         {min: 8, max: 20, message: '密码长度在8到20位', trigger: 'change'},
                         {pattern: '^(?![^a-zA-Z]+$)(?!\\D+$)', message: '有且必须包含数字、字母', trigger: 'change'}
                         ],
-                    agree: [{required: true, message: '请勾选', trigger: 'change'}],
                 }
             }
         },
@@ -105,13 +97,14 @@
     }
 
     .line {
+        width: 452px;
         height: 1px;
         background-color: #dedede;
     }
 
     .form-container {
         width: 540px;
-        height: 620px;
+        height: 540px;
         border-radius: 8px;
         box-shadow: 0 3px 20px 0 rgba(40, 29, 50, 0.4);
         background-color: var(--white);
@@ -143,23 +136,6 @@
             border-radius: 4px;
             background-color: #f5f3f6;
             border: none;
-        }
-
-
-        .agreement {
-            display: inline;
-            text-align: left;
-            margin: 35px 0;
-            font-size: 14px;
-
-            span {
-                font-weight: 600;
-                color: #000000;
-            }
-
-            a {
-                color: var(--slate-grey);
-            }
         }
 
         button {
@@ -194,5 +170,10 @@
                 border: 1px solid var(--pastel-red);
             }
         }
+
+        .register-button {
+            margin-top: 40px;
+        }
     }
+
 </style>
