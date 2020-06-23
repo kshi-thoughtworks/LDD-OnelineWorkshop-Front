@@ -59,7 +59,8 @@ export default class DataPanorama extends Vue{
       x: 100,
       y: 100,
       width: 480,
-      height: 480
+      height: 480,
+      scale: { x: 1, y: 1 }
     }
     createStickyNote(this.stepId, content, meta).then(({ element_id }) => {
       const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
@@ -195,7 +196,7 @@ export default class DataPanorama extends Vue{
       <div ref="container" class="data-panorama">
         { this.renderOperations(h) }
         <div class="data-panorama-wrapper">
-          <div ref="stage" class="data-panorama-stage"></div>
+          <div ref="stage" class="sprite-stage"></div>
         </div>
         { this.toggleStickerModalVisibility 
           && <EditStickerModal 

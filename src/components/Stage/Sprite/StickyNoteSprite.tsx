@@ -1,4 +1,5 @@
 import Sprite, { SpriteBox } from './index';
+import { drawText } from './text'
 
 const stickyNoteType = 'sticky'
 export type StickyNoteType = 'sticky'
@@ -11,7 +12,7 @@ export class StickyNoteProps {
   height!: number
   content!: string
   color!: string
-  scale?: { x: number, y: number } = { x: 1, y: 1}
+  scale: { x: number, y: number } = { x: 1, y: 1}
 
   compare(props: StickyNoteProps): boolean{
     const { x, y, content, color, scale } = props
@@ -28,7 +29,7 @@ export class StickyNoteProps {
   }
 
   toSpriteBox(): SpriteBox{
-    return { x: this.x, y: this.y, width: this.width, height: this.height}
+    return { x: this.x, y: this.y, width: this.width, height: this.height, scale: this.scale }
   }
 
   updateSpriteBox(box: SpriteBox){
@@ -36,6 +37,7 @@ export class StickyNoteProps {
     this.y = box.y
     this.width = box.width
     this.height = box.height
+    this.scale = box.scale
   }
 
   static build(props: StickyNoteProps): StickyNoteProps {
@@ -46,6 +48,7 @@ export class StickyNoteProps {
     stickyNoteProps.y = props.y
     stickyNoteProps.width = props.width
     stickyNoteProps.height = props.height
+    stickyNoteProps.scale = props.scale || { x: 1, y: 1 }
     stickyNoteProps.content = props.content
     stickyNoteProps.color = props.color
     return stickyNoteProps
@@ -58,69 +61,7 @@ export default class StickyNoteSprite extends Sprite<StickyNoteProps>{
     super(props)
     this.props = props
   }
-  calculateText(width, height, content): {fontSize: number, rows: Array<string>} {
-    const context = this.stage!.context!
-    context.save()
-    let minFontSize = 40
-    let maxFontSize = 320
 
-    let fontSize = minFontSize
-    context.font = `bold ${fontSize}px Montserrat, sans-serif`
-    const isMultipleRows = context.measureText(content).width > width
-    const rows: Array<string> = []
-    if(isMultipleRows){
-      const getFirstRow = contentString => {
-        let startIndex = 0
-        let endIndex = contentString.length - 1
-        while(startIndex < endIndex) {
-          const middleIndex = Math.round((endIndex - startIndex)/2) + startIndex
-          const rowContent = contentString.substring(0, middleIndex)
-          const rowContentWidth = context.measureText(rowContent).width
-          if(middleIndex >= endIndex) {
-            break
-          } 
-          
-          if(rowContentWidth > width) {
-            endIndex = middleIndex
-          }else {
-            startIndex = middleIndex
-          }
-        }
-        return startIndex
-      }
-      
-      let contentString = content
-      while(contentString.length > 0) {
-        const contentWidth = context.measureText(contentString).width
-        if(contentWidth > width) {
-          const splitIndex = getFirstRow(contentString)
-          const rowContent = contentString.substring(0, splitIndex)
-          contentString = contentString.substring(splitIndex, contentString.length)
-          rows.push(rowContent)
-        } else {
-          rows.push(contentString)
-          break
-        }
-      }
-    } else {
-      rows.push(content)
-      while(fontSize < maxFontSize) {
-        const size = Math.round((maxFontSize - fontSize)/2) + fontSize
-        context.font = `bold ${size}px Montserrat, sans-serif`
-        const contentWidth = context.measureText(content).width
-        if(contentWidth > width) {
-          if(size >= maxFontSize) {
-            break
-          }
-          maxFontSize = size
-        } else {
-          fontSize = size
-        }
-      }
-    }
-    context.restore()
-    return { fontSize, rows}
-  }
   drawBackground(){
     const context = this.stage!.context!
     const { color, x, y, width, height } = this.props
@@ -134,36 +75,15 @@ export default class StickyNoteSprite extends Sprite<StickyNoteProps>{
     context.restore()
   }
   drawText() {
-    const context = this.stage!.context!
-    context.save()
-    const padding = 30
     const { content, width, height } = this.props
-    const maxWidth = width - padding * 2
-    const maxHeight = height - padding * 2
-    const { fontSize, rows } = this.calculateText(maxWidth, maxHeight, content)
-    context.textAlign = 'center'
-    context.font = `bold ${fontSize}px Montserrat, sans-serif`
-    if(rows.length === 1) {
-      context.textBaseline = 'middle'
-      context.fillText(rows[0], width/2, height/2)
-    }else {
-      const rowsLength = rows.length
-      const textHeight = fontSize * rowsLength
-      const textTop = (height - textHeight)/2
-      context.textAlign = 'left'
-      for(let index = 0; index < rowsLength; index++) {
-        const row = rows[index]
-        context.fillText(row, padding, textTop + fontSize * (index + 0.5))
-      }
-    }
-    
-    context.restore()
+    drawText(this.stage!.context!, { content, width, height })
   }
   draw() {
     const context = this.stage!.context!
-    const { x, y } = this.props
+    const { x, y, scale: { x: scaleX, y: scaleY } = { x: 1, y: 1 } } = this.props
     context.save()
     context.translate(x, y)
+    context.scale(scaleX, scaleY)
 
     this.drawBackground()
     this.drawText()

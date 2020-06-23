@@ -2,6 +2,8 @@ import { findLast, forEach } from 'lodash'
 import Sprite, { SpriteClass, SpriteBox } from './Sprite'
 import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
+import './index.scss'
+
 export type CanvasContext = CanvasRenderingContext2D | null
 export const stageBox = {
   width: 3840,
@@ -11,11 +13,10 @@ const stageRatio = stageBox.width/stageBox.height
 
 export default class Stage {
   container: HTMLDivElement
+  zoomContainer: HTMLDivElement | null
   canvas: HTMLCanvasElement
-  frontendCanvas: HTMLCanvasElement
 
   context: CanvasContext
-  frontendContext: CanvasContext
 
   sprites: Array<Sprite<SpriteBox>>
 
@@ -23,11 +24,18 @@ export default class Stage {
 
   constructor(container: HTMLDivElement) {
     this.container = container
-    this.canvas = document.createElement('canvas')
-    this.frontendCanvas = document.createElement('canvas')
+    const zoomContainer = `
+      <div class="sprite-operation-container">
+        <span class="zoom-item top-left" data-orientation="topLeft"></span>
+        <span class="zoom-item top-right" data-orientation="topRight"></span>
+        <span class="zoom-item bottom-left" data-orientation="bottomLeft"></span>
+        <span class="zoom-item bottom-right" data-orientation="bottomRight"></span>
+      </div>`
+    this.container.innerHTML = zoomContainer
+    this.zoomContainer = this.container.querySelector('.sprite-operation-container')
 
+    this.canvas = document.createElement('canvas')
     this.context = this.canvas.getContext('2d')
-    this.frontendContext = this.canvas.getContext('2d')
     this.container.append(this.canvas)
 
     this.sprites = []
@@ -40,13 +48,30 @@ export default class Stage {
     return width / stageBox.width
   }
 
+  init() {
+    this.updateBoxRect()
+  }
+
   setDragManager(dragManager: DragManager){
     this.dragManager = dragManager
     this.dragManager.setup()
+    this.dragManager.addEventListener('resetselection', this.onResetSelection)
+    this.dragManager.addEventListener('dragstart', this.updateSelection)
+    this.dragManager.addEventListener('drag', this.updateSelection)
   }
 
-  init() {
-    this.updateBoxRect()
+  onResetSelection = () => {
+    this.zoomContainer!.style.display = 'none'
+  }
+
+  updateSelection = (sprite: Sprite<SpriteBox>) => {
+    const style = this.zoomContainer!.style
+    const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
+    style.left = `${x}px`
+    style.top = `${y}px`
+    style.width = `${width}px`
+    style.height = `${height}px`
+    style.display = 'block'
   }
   
   findSpriteByPoint(left: number, top: number) : Sprite<SpriteBox>{
