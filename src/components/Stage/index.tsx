@@ -112,6 +112,7 @@ export default class Stage {
     const spriteMap = toMap(spriteProps)
 
     const latestSprites: Array<Sprite<SpriteBox>> = []
+    let spritesChanged = false
     forEach(spriteProps, spriteProp => {
       const { id, version } = spriteProp
       const sprite = this.spriteMap[id]
@@ -120,15 +121,20 @@ export default class Stage {
         const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
         spriteInstance.setStage(this)
         latestSprites.push(spriteInstance)
+        spritesChanged = true
       } else {
         const isSame = sprite.props.compare!<SpriteBox>(spriteProp)
         if(!isSame) {
           const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
           sprite.updateProps(spriteInstance.props)
+          spritesChanged = true
         }
         latestSprites.push(sprite)
       }
     })
+    if(!spritesChanged) {
+      return
+    }
     this.sprites = latestSprites
     this.spriteMap = toMap(latestSprites)
 
