@@ -56,6 +56,13 @@
     left: 140px;
     width: calc(100% - 170px);
     height: calc(100% - 60px);
+    .sprite-edit-menu{
+      position: absolute;
+      width: 100px;
+      transform: translate(24px, -16px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      background-color: var(--white);
+    }
   }
 }
 

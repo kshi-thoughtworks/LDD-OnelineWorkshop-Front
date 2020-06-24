@@ -59,6 +59,7 @@ export default class StickyNoteSprite extends Sprite<StickyNoteProps>{
   static type: string = 'sticky'
   constructor(props: StickyNoteProps) {
     super(props)
+    this.id = props.id!
     this.props = props
   }
 

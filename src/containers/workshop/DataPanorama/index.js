@@ -30,6 +30,8 @@ export default class DataPanorama extends Vue{
   toggleStickerModalVisibility = false
   cards = []
   selectedCard = null
+  selectedSprite = null
+  editMenuPosition = null
   constructor(props) {
     super(props)
     window.addEventListener('resize', this.onResize)
@@ -41,34 +43,60 @@ export default class DataPanorama extends Vue{
   onResize() {
     this.stage.resize()
   }
-  onDragStart = sprite => {
-
+  onDragStart(sprite){
+    this.selectedSprite = { ...sprite.props }
+    this.editMenuPosition = null
   }
-  onDragEnd = sprite => {
+  onDragEnd = (sprite, changed) => {
+    if(!changed) {
+      return
+    }
     const { id, title, content, ...meta } = sprite.props
     const metaProps = { ...meta }
     delete metaProps.type
     updateElement(id, title, content, metaProps)
   }
   onClickSprite = sprite => {
-
+    console.log('dblclick', sprite)
   }
-  onAddSticker(content, color){
-    const meta = {
-      color,
-      x: 100,
-      y: 100,
-      width: 480,
-      height: 480,
-      scale: { x: 1, y: 1 }
+  onEditSticker(content, color, editable){
+    if(editable) {
+      const { id, content: oldContent, ...meta} = this.selectedSprite
+      meta.color = color
+      updateElement(id, '', content, meta).then(() => this.toggleStickerModalVisibility = false)
+      const sprite = this.stage.findSpriteById(id)
+      sprite.props.content = content
+      sprite.props.color = color
+      this.stage.draw()
+    } else {
+      const meta = {
+        color,
+        x: 100,
+        y: 100,
+        width: 480,
+        height: 480,
+        scale: { x: 1, y: 1 }
+      }
+      createStickyNote(this.stepId, content, meta).then(({ element_id }) => {
+        const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
+        this.stage.addSprite(spriteProps)
+        
+        this.toggleStickerModalVisibility = false
+      })
     }
+  }
+  onCopySticker() {
+    const { id, content, ...meta} = this.selectedSprite
+    meta.x += 100
+    meta.y += 100
     createStickyNote(this.stepId, content, meta).then(({ element_id }) => {
       const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
       this.stage.addSprite(spriteProps)
-      
-      this.toggleStickerModalVisibility = false
     })
-    
+    this.editMenuPosition = null
+  }
+  onDeleteStiker(){
+
   }
   onEditCard(title, description, color){
     const meta = { color, x: 100, y: 100, width: 480, height: 480 }
@@ -84,7 +112,6 @@ export default class DataPanorama extends Vue{
     
   }
   onExport(){
-    console.log('export')
     const aTag = document.createElement('a')
     aTag.target = '_blank'
     aTag.href = this.stage.canvas.toDataURL('image/png')
@@ -108,20 +135,36 @@ export default class DataPanorama extends Vue{
         return this.onExport;
     }
   }
-  onClickMenu(event){
+  onClickCardMenu(event){
     const { key } = event
     const card = find(this.cards, card => card.id === key)
     this.selectedCard = card
   }
-  mounted(){
-    const { stage } = this.$refs
-    this.stage = new Stage(stage)
-    const dragManager = new DragManager(this.stage)
-    dragManager.addEventListener('dragstart', this.onDragStart)
-    dragManager.addEventListener('dragend', this.onDragEnd)
-    dragManager.addEventListener('click', this.onClickSprite)
-    
-    
+  onClickSpriteMenu(event) {
+    const { key } = event
+    switch(key) {
+      case 'edit':
+        this.toggleStickerModalVisibility = true
+        break;
+      case 'copy':
+        this.onCopySticker()
+        break;
+      case 'delete':
+        this.onDeleteStiker()
+        break;
+    }
+    this.editMenuPosition = null
+    this.stage.dragManager.resetSelection()
+  }
+  onShowEditMenu(sprite) {
+    if(this.editMenuPosition) {
+      this.editMenuPosition = null
+      return
+    }
+    const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
+    this.editMenuPosition = { x: x + width, y }
+  }
+  loadElements() {
     loadElements(this.stepId).then(elements => {
       const sprites = map(elements, element => {
         const { id, type, title, content, meta, card } = element
@@ -129,9 +172,24 @@ export default class DataPanorama extends Vue{
       })
       this.stage.readSprites(sprites)
     })
+  }
+  loadCards(){
     loadCards().then(cards => {
       this.cards = cards
     })
+  }
+  mounted(){
+    const { stage } = this.$refs
+    this.stage = new Stage(stage)
+    const dragManager = new DragManager(this.stage)
+    dragManager.addEventListener('dragstart', this.onDragStart)
+    dragManager.addEventListener('dragend', this.onDragEnd)
+    dragManager.addEventListener('dblclick', this.onClickSprite)
+    dragManager.addEventListener('edit-operation', this.onShowEditMenu)
+    dragManager.addEventListener('resetselection', () => this.editMenuPosition = null)
+    
+    this.loadElements()
+    this.loadCards()
   }
   beforeDestory(){
     window.removeEventListener('resize', this.onResize)
@@ -163,7 +221,7 @@ export default class DataPanorama extends Vue{
     return (
       <a-dropdown>
         <li class={`data-panorama-menu-item operation-${operation.type}`} />
-        <a-menu slot="overlay" class="card-menu" onClick={this.onClickMenu}>
+        <a-menu slot="overlay" class="card-menu" onClick={this.onClickCardMenu}>
           {
             map(rootCards, card => {
               return renderCard(card)
@@ -192,15 +250,32 @@ export default class DataPanorama extends Vue{
     )
   }
   render(h){
+    const { x: menuLeft, y: menuRight } = this.editMenuPosition || { x: -1000, y: -1000 }
     return (
       <div ref="container" class="data-panorama">
         { this.renderOperations(h) }
         <div class="data-panorama-wrapper">
           <div ref="stage" class="sprite-stage"></div>
+          {
+            this.editMenuPosition && (
+              <div class="sprite-edit-menu" style={{ left: `${menuLeft}px`, top: `${menuRight}px` }}
+                onMousedown={event => event.stopPropagation()}>
+                <a-menu
+                  onClick={this.onClickSpriteMenu}>
+                  <a-menu-item key="edit">编辑</a-menu-item>
+                  <a-menu-item key="copy">复制</a-menu-item>
+                  <a-menu-item key="delete">删除</a-menu-item>
+                </a-menu>
+              </div>
+            )
+          }
         </div>
-        { this.toggleStickerModalVisibility 
-          && <EditStickerModal 
-              onConfirm={this.onAddSticker} 
+        { this.toggleStickerModalVisibility
+          && <EditStickerModal
+              editable={!!this.selectedSprite}
+              content={this.selectedSprite?.content}
+              color={this.selectedSprite?.color}
+              onConfirm={this.onEditSticker} 
               onClose={() => this.toggleStickerModalVisibility = false } />
         }
         {

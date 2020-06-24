@@ -12,6 +12,7 @@ export interface SpriteClass{
 }
 
 export default abstract class Sprite<T extends SpriteBox>{
+  id!: number
   props: T
   stage?: Stage
   constructor(props: T) {

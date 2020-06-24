@@ -1,4 +1,4 @@
-import { findLast, forEach } from 'lodash'
+import { find, findLast, forEach } from 'lodash'
 import Sprite, { SpriteClass, SpriteBox } from './Sprite'
 import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
@@ -27,7 +27,7 @@ export default class Stage {
     const zoomContainer = `
       <div class="sprite-operation-container">
         <span class="zoom-item top-left" data-orientation="topLeft"></span>
-        <span class="zoom-item top-right" data-orientation="topRight"></span>
+        <span class="sprite-edit"></span>
         <span class="zoom-item bottom-left" data-orientation="bottomLeft"></span>
         <span class="zoom-item bottom-right" data-orientation="bottomRight"></span>
       </div>`
@@ -64,7 +64,11 @@ export default class Stage {
     this.zoomContainer!.style.display = 'none'
   }
 
-  updateSelection = (sprite: Sprite<SpriteBox>) => {
+  updateSelection = () => {
+    const sprite = this.dragManager?.selectedSprite
+    if(!sprite) {
+      return
+    }
     const style = this.zoomContainer!.style
     const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
     style.left = `${x}px`
@@ -76,6 +80,10 @@ export default class Stage {
   
   findSpriteByPoint(left: number, top: number) : Sprite<SpriteBox>{
     return findLast(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.pointInSprite(left, top))
+  }
+
+  findSpriteById(id): Sprite<SpriteBox>{
+    return find(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.id === id)
   }
 
   readSprites(spriteProps) {
@@ -132,6 +140,8 @@ export default class Stage {
   resize() {
     this.updateBoxRect()
     this.draw()
+
+    this.updateSelection()
   }
 
   destroy() {

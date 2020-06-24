@@ -5,9 +5,10 @@ export type Point = {
   clientX: number
   clientY: number
 }
-const MOVE = 'move'
-const ZOOM = 'zoom'
-type DragType = 'move' | 'zoom'
+enum DragType {
+  MOVE = 'move',
+  ZOOM = 'zoom'
+}
 
 enum ZoomOrientation{
   TOPLEFT = 'topLeft',
@@ -22,8 +23,9 @@ export default class DragManager extends EventEmitter{
   dragStartPoint?: Point
   selectedSprite?: Sprite<SpriteBox>
   selectedSpriteBox?: SpriteBox
-  dragType: DragType = MOVE
+  dragType: DragType = DragType.MOVE
   orientation?: ZoomOrientation
+  dragWithChange: boolean = false
   constructor(stage: Stage){
     super()
     this.stage = stage
@@ -36,9 +38,10 @@ export default class DragManager extends EventEmitter{
   }
   addMouseEventListeners() {
     this.container.addEventListener('mousedown', this.onMoveStart)
-    // this.container.addEventListener('click', this.onClick)
     this.zoomContainer.addEventListener('mousedown', this.onZoomMouseDown)
     this.zoomContainer.addEventListener('dblclick', this.onDoubleClick)
+
+    document.addEventListener('mousedown', this.onDocumentMouseDown)
   }
   addDocumentMouseEvent(){
     document.addEventListener('mousemove', this.onDrag)
@@ -48,6 +51,7 @@ export default class DragManager extends EventEmitter{
     this.dragStartPoint = undefined
     this.selectedSprite = undefined
     this.selectedSpriteBox = undefined
+    this.fire('resetselection')
   }
   calculateOffset(event: MouseEvent): {offsetX: number, offsetY: number} {
     const { clientX, clientY } = event
@@ -149,15 +153,22 @@ export default class DragManager extends EventEmitter{
     
     return { x: left, y: top, width, height, scale: { x: zoomScale, y: zoomScale } }
   }
+  onDocumentMouseDown = () => {
+    this.resetSelection()
+  }
   onZoomMouseDown = (event: MouseEvent) => {
     const { target } = event
     const className = (target as HTMLSpanElement).className
-    if(className.indexOf('zoom-item') !== -1) {
+    const isZoomOperation = className.indexOf('zoom-item') !== -1
+    const isEditOperation = className.indexOf('sprite-edit') !== -1
+    if(isZoomOperation) {
       const { target } = event
       const { orientation } = (target as HTMLSpanElement).dataset
       this.orientation = orientation as ZoomOrientation
       this.onZoomStart(event)
-    } else {
+    } else if(isEditOperation){
+      this.fire('edit-operation', this.selectedSprite)
+    }else {
       this.onMoveStart(event)
     }
     event.stopPropagation()
@@ -166,21 +177,13 @@ export default class DragManager extends EventEmitter{
     this.fire('dblclick', this.selectedSprite)
     event.stopPropagation()
   }
-  onClick = (event: MouseEvent) => {
-    const { offsetX, offsetY } = this.calculateOffset(event)
-    const sprite = this.stage.findSpriteByPoint(offsetX, offsetY)
-    if(!sprite) {
-      this.resetSelection()
-      return
-    }
-    this.fire('click', sprite)
-  }
   onMoveStart = (event: MouseEvent) => {
-    this.dragType = MOVE
+    this.dragType = DragType.MOVE
     this.onDragStart(event)
+    event.stopPropagation()
   }
   onZoomStart = (event: MouseEvent) => {
-    this.dragType = ZOOM
+    this.dragType = DragType.ZOOM
     this.onDragStart(event)
   }
   onZoomDrag = (event: MouseEvent) => {
@@ -208,11 +211,11 @@ export default class DragManager extends EventEmitter{
     this.fire('drag', this.selectedSprite)
   }
   onDragStart = (event: MouseEvent) => {
+    this.dragWithChange = false
     const { clientX, clientY } = event
     const { offsetX, offsetY } = this.calculateOffset(event)
     const sprite = this.stage.findSpriteByPoint(offsetX, offsetY)
     if(!sprite) {
-      this.fire('resetselection')
       this.resetSelection()
       return
     }
@@ -225,16 +228,16 @@ export default class DragManager extends EventEmitter{
     this.fire('dragstart', sprite)
   }
   onDrag = (event: MouseEvent) => {
-    return this.dragType === ZOOM ? this.onZoomDrag(event) : this.onMoveDrag(event)
+    this.dragWithChange = true
+    return this.dragType === DragType.ZOOM ? this.onZoomDrag(event) : this.onMoveDrag(event)
   }
   onDragEnd = (event: MouseEvent) => {
     this.clearDocumentMouseEvent()
-    this.fire('dragend', this.selectedSprite)
+    this.fire('dragend', this.selectedSprite, this.dragWithChange)
   }
 
   clearMouseEvent(){
     this.container.removeEventListener('mousedown', this.onDragStart)
-    this.container.removeEventListener('click', this.onClick)
 
     this.zoomContainer.removeEventListener('mousedown', this.onZoomMouseDown)
     this.zoomContainer.removeEventListener('dblclick', this.onDoubleClick)
