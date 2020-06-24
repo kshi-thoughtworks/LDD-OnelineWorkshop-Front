@@ -13,6 +13,7 @@ export type CardType = 'card'
 export class CardProps extends StickyNoteProps {
   title?: string
   card?: CardInfoType
+
   static build(props: CardProps): StickyNoteProps {
     const cardProps = new CardProps()
 
