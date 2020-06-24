@@ -334,7 +334,7 @@ export default class DataPanorama extends Vue{
         {
           this.selectedCard 
             && <EditCardModal
-                editable={!!this.selectedSprite}
+                editable={this.operateCardType === 'edit'}
                 color={this.selectedSprite?.color}
                 card={this.operateCardType === 'edit'
                   ? { name: this.selectedSprite.title, description: this.selectedSprite.content }
