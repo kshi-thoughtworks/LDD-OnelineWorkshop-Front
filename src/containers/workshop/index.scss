@@ -51,6 +51,15 @@
         z-index: 2;
       }
     }
+    &-members {
+      padding-left: 30px;
+      .ant-avatar {
+        margin-right: -4px;
+      }
+      .anticon {
+        padding-left: 10px;
+      }
+    }
   }
   &-types{
     display: flex;

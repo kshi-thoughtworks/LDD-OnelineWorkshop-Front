@@ -4,10 +4,10 @@
             a-form-model-item(label="工作坊名称" prop="name")
                 a-input(v-model="form.name")
             a-form-model-item(label="邀请工作坊成员")
-                a-select(mode="multiple" :value="form.selectedList" placeholder="Please select" @change="handleChange" @search="searchUsers")
-                ul.select-dropdown
+                a-select(mode="multiple" :value="form.selectedList" @change="handleChange" @search="searchUsers" ref="select").select-input
+                ul(@click="onDropdownClick").select-dropdown
                     li(v-for="member in this.form.filteredUsers" :key="member.id" :value="member.username" @click="selectChange(member.username)").select-item
-                        <a-avatar>{{member.username[0]}}</a-avatar>
+                        <a-avatar :style="member.color">{{member.username[0]}}</a-avatar>
                         span.select-item-content 
                             p {{member.username}}
                             p {{member.email}}
@@ -53,6 +53,10 @@
             this.form.name = this.$props.workshopName
             this.form.description = this.$props.workshopDescription
             loadUsers().then(users => {
+                users = users.map(user => {
+                    user.color = this.getRandomColor()
+                    return user
+                })
                 this.form.allUsers = users
                 this.form.filteredUsers = this.form.allUsers
             })
@@ -88,6 +92,12 @@
                 this.form.filteredUsers = this.form.allUsers.filter(user => {
                     return user.username.includes(value) || user.email.includes(value)
                 })
+            },
+            onDropdownClick() {
+                this.$refs.select.focus()
+            },
+            getRandomColor() {
+                return {'background-color': '#'+(Math.random()*0xffffff<<0).toString(16)}
             }
         },
     }
@@ -99,6 +109,7 @@
 }
 
 .select-dropdown {
+    display: none;
     width: 100%;
     border-radius: 4px;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
@@ -109,10 +120,20 @@
     padding: 0;
     margin-top: 2px;
     color: #000000;
+    position: absolute;
+    z-index: 1;
+    background-color: var(--white);
     option {
         height: 56px;
     }
 }
+
+.ant-select-open {
+    + .select-dropdown {
+        display: block;
+    }
+}
+
 .select-item {
     display: flex;
     height: 56px;

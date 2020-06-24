@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
+import { Avatar } from 'ant-design-vue'
 import DataPanorama from './DataPanorama'
 import WorkshopModal from '../../components/WorkshopModal.vue'
-import { loadWorkshop, updateWorkshop } from '../service'
+import { loadWorkshop, updateWorkshop, loadWorkshopUsers } from '../service'
 
 import './index.scss'
 
@@ -20,15 +21,22 @@ type TypeItem = {
   name: string;
 }
 
+type MemberItem = {
+  username: string;
+  color: string;
+}
+
 @Component({
   components: {
-      'workshop-modal': WorkshopModal
+      'workshop-modal': WorkshopModal,
+      'a-avatar': Avatar
   }
 })
 export default class Workshop extends Vue{
   types: Array<TypeItem>
   currentType: string
   workshop: any = null
+  members: Array<MemberItem> = []
   addWorkshopModalVisibility = false
 
   constructor(props){
@@ -50,6 +58,14 @@ export default class Workshop extends Vue{
   mounted() {
     loadWorkshop(this.$route.params.workshopId).then(workshop => {
       this.workshop = workshop
+    })
+    loadWorkshopUsers(this.$route.params.workshopId).then(members => {
+      this.members = map(members, member => {
+        return {
+          'username': member.username,
+          'color': this.getRandomColor()
+        }
+      })
     })
   }
   renderByType(h){
@@ -104,6 +120,10 @@ export default class Workshop extends Vue{
     this.addWorkshopModalVisibility = false
   }
 
+  getRandomColor() {
+    return {'background-color': '#'+(Math.random()*0xffffff<<0).toString(16)}
+  }
+
   render(h){
     return this.workshop && (
       <div class="workshop">
@@ -115,6 +135,10 @@ export default class Workshop extends Vue{
               {this.workshop.name}(<span>{this.workshop.description}</span>)<a-icon type="edit" theme="filled"/>
             </p>
             <p class="workshop-header-info-detail">{this.workshop.name + '(' + this.workshop.description + ')'}</p>
+          </div>
+          <div class="workshop-header-members">
+            { map(this.members, member => <a-avatar style={member.color}>{member.username[0]}</a-avatar>) }
+            <a-icon type="usergroup-add"/>
           </div>
         </header>
         { this.renderTypes(h) }
