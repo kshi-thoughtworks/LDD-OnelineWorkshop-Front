@@ -5,6 +5,7 @@ export interface SpriteBox{
   width: number;
   height: number;
   scale: { x: number, y: number }
+  compare?: <T>(props: T) => boolean
 }
 
 export interface SpriteClass{

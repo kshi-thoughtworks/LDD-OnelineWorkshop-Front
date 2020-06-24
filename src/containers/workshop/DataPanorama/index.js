@@ -57,8 +57,16 @@ export default class DataPanorama extends Vue{
     delete metaProps.type
     updateElement(id, title, content, metaProps)
   }
-  onClickSprite = sprite => {
-    console.log('dblclick', sprite)
+  onClickSprite(sprite) {
+    const { type, card } = this.selectedSprite
+    const isSticky = type === 'sticky'
+
+    if(isSticky) {
+      this.toggleStickerModalVisibility = true
+    } else {
+      this.operateCardType = 'edit'
+      this.selectedCard = card
+    }
   }
   onEditSticker(content, color, editable){
     if(editable) {
@@ -198,19 +206,27 @@ export default class DataPanorama extends Vue{
     const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
     this.editMenuPosition = { x: x + width, y }
   }
-  loadElements() {
-    loadElements(this.stepId).then(elements => {
-      const sprites = map(elements, element => {
-        const { id, type, title, content, meta, card } = element
-        return { id, type, title, content, ...meta, card }
-      })
-      this.stage.readSprites(sprites)
-    })
-  }
   loadCards(){
     loadCards().then(cards => {
       this.cards = cards
     })
+  }
+  loadElements() {
+    return loadElements(this.stepId).then(elements => {
+      return map(elements, element => {
+        const { id, type, title, content, meta, card } = element
+        return { id, type, title, content, ...meta, card }
+      })
+    })
+  }
+  loadElementsInterval() {
+    const loadAction = () => {
+      this.loadElements().then(sprites => {
+        this.stage.patchSprites(sprites)
+      })
+    }
+    loadAction()
+    this.timerId = setInterval(loadAction, 5000)
   }
   mounted(){
     const { stage } = this.$refs
@@ -222,11 +238,12 @@ export default class DataPanorama extends Vue{
     dragManager.addEventListener('edit-operation', this.onShowEditMenu)
     dragManager.addEventListener('resetselection', () => this.editMenuPosition = null)
     
-    this.loadElements()
+    this.loadElementsInterval()
     this.loadCards()
   }
   beforeDestory(){
     window.removeEventListener('resize', this.onResize)
+    clearInterval(this.timerId)
   }
   renderCardMenu(h, operation) {
     const { cards } = this

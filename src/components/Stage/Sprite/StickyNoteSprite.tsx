@@ -13,9 +13,10 @@ export class StickyNoteProps {
   content!: string
   color!: string
   scale: { x: number, y: number } = { x: 1, y: 1}
+  version!: number
 
-  compare(props: StickyNoteProps): boolean{
-    const { x, y, content, color, scale } = props
+  compare<StickyNoteProps>(props): boolean{
+    const { x, y, content, color, scale, version } = props
     const scaleX = scale && scale.x ? scale.x : 1
     const scaleY = scale && scale.y ? scale.y : 1
     const thisScaleX = this.scale && this.scale.x ? this.scale.x : 1
@@ -25,7 +26,8 @@ export class StickyNoteProps {
             && this.content === content 
             && this.color === color
             && thisScaleX === scaleX
-            && thisScaleY === scaleY;
+            && thisScaleY === scaleY
+            && this.version === this.version;
   }
 
   toSpriteBox(): SpriteBox{
@@ -51,6 +53,7 @@ export class StickyNoteProps {
     stickyNoteProps.scale = props.scale || { x: 1, y: 1 }
     stickyNoteProps.content = props.content
     stickyNoteProps.color = props.color
+    stickyNoteProps.version = props.version
     return stickyNoteProps
   }
 }

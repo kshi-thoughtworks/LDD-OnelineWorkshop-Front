@@ -1,4 +1,4 @@
-import { find, findLast, forEach } from 'lodash'
+import { find, findLast, forEach, reduce } from 'lodash'
 import Sprite, { SpriteClass, SpriteBox } from './Sprite'
 import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
@@ -19,6 +19,7 @@ export default class Stage {
   context: CanvasContext
 
   sprites: Array<Sprite<SpriteBox>>
+  spriteMap: { [key: number]: Sprite<SpriteBox> }
 
   dragManager?: DragManager
 
@@ -40,6 +41,7 @@ export default class Stage {
     this.container.append(this.canvas)
 
     this.sprites = []
+    this.spriteMap = {}
 
     this.init()
   }
@@ -97,6 +99,42 @@ export default class Stage {
       spriteInstance.setStage(this)
       this.sprites.push(spriteInstance)
     })
+    this.draw()
+  }
+
+  patchSprites(spriteProps) {
+    const toMap = items => {
+      return reduce(items, (accumulator, item) => {
+        accumulator[item.id] = item
+        return accumulator
+      }, {})
+    }
+    const spriteMap = toMap(spriteProps)
+
+    const latestSprites: Array<Sprite<SpriteBox>> = []
+    forEach(spriteProps, spriteProp => {
+      const { id, version } = spriteProp
+      const sprite = this.spriteMap[id]
+      const notExist = !sprite
+      if(notExist) {
+        const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
+        spriteInstance.setStage(this)
+        latestSprites.push(spriteInstance)
+      } else {
+        const isSame = sprite.props.compare!<SpriteBox>(spriteProp)
+        if(!isSame) {
+          const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
+          sprite.updateProps(spriteInstance.props)
+        }
+        latestSprites.push(sprite)
+      }
+    })
+    this.sprites = latestSprites
+    this.spriteMap = toMap(latestSprites)
+
+    if(this.dragManager?.selectedSprite && !spriteMap[this.dragManager.selectedSprite.id]) {
+      this.dragManager.resetSelection()
+    }    
     this.draw()
   }
 
