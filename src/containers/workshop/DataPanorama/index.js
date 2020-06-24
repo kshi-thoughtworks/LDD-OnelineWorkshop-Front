@@ -289,20 +289,22 @@ export default class DataPanorama extends Vue{
       <div ref="container" class="data-panorama">
         { this.renderOperations(h) }
         <div class="data-panorama-wrapper">
-          <div ref="stage" class="sprite-stage"></div>
-          {
-            this.editMenuPosition && (
-              <div class="sprite-edit-menu" style={{ left: `${menuLeft}px`, top: `${menuRight}px` }}
-                onMousedown={event => event.stopPropagation()}>
-                <a-menu
-                  onClick={this.onClickSpriteMenu}>
-                  <a-menu-item key="edit">编辑</a-menu-item>
-                  <a-menu-item key="copy">复制</a-menu-item>
-                  <a-menu-item key="delete">删除</a-menu-item>
-                </a-menu>
-              </div>
-            )
-          }
+          <div ref="stage" class="sprite-stage">
+            {
+              this.editMenuPosition && (
+                <div class="sprite-edit-menu" 
+                  style={{ left: `${menuLeft}px`, top: `${menuRight}px` }}
+                  onMousedown={event => event.stopPropagation()}>
+                  <a-menu
+                    onClick={this.onClickSpriteMenu}>
+                    <a-menu-item key="edit">编辑</a-menu-item>
+                    <a-menu-item key="copy">复制</a-menu-item>
+                    <a-menu-item key="delete">删除</a-menu-item>
+                  </a-menu>
+                </div>
+              )
+            }
+          </div>
         </div>
         { this.toggleStickerModalVisibility
           && <EditStickerModal

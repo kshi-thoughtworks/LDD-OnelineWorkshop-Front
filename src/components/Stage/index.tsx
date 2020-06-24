@@ -24,14 +24,15 @@ export default class Stage {
 
   constructor(container: HTMLDivElement) {
     this.container = container
-    const zoomContainer = `
-      <div class="sprite-operation-container">
-        <span class="zoom-item top-left" data-orientation="topLeft"></span>
-        <span class="sprite-edit"></span>
-        <span class="zoom-item bottom-left" data-orientation="bottomLeft"></span>
-        <span class="zoom-item bottom-right" data-orientation="bottomRight"></span>
-      </div>`
-    this.container.innerHTML = zoomContainer
+    const zoomContainer = document.createElement('div')
+    zoomContainer.innerHTML = `
+      <span class="zoom-item top-left" data-orientation="topLeft"></span>
+      <span class="sprite-edit"></span>
+      <span class="zoom-item bottom-left" data-orientation="bottomLeft"></span>
+      <span class="zoom-item bottom-right" data-orientation="bottomRight"></span>
+    `
+    zoomContainer.className = 'sprite-operation-container'
+    this.container.appendChild(zoomContainer)
     this.zoomContainer = this.container.querySelector('.sprite-operation-container')
 
     this.canvas = document.createElement('canvas')
