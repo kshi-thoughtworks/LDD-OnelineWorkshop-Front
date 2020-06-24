@@ -58,6 +58,9 @@
             font-weight: 600;
             text-align: left;
             margin: 16px 0 4px 16px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
 
         &-date {

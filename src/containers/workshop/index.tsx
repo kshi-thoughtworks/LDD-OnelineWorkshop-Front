@@ -104,6 +104,30 @@ export default class Workshop extends Vue{
     )
   }
 
+  renderMemeberAvatars(h) {
+    if (this.members.length > 5) {
+      const content = this.members.slice(0, 4).map(member => {
+        return {
+          'color': member.color,
+          'text': member.username[0]
+        }
+      })
+      content.push(
+        {
+          'color': '',
+          'text': '+' + (this.members.length - 5)
+        }
+      )
+      return (
+          map(content, member => <a-avatar style={member.color}>{member.text}</a-avatar>)
+      )
+    } else {
+      return (
+        map(this.members, member => <a-avatar style={member.color}>{member.username[0]}</a-avatar>)
+      )
+    }
+  }
+
   confirmWorkshopModal(name, description) {
     updateWorkshop(this.workshop.id, name, description)
       .then(() => {
@@ -140,7 +164,7 @@ export default class Workshop extends Vue{
             <p class="workshop-header-info-detail">{this.workshop.name + '(' + this.workshop.description + ')'}</p>
           </div>
           <div class="workshop-header-members" onClick={this.showMemberModal(true)}>
-            { map(this.members, member => <a-avatar style={member.color}>{member.username[0]}</a-avatar>) }
+            { this.renderMemeberAvatars(h) }
             <a-icon type="usergroup-add"/>
           </div>
         </header>

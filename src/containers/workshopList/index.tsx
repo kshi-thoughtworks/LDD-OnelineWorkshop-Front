@@ -30,7 +30,7 @@ export default class WorkshopList extends Vue{
         loadWorkshops()
             .then((workshops) => {
                 this.workshopList = workshops.sort(function(a:workshopItem, b:workshopItem) {
-                    return b.created_at.localeCompare(a.created_at);
+                    return b.id - a.id
                 })
             })
             .catch(error => this.$message.error(error))
@@ -57,7 +57,7 @@ export default class WorkshopList extends Vue{
                 this.hiddenModal()
                 loadWorkshops().then(workshops => {
                         this.workshopList = workshops.sort(function(a:workshopItem, b:workshopItem) {
-                            return b.created_at.localeCompare(a.created_at);
+                            return b.id - a.id
                     })
                 })
             })

@@ -1,6 +1,6 @@
 <template lang="pug">
     a-modal(title="编辑工作坊成员" visible=true @cancel="onCancel" okText="完成" cancelText="取消")
-        a-form-model(ref="ruleForm" hide-required-mark=true)
+        a-form-model(ref="ruleForm" hide-required-mark=true).members-form
             a-form-model-item(label="邀请工作坊成员")
                 a-select(mode="multiple" :value="form.selectedList" @change="handleChange" @search="searchUsers" ref="select").select-input
                 ul(@click="onDropdownClick").select-dropdown
@@ -106,5 +106,10 @@
     overflow: auto;
     padding: 0;
     color: #000000;
+}
+.members-form {
+    .ant-form-item {
+        margin-bottom: 0;
+    }
 }
 </style>
