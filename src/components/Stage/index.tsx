@@ -127,13 +127,12 @@ export default class Stage {
         if(!isSame) {
           const dragSpriteId = this.dragManager?.selectedSprite?.id
           const isDragging = dragSpriteId === spriteProp.id
-          
+          const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
           // 如果正在拖动，只能改变其内容，位置与scale维持当前操作状态
           if(isDragging) {
-            const { x, y, width, height, scale, ...others } = sprite.props
+            const { x, y, width, height, scale, ...others } = spriteInstance.props
             Object.assign(sprite.props, {...others})
           } else {
-            const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
             sprite.updateProps(spriteInstance.props)
           }
           spritesChanged = true
