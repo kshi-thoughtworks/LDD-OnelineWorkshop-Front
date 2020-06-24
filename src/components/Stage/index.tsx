@@ -76,6 +76,8 @@ export default class Stage {
     style.width = `${width}px`
     style.height = `${height}px`
     style.display = 'block'
+
+    this.draw()
   }
   
   findSpriteByPoint(left: number, top: number) : Sprite<SpriteBox>{
@@ -134,7 +136,13 @@ export default class Stage {
 
   draw(){
     this.context!.clearRect(0, 0, stageBox.width, stageBox.height)
-    forEach(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.draw())
+    forEach(this.sprites, (sprite: Sprite<SpriteBox>) => {
+      if(sprite === this.dragManager?.selectedSprite) {
+        return
+      }
+      sprite.draw()
+    })
+    this.dragManager?.selectedSprite?.draw()
   }
 
   resize() {
