@@ -114,7 +114,7 @@
     border-radius: 4px;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
     border: none;
-    height: 224px;
+    max-height: 224px;
     overflow: auto;
     list-style-type: none;
     padding: 0;

@@ -148,6 +148,7 @@ export default class Workshop extends Vue{
   confirmMemeberModal(userIds) {
     addUsersToWorkshop(this.$route.params.workshopId, userIds)
       .then(() => {
+        this.$message.success('添加成功')
         this.updateMemebers()
         this.showMemberModal(false)()
       })
