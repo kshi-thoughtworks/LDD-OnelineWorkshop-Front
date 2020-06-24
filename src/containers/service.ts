@@ -37,6 +37,10 @@ export const updateElement = (elementId, title, content, meta) => {
   return http.put(`/api/elements/${elementId}`, { title, content, meta })
 }
 
+export const deleteElement = elementId => {
+  return http.delete(`/api/elements/${elementId}`)
+}
+
 export const loadCards = () => {
   return http.get('/api/cards')
 }

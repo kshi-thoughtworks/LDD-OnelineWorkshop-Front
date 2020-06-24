@@ -112,7 +112,7 @@ export default class Stage {
     const spriteMap = toMap(spriteProps)
 
     const latestSprites: Array<Sprite<SpriteBox>> = []
-    let spritesChanged = false
+    let spritesChanged = spriteProps.length !== this.sprites.length
     forEach(spriteProps, spriteProp => {
       const { id, version } = spriteProp
       const sprite = this.spriteMap[id]

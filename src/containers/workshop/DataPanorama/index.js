@@ -10,7 +10,8 @@ import {
   loadElements, 
   createStickyNote, 
   createCard, 
-  updateElement
+  updateElement,
+  deleteElement
 } from '../../service'
 import './index.scss'
 
@@ -117,8 +118,10 @@ export default class DataPanorama extends Vue{
       this.stage.addSprite(spriteProps)
     })
   }
-  onDeleteStiker(){
-
+  onDeleteStiker() {
+    deleteElement(this.selectedSprite.id).then(() => {
+      this.loadElementsInterval()
+    })
   }
   onEditCard(title, description, color, editable){
     if(editable) {
@@ -225,6 +228,9 @@ export default class DataPanorama extends Vue{
     })
   }
   loadElementsInterval() {
+    if(this.timerId) {
+      clearInterval(this.timerId)
+    }
     const loadAction = () => {
       this.loadElements().then(sprites => {
         this.stage.patchSprites(sprites)
