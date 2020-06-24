@@ -4,6 +4,7 @@ import { Component } from 'vue-property-decorator'
 import { Avatar } from 'ant-design-vue'
 import DataPanorama from './DataPanorama'
 import WorkshopModal from '../../components/WorkshopModal.vue'
+import MemberModal from '../../components/MemberModal.vue'
 import { loadWorkshop, updateWorkshop, loadWorkshopUsers } from '../service'
 
 import './index.scss'
@@ -23,12 +24,15 @@ type TypeItem = {
 
 type MemberItem = {
   username: string;
+  email: string;
+  role: string;
   color: string;
 }
 
 @Component({
   components: {
       'workshop-modal': WorkshopModal,
+      'member-modal': MemberModal,
       'a-avatar': Avatar
   }
 })
@@ -37,7 +41,8 @@ export default class Workshop extends Vue{
   currentType: string
   workshop: any = null
   members: Array<MemberItem> = []
-  addWorkshopModalVisibility = false
+  addWorkshopModalVisible = false
+  editMemberModalVisible = false
 
   constructor(props){
     super(props)
@@ -61,10 +66,8 @@ export default class Workshop extends Vue{
     })
     loadWorkshopUsers(this.$route.params.workshopId).then(members => {
       this.members = map(members, member => {
-        return {
-          'username': member.username,
-          'color': this.getRandomColor()
-        }
+        member.color = this.getRandomColor()
+        return member
       })
     })
   }
@@ -105,19 +108,19 @@ export default class Workshop extends Vue{
     updateWorkshop(this.workshop.id, name, description)
       .then(() => {
           this.$message.success('更新成功')
-          this.hiddenModal()
+          this.showWorkshopModal(false)
           this.workshop.name = name
           this.workshop.description = description
       })
       .catch(error => this.$message.error(error))
   }
 
-  showModal() {
-    this.addWorkshopModalVisibility = true
+  showWorkshopModal(show: boolean) {
+    return () => this.addWorkshopModalVisible = show
   }
 
-  hiddenModal() {
-    this.addWorkshopModalVisibility = false
+  showMemberModal(show: boolean) {
+    return () => this.editMemberModalVisible = show
   }
 
   getRandomColor() {
@@ -131,21 +134,23 @@ export default class Workshop extends Vue{
           <a-icon type="left" style={{ fontSize: '12px', color: '#6d6e71' }} />
           <router-link to="/workshops" class="workshop-header-title">我的工作台</router-link>
           <div class="workshop-header-info">
-            <p class="workshop-header-info-brif" onClick={this.showModal}>
+            <p class="workshop-header-info-brif" onClick={this.showWorkshopModal(true)}>
               {this.workshop.name}(<span>{this.workshop.description}</span>)<a-icon type="edit" theme="filled"/>
             </p>
             <p class="workshop-header-info-detail">{this.workshop.name + '(' + this.workshop.description + ')'}</p>
           </div>
-          <div class="workshop-header-members">
+          <div class="workshop-header-members" onClick={this.showMemberModal(true)}>
             { map(this.members, member => <a-avatar style={member.color}>{member.username[0]}</a-avatar>) }
             <a-icon type="usergroup-add"/>
           </div>
         </header>
         { this.renderTypes(h) }
         { this.renderByType(h) }
-        { this.addWorkshopModalVisibility &&
-          <workshop-modal onConfirm={this.confirmWorkshopModal} onCancel={this.hiddenModal} 
-            modalTitle="编辑工作坊信息" workshopName={this.workshop.name} workshopDescription={this.workshop.description}/>  }       
+        { this.addWorkshopModalVisible &&
+          <workshop-modal onConfirm={this.confirmWorkshopModal} onCancel={this.showWorkshopModal(false)} 
+            modalTitle="编辑工作坊信息" workshopName={this.workshop.name} workshopDescription={this.workshop.description}/>  } 
+        { this.editMemberModalVisible &&
+          <member-modal onCancel={this.showMemberModal(false)} members={this.members}/> } 
       </div>
     )
   }
