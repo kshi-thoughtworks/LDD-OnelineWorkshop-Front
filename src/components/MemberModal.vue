@@ -1,36 +1,37 @@
 <template lang="pug">
-    a-modal(title="编辑工作坊成员" visible=true @cancel="onCancel" okText="完成" cancelText="取消")
+    a-modal(title="编辑工作坊成员" visible=true @ok="onSubmit" @cancel="onCancel" okText="完成" cancelText="取消")
         a-form-model(ref="ruleForm" hide-required-mark=true).members-form
             a-form-model-item(label="邀请工作坊成员")
                 a-select(mode="multiple" :value="form.selectedList" @change="handleChange" @search="searchUsers" ref="select").select-input
                 ul(@click="onDropdownClick").select-dropdown
-                    li(v-for="member in this.form.filteredUsers" :key="member.id" :value="member.username" @click="selectChange(member.username)").select-item
-                        <a-avatar :style="member.color">{{member.username[0]}}</a-avatar>
+                    li(v-for="member in form.filteredUsers" @click="selectChange(member)" :class="member.choosable ? '' : 'select-item-disbaled'").select-item
+                        a-avatar(:style="member.color") {{member.username[0]}}
                         span.select-item-content 
-                            p {{member.username}}
+                            p(v-if="member.choosable") {{member.username}}
+                            p(v-else) {{member.username}} (已加入)
                             p {{member.email}}
             a-form-model-item(label="工作坊创建者")
                 li.select-item
-                    <a-avatar :style="creator.color">{{creator.username[0]}}</a-avatar>
-                        span.select-item-content 
-                            p {{creator.username}}
-                            p {{creator.email}}
+                    a-avatar(:style="creator.color") {{creator.username[0]}}
+                    span.select-item-content 
+                        p {{creator.username}}
+                        p {{creator.email}}
             a-form-model-item(:label="`工作坊成员 (${this.attendees.length})`")
                 ul.select-members
                     li(v-for="member in this.attendees" :key="member.id" :value="member.username").select-item
-                        <a-avatar :style="member.color">{{member.username[0]}}</a-avatar>
+                        a-avatar(:style="member.color") {{member.username[0]}}
                         span.select-item-content 
                             p {{member.username}}
                             p {{member.email}}
 </template>
 
 <script>
-    import { Input, Select, Avatar } from 'ant-design-vue'
+    import { Select, Avatar } from 'ant-design-vue'
+    import { loadUsers } from '../containers/service'
 
     export default {
-        name: 'Register',
+        name: 'MemberModal',
         components: {
-            'a-input': Input,
             'a-select': Select,
             'a-avatar': Avatar,
         },
@@ -38,48 +39,42 @@
         data() {
             return {
                 form: {
-                    name: '',
-                    description: '',
                     allUsers: [],
                     filteredUsers: [],
                     selectedList: []
-                },
-                rules: {
-                    name: [
-                        {required: true, message: '请输入工作坊名称', trigger: 'change', whitespace: true},
-                        {max: 20, message: '工作坊名称不可超过20个字符', trigger: 'change'}
-                        ],
-                    description: [
-                        {required: true, message: '请输入工作坊介绍', trigger: 'change', whitespace: true},
-                        {max: 200, message: '工作坊介绍不可超过200个字符', trigger: 'change'}
-                        ],
                 },
                 creator: this.$props.members.find(member => member.role == 'creator'),
                 attendees: this.$props.members.filter(member => member.role != 'creator'),
             }
         },
+        mounted() {
+            loadUsers().then(users => {
+                const attendeeIds = this.attendees.map(attendee => attendee.id)
+                users = users.map(user => {
+                    user.choosable = !attendeeIds.includes(user.id)
+                    user.color = this.getRandomColor()
+                    return user
+                })
+                this.form.allUsers = users
+                this.form.filteredUsers = this.form.allUsers
+            })
+        },
         methods: {
             onSubmit() {
-                this.$refs.ruleForm.validate(valid => {
-                    if (valid) { 
-                        const userIds = this.form.selectedList.map(selectedUserName => {
-                            const user = this.form.allUsers.find(user => user.username == selectedUserName)
-                            return user.id
-                        })
-                        const {confirm} = this.$listeners
-                        confirm(this.form.name.trim(), this.form.description.trim(), userIds)
-                    } else {
-                        return false
-                    }
-                });
+                const userIds = this.form.selectedList.map(selectedUserName => {
+                    const user = this.form.allUsers.find(user => user.username == selectedUserName)
+                    return user.id
+                })
+                const {confirm} = this.$listeners
+                confirm(userIds)
             },
             onCancel() {
                 const { cancel } = this.$listeners
                 cancel()
             },
-            selectChange(selectedValue) {
-                if (!(this.form.selectedList.includes(selectedValue))) {
-                    this.form.selectedList.push(selectedValue)
+            selectChange(selectedMember) {
+                if (selectedMember.choosable && !(this.form.selectedList.includes(selectedMember.username))) {
+                    this.form.selectedList.push(selectedMember.username)
                 }
             },
             handleChange(value) {
@@ -111,5 +106,8 @@
     .ant-form-item {
         margin-bottom: 0;
     }
+}
+.select-item-disbaled {
+    color: var(--slate-grey);
 }
 </style>

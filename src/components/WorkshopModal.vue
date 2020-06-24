@@ -3,11 +3,11 @@
         a-form-model(ref="ruleForm" :model="form" :rules="rules" hide-required-mark=true)
             a-form-model-item(label="工作坊名称" prop="name")
                 a-input(v-model="form.name")
-            a-form-model-item(label="邀请工作坊成员")
+            a-form-model-item(label="邀请工作坊成员" v-if="!hiddenInvite")
                 a-select(mode="multiple" :value="form.selectedList" @change="handleChange" @search="searchUsers" ref="select").select-input
                 ul(@click="onDropdownClick").select-dropdown
                     li(v-for="member in this.form.filteredUsers" :key="member.id" :value="member.username" @click="selectChange(member.username)").select-item
-                        <a-avatar :style="member.color">{{member.username[0]}}</a-avatar>
+                        a-avatar(:style="member.color") {{member.username[0]}}
                         span.select-item-content 
                             p {{member.username}}
                             p {{member.email}}
@@ -27,7 +27,7 @@
             'a-select': Select,
             'a-avatar': Avatar,
         },
-        props: ['modalTitle', 'workshopName', 'workshopDescription'],
+        props: ['modalTitle', 'workshopName', 'workshopDescription', 'hiddenInvite'],
         data() {
             return {
                 form: {

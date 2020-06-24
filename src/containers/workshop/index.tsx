@@ -5,7 +5,7 @@ import { Avatar } from 'ant-design-vue'
 import DataPanorama from './DataPanorama'
 import WorkshopModal from '../../components/WorkshopModal.vue'
 import MemberModal from '../../components/MemberModal.vue'
-import { loadWorkshop, updateWorkshop, loadWorkshopUsers } from '../service'
+import { loadWorkshop, updateWorkshop, loadWorkshopUsers, addUsersToWorkshop } from '../service'
 
 import './index.scss'
 
@@ -23,6 +23,7 @@ type TypeItem = {
 }
 
 type MemberItem = {
+  id: number;
   username: string;
   email: string;
   role: string;
@@ -64,6 +65,10 @@ export default class Workshop extends Vue{
     loadWorkshop(this.$route.params.workshopId).then(workshop => {
       this.workshop = workshop
     })
+    this.updateMemebers()
+  }
+
+  updateMemebers() {
     loadWorkshopUsers(this.$route.params.workshopId).then(members => {
       this.members = map(members, member => {
         member.color = this.getRandomColor()
@@ -71,6 +76,7 @@ export default class Workshop extends Vue{
       })
     })
   }
+
   renderByType(h){
     const { currentType } = this
     const steps = this.workshop.steps
@@ -132,9 +138,18 @@ export default class Workshop extends Vue{
     updateWorkshop(this.workshop.id, name, description)
       .then(() => {
           this.$message.success('更新成功')
-          this.showWorkshopModal(false)
+          this.showWorkshopModal(false)()
           this.workshop.name = name
           this.workshop.description = description
+      })
+      .catch(error => this.$message.error(error))
+  }
+
+  confirmMemeberModal(userIds) {
+    addUsersToWorkshop(this.$route.params.workshopId, userIds)
+      .then(() => {
+        this.updateMemebers()
+        this.showMemberModal(false)()
       })
       .catch(error => this.$message.error(error))
   }
@@ -172,9 +187,10 @@ export default class Workshop extends Vue{
         { this.renderByType(h) }
         { this.addWorkshopModalVisible &&
           <workshop-modal onConfirm={this.confirmWorkshopModal} onCancel={this.showWorkshopModal(false)} 
-            modalTitle="编辑工作坊信息" workshopName={this.workshop.name} workshopDescription={this.workshop.description}/>  } 
+            modalTitle="编辑工作坊信息" workshopName={this.workshop.name} workshopDescription={this.workshop.description}
+            hiddenInvite={true}/>  } 
         { this.editMemberModalVisible &&
-          <member-modal onCancel={this.showMemberModal(false)} members={this.members}/> } 
+          <member-modal onConfirm={this.confirmMemeberModal} onCancel={this.showMemberModal(false)} members={this.members}/> } 
       </div>
     )
   }
