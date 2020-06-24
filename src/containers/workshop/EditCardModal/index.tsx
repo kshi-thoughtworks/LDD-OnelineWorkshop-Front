@@ -7,6 +7,7 @@ import './index.scss'
 const colors = ['#ffe562', '#26e082', '#f6a0b2', '#bc7df2', '#6ec2f9', '#f5f3f6']
 @Component
 export default class EditCardModal extends Vue{
+  @Prop() editable!: boolean
   @Prop({default: '#ffe562'}) color!: string
   @Prop({default: {}}) card!: { name: string, description: string }
 
@@ -38,13 +39,14 @@ export default class EditCardModal extends Vue{
     }
   }
   onConfirm(){
-    const { confirm } = this.$listeners as { confirm: (name: string, description: string, color: string) => void }
+    const { confirm } = this.$listeners as 
+      { confirm: (name: string, description: string, color: string, editable: boolean) => void }
     const { $el } = this.$refs.name as Vue
     const value = ($el as HTMLInputElement).value
     if(!value) {
       return
     }
-    confirm(value, this.description, this.color)
+    confirm(value, this.description, this.color, this.editable)
   }
   render(h) {
     const { close } = this.$listeners
@@ -53,11 +55,11 @@ export default class EditCardModal extends Vue{
       <a-modal
         width={620}
         wrapClassName="edit-card-modal"
-        title="添加卡牌" 
+        title={ this.editable ? '修改卡牌' : '添加卡牌'} 
         visible={true} 
         onChange={close}
         onOk={this.onConfirm}
-        okText="添加" 
+        okText={this.editable ? '保存' : '添加'} 
         cancelText="取消">
           <ul class="colors">
             {
