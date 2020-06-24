@@ -33,6 +33,7 @@ export default class DataPanorama extends Vue{
   selectedSprite = null
   editMenuPosition = null
   operateCardType = null
+  operateStickyType = null
   constructor(props) {
     super(props)
     window.addEventListener('resize', this.onResize)
@@ -62,6 +63,7 @@ export default class DataPanorama extends Vue{
     const isSticky = type === 'sticky'
 
     if(isSticky) {
+      this.operateStickyType = 'edit'
       this.toggleStickerModalVisibility = true
     } else {
       this.operateCardType = 'edit'
@@ -162,7 +164,10 @@ export default class DataPanorama extends Vue{
       case 'text':
         return this.onText;
       case 'stick':
-        return () => this.toggleStickerModalVisibility = true;
+        return () => {
+          this.operateStickyType = 'create'
+          this.toggleStickerModalVisibility = true;
+        }
       case 'zoom':
         return this.onZoom;
       case 'export':
@@ -325,7 +330,7 @@ export default class DataPanorama extends Vue{
         </div>
         { this.toggleStickerModalVisibility
           && <EditStickerModal
-              editable={!!this.selectedSprite}
+              editable={this.operateStickyType === 'edit'}
               content={this.selectedSprite?.content}
               color={this.selectedSprite?.color}
               onConfirm={this.onEditSticker} 
