@@ -1,5 +1,5 @@
 import Sprite, { SpriteBox } from './index';
-import StickyNoteSprite from './StickyNoteSprite'
+import { calculateTextRows } from './text'
 
 export enum CardImageType{
   VISION = 'vision',
@@ -68,12 +68,50 @@ export default class CardSprite extends Sprite<CardProps>{
     this.props = props
   }
 
+  drawText(){
+    const context = this.stage!.context!
+    const { width, height, content } = this.props
+    const padding = 48
+    const maxWidth = width - padding * 2
+    const fontSize = 35
+
+    context.save()
+    context.textAlign = 'left'
+    context.font = `bold ${fontSize}px Montserrat, sans-serif`
+    context.fillStyle='#7825be'
+    const rows = calculateTextRows(context, maxWidth, content, fontSize)
+    if(rows.length === 1) {
+      context.textAlign = 'center'
+      const textTop = height - 110
+      context.fillText(rows[0], width/2, textTop)
+    }else {
+      const rowsLength = rows.length
+      const textHeight = fontSize * rowsLength
+      const textTop = height - textHeight * 2 - 20
+      context.textAlign = 'center'
+      for(let index = 0; index < rowsLength; index++) {
+        const row = rows[index]
+        context.fillText(row, width/2, textTop + fontSize * (index + 0.5))
+      }
+    }
+    context.restore()
+  }
+
   draw(){
     const context = this.stage!.context!
-    const { x, y, width, height, scale: { x: scaleX, y: scaleY } = { x: 1, y: 1 } } = this.props
-    const scaleWidth =  width * scaleX
-    const scaleHeight = height * scaleY
-    context.drawImage(this.stage!.cardImages.scene, x, y, scaleWidth, scaleHeight)
+    const { x, y, width, height, scale: { x: scaleX, y: scaleY } = { x: 1, y: 1 }, card } = this.props
+    const cardImages = this.stage!.cardImages
+    const cardImageType = (card && card.type) as CardImageType
+    const cardImage = cardImages[cardImageType] ? cardImages[cardImageType] : cardImages[CardImageType.VISION]
+
+    context.save()
+    context.translate(x, y)
+    context.scale(scaleX, scaleY)
+
+    context.drawImage(cardImage, 0, 0, width, height)
+
+    this.drawText()
+    context.restore()
   }
 
   static build(props: CardProps) {

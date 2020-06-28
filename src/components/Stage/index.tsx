@@ -77,7 +77,6 @@ export default class Stage {
       vision: visionImage,
       scene: sceneImage
     }
-    window.cardImages = this.cardImages
   }
 
   setDragManager(dragManager: DragManager){

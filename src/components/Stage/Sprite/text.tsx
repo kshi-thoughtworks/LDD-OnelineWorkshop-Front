@@ -1,13 +1,9 @@
-const calculateText = (context, width, height, content): {fontSize: number, rows: Array<string>} => {
+export const calculateTextRows = (context, maxWidth, content, fontSize): Array<string> => {
   context.save()
-  let minFontSize = 40
-  let maxFontSize = 320
-
-  let fontSize = minFontSize
   context.font = `bold ${fontSize}px Montserrat, sans-serif`
-  const isMultipleRows = context.measureText(content).width > width
+  const isMultipleRows = context.measureText(content).width > maxWidth
   const rows: Array<string> = []
-  if(isMultipleRows){
+  if(isMultipleRows) {
     const getFirstRow = contentString => {
       let startIndex = 0
       let endIndex = contentString.length - 1
@@ -19,7 +15,7 @@ const calculateText = (context, width, height, content): {fontSize: number, rows
           break
         } 
         
-        if(rowContentWidth > width) {
+        if(rowContentWidth > maxWidth) {
           endIndex = middleIndex
         }else {
           startIndex = middleIndex
@@ -31,7 +27,7 @@ const calculateText = (context, width, height, content): {fontSize: number, rows
     let contentString = content
     while(contentString.length > 0) {
       const contentWidth = context.measureText(contentString).width
-      if(contentWidth > width) {
+      if(contentWidth > maxWidth) {
         const splitIndex = getFirstRow(contentString)
         const rowContent = contentString.substring(0, splitIndex)
         contentString = contentString.substring(splitIndex, contentString.length)
@@ -43,23 +39,46 @@ const calculateText = (context, width, height, content): {fontSize: number, rows
     }
   } else {
     rows.push(content)
-    while(fontSize < maxFontSize) {
-      const size = Math.round((maxFontSize - fontSize)/2) + fontSize
-      context.font = `bold ${size}px Montserrat, sans-serif`
-      const contentWidth = context.measureText(content).width
-      if(contentWidth > width) {
-        if(size >= maxFontSize) {
-          break
-        }
-        maxFontSize = size
-      } else {
-        fontSize = size
+  }
+  context.restore()
+  return rows
+}
+
+export const calculateFontSize = (context, maxWidth, content, minFontSize, maxFontSize): number => {
+  let fontSize = minFontSize
+  while(fontSize < maxFontSize) {
+    const size = Math.round((maxFontSize - fontSize)/2) + fontSize
+    context.font = `bold ${size}px Montserrat, sans-serif`
+    const contentWidth = context.measureText(content).width
+    if(contentWidth > maxWidth) {
+      if(size >= maxFontSize) {
+        break
       }
+      maxFontSize = size
+    } else {
+      fontSize = size
     }
+  }
+  return fontSize
+}
+
+export const calculateText = (context, width, height, content): {fontSize: number, rows: Array<string>} => {
+  context.save()
+  let minFontSize = 40
+  let maxFontSize = 320
+
+  let fontSize = minFontSize
+  const rows = calculateTextRows(context, width, content, fontSize)
+  const isSingleRow = rows.length === 1
+
+  if(isSingleRow) {
+    const content = rows[0]
+    fontSize = calculateFontSize(context, width, content, minFontSize, maxFontSize)
   }
   context.restore()
   return { fontSize, rows}
 }
+
 export const drawText = (context: CanvasRenderingContext2D, 
   props: { content: string, width: number, height: number}
   ) => {
