@@ -252,7 +252,7 @@ export default class DataPanorama extends Vue{
     this.loadElementsInterval()
     this.loadCards()
   }
-  beforeDestory(){
+  destroyed(){
     window.removeEventListener('resize', this.onResize)
     clearInterval(this.timerId)
   }
