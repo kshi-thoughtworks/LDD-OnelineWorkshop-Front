@@ -69,6 +69,10 @@ export const loadWorkshopUsers = (workshopId) => {
   return http.get(`/api/workbenches/${workshopId}/users`)
 }
 
+export const loadToolCards = () => {
+  return http.get('api/cards/tools')
+}
+
 export const register = (username, email, password) => {
   return http.post('/api/users/register', { username, email, password })
 }

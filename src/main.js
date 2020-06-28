@@ -15,6 +15,7 @@ Vue.use(Icon)
 Vue.use(Menu)
 Vue.use(Modal)
 Vue.prototype.$message = message
+Vue.prototype.$info = Modal.info
 
 new Vue({
   router,

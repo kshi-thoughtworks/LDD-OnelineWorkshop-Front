@@ -21,7 +21,7 @@
     import { loadUsers } from '../containers/service'
 
     export default {
-        name: 'Register',
+        name: 'WorkshopModal',
         components: {
             'a-input': Input,
             'a-select': Select,

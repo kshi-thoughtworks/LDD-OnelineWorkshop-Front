@@ -5,6 +5,7 @@ import { Avatar } from 'ant-design-vue'
 import DataPanorama from './DataPanorama'
 import WorkshopModal from '../../components/WorkshopModal.vue'
 import MemberModal from '../../components/MemberModal.vue'
+import ToolCards from './ToolCards.vue'
 import { loadWorkshop, updateWorkshop, loadWorkshopUsers, addUsersToWorkshop } from '../service'
 
 import './index.scss'
@@ -35,7 +36,8 @@ type MemberItem = {
       'workshop-modal': WorkshopModal,
       'member-modal': MemberModal,
       'a-avatar': Avatar,
-      'data-panorama': DataPanorama
+      'data-panorama': DataPanorama,
+      'tool-cards': ToolCards,
   }
 })
 export default class Workshop extends Vue{
@@ -92,6 +94,7 @@ export default class Workshop extends Vue{
       case TypeEnum.convergenceScene:
         return this.renderStageByIndex(h, 3)
       case TypeEnum.technologyCard:
+        return <tool-cards/>
       case TypeEnum.generateReport:
         return <div>敬请期待...</div>
       default:
