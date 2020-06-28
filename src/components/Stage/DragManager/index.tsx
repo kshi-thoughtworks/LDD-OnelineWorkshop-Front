@@ -161,9 +161,11 @@ export default class DragManager extends EventEmitter{
     const className = (target as HTMLSpanElement).className
     let isZoomOperation = false
     let isEditOperation = false
+    let isMoveOperation = false
     if(!!className.indexOf) {
       isZoomOperation = className.indexOf('zoom-item') !== -1
       isEditOperation = className.indexOf('sprite-edit') !== -1
+      isMoveOperation = className.indexOf('sprite-operation-container') !== -1
     }
     if(isZoomOperation) {
       const { target } = event
@@ -172,7 +174,9 @@ export default class DragManager extends EventEmitter{
       this.onZoomStart(event)
     } else if(isEditOperation){
       this.fire('edit-operation', this.selectedSprite)
-    }else {
+    }else if(isMoveOperation){
+      this.onMoveStart(event)
+    } else {
       this.fire('edit-operation', this.selectedSprite)
     }
     event.stopPropagation()
@@ -245,9 +249,10 @@ export default class DragManager extends EventEmitter{
 
     this.zoomContainer.removeEventListener('mousedown', this.onZoomMouseDown)
     this.zoomContainer.removeEventListener('dblclick', this.onDoubleClick)
+
+    document.removeEventListener('mousedown', this.onDocumentMouseDown)
   }
   clearDocumentMouseEvent(){
-    document.removeEventListener('mousedown', this.onDocumentMouseDown)
     document.removeEventListener('mousemove', this.onDrag)
     document.removeEventListener('mouseup', this.onDragEnd)
   }

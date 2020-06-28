@@ -2,6 +2,9 @@ import { find, findLast, forEach, reduce } from 'lodash'
 import Sprite, { SpriteClass, SpriteBox } from './Sprite'
 import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
+import { CardImageType } from './Sprite/CardSprite'
+import VisionPng from '../../assets/images/cards/vision.png'
+import ScenePng from '../../assets/images/cards/scene.png'
 import './index.scss'
 
 export type CanvasContext = CanvasRenderingContext2D | null
@@ -22,6 +25,8 @@ export default class Stage {
   spriteMap: { [key: number]: Sprite<SpriteBox> }
 
   dragManager?: DragManager
+  
+  cardImages!: { [key in CardImageType]: HTMLImageElement }
 
   constructor(container: HTMLDivElement) {
     this.container = container
@@ -60,6 +65,19 @@ export default class Stage {
 
   init() {
     this.updateBoxRect()
+    this.preLoadCardImages()
+  }
+
+  preLoadCardImages() {
+    const visionImage = new Image()
+    const sceneImage = new Image()
+    visionImage.src = VisionPng
+    sceneImage.src = ScenePng
+    this.cardImages = {
+      vision: visionImage,
+      scene: sceneImage
+    }
+    window.cardImages = this.cardImages
   }
 
   setDragManager(dragManager: DragManager){
@@ -72,6 +90,7 @@ export default class Stage {
 
   onResetSelection = () => {
     this.zoomContainer!.style.display = 'none'
+    this.draw()
   }
 
   updateSelection = () => {
@@ -91,6 +110,9 @@ export default class Stage {
   }
   
   findSpriteByPoint(left: number, top: number) : Sprite<SpriteBox>{
+    if(this.dragManager?.selectedSprite?.pointInSprite(left, top)) {
+      return this.dragManager.selectedSprite
+    }
     return findLast(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.pointInSprite(left, top))
   }
 

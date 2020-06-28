@@ -8,7 +8,7 @@ export const loadWorkshop = workshopId => {
 export const loadElements =  stepId => {
   return http.get(`/api/steps/${stepId}/elements`).then(elements => {
     return map(elements, element => {
-      const { id, title, content, type, meta, card } = element
+      const { id, title, content, type, meta, card, version } = element
       const defaultProps = { x: 100, y: 100, width: 480, height: 480, color: '#ffe562' }
       const metaJson = meta ? JSON.parse(meta) : defaultProps
       return {
@@ -17,7 +17,8 @@ export const loadElements =  stepId => {
         title,
         content,
         meta: metaJson,
-        card
+        card,
+        version
       }
     })
   })
@@ -28,13 +29,13 @@ export const createStickyNote = (stepId, content, meta, ) => {
   return http.post(`/api/elements/sticker`, element)
 }
 
-export const createCard = (stepId, title, content, meta, card_id) => {
-  const element = { step_id: stepId, title, content, meta, card_id } 
+export const createCard = (stepId, content, meta, card_id) => {
+  const element = { step_id: stepId, title: '', content, meta, card_id } 
   return http.post(`/api/elements/card`, element)
 }
 
-export const updateElement = (elementId, title, content, meta) => {
-  return http.put(`/api/elements/${elementId}`, { title, content, meta })
+export const updateElement = (elementId, content, meta) => {
+  return http.put(`/api/elements/${elementId}`, { title: '', content, meta })
 }
 
 export const deleteElement = elementId => {

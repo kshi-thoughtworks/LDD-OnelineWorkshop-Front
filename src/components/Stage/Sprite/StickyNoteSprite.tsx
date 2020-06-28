@@ -3,16 +3,17 @@ import { drawText } from './text'
 
 const stickyNoteType = 'sticky'
 export type StickyNoteType = 'sticky'
-export class StickyNoteProps {
-  type: string = stickyNoteType
+export class StickyNoteProps implements SpriteBox{
   id?: number
   x!: number
   y!: number
   width!: number
   height!: number
-  content!: string
-  color!: string
   scale: { x: number, y: number } = { x: 1, y: 1}
+
+  type: string = stickyNoteType
+  color!: string
+  content!: string
   version!: number
 
   compare<StickyNoteProps>(props): boolean{
@@ -27,7 +28,7 @@ export class StickyNoteProps {
             && this.color === color
             && thisScaleX === scaleX
             && thisScaleY === scaleY
-            && this.version === this.version;
+            && this.version === version;
   }
 
   toSpriteBox(): SpriteBox{

@@ -54,10 +54,10 @@ export default class DataPanorama extends Vue{
     if(!changed) {
       return
     }
-    const { id, title, content, ...meta } = sprite.props
+    const { id, title, content, card, ...meta } = sprite.props
     const metaProps = { ...meta }
     delete metaProps.type
-    updateElement(id, title, content, metaProps)
+    updateElement(id, content, metaProps)
   }
   onClickSprite(sprite) {
     const { type, card } = this.selectedSprite
@@ -75,7 +75,7 @@ export default class DataPanorama extends Vue{
     if(editable) {
       const { id, content: oldContent, ...meta} = this.selectedSprite
       meta.color = color
-      updateElement(id, '', content, meta).then(() => this.toggleStickerModalVisibility = false)
+      updateElement(id, content, meta).then(() => this.toggleStickerModalVisibility = false)
       const sprite = this.stage.findSpriteById(id)
       sprite.props.content = content
       sprite.props.color = color
@@ -123,23 +123,18 @@ export default class DataPanorama extends Vue{
       this.loadElementsInterval()
     })
   }
-  onEditCard(title, description, color, editable){
+  onEditCard(content, editable){
     if(editable) {
       const { id, content: oldContent, ...meta} = this.selectedSprite
-      meta.color = color
-      meta.title = title
-      meta.content = description
-      updateElement(id, title, description, meta).then( () => {
+      updateElement(id, content, meta).then( () => {
         const sprite = this.stage.findSpriteById(id)
-        sprite.props.title = title
-        sprite.props.content = description
-        sprite.props.color = color
+        sprite.props.content = content
         this.stage.draw()
       })
     } else {
-      const meta = { color, x: 100, y: 100, width: 480, height: 480 }
-      createCard(this.stepId, title, description, meta, this.selectedCard.id).then(({ element_id }) => {
-        const spriteProps = { ...meta, id: element_id, content: description, type: 'card' }
+      const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
+      createCard(this.stepId, content, meta, this.selectedCard.id).then(({ element_id }) => {
+        const spriteProps = { ...meta, id: element_id, type: 'card', content}
         this.stage.addSprite(spriteProps)
       })
     }
@@ -346,10 +341,9 @@ export default class DataPanorama extends Vue{
           this.selectedCard 
             && <EditCardModal
                 editable={this.operateCardType === 'edit'}
-                color={this.selectedSprite?.color}
-                card={this.operateCardType === 'edit'
-                  ? { name: this.selectedSprite.title, description: this.selectedSprite.content }
-                  : { name: this.selectedCard.name, description: this.selectedCard.description}
+                content={this.operateCardType === 'edit'
+                  ? this.selectedSprite.content
+                  : this.selectedCard.name
                 }
                 onConfirm={this.onEditCard} 
                 onClose={()=> this.selectedCard = null} />
