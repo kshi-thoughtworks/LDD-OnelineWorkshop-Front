@@ -154,7 +154,7 @@ export default class Stage {
         const isSame = sprite.props.compare!<SpriteBox>(spriteProp)
         if(!isSame) {
           const dragSpriteId = this.dragManager?.selectedSprite?.id
-          const isDragging = dragSpriteId === spriteProp.id
+          const isDragging = dragSpriteId === spriteProp.id && this.dragManager!.dragging
           const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
           // 如果正在拖动，只能改变其内容，位置与scale维持当前操作状态
           if(isDragging) {

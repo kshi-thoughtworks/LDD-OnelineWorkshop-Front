@@ -5,6 +5,12 @@ export type Point = {
   clientX: number
   clientY: number
 }
+
+type Coordinate = {
+  x: number
+  y: number
+}
+
 enum DragType {
   MOVE = 'move',
   ZOOM = 'zoom'
@@ -26,6 +32,7 @@ export default class DragManager extends EventEmitter{
   dragType: DragType = DragType.MOVE
   orientation?: ZoomOrientation
   dragWithChange: boolean = false
+  dragging: boolean = false
   constructor(stage: Stage){
     super()
     this.stage = stage
@@ -74,6 +81,22 @@ export default class DragManager extends EventEmitter{
     const spriteY = boxY > maxY ? maxY : (boxY < minY ? minY : boxY)
     return { x: spriteX, y: spriteY, width, height, scale: spriteBox.scale }
   }
+  calculateDropPoint(
+    startPoint: Coordinate, 
+    endPoint: Coordinate, 
+    outterPointer: Coordinate): Coordinate{
+      const dx = startPoint.x - endPoint.x
+      const dy = startPoint.y - endPoint.y
+      let ratio = (outterPointer.x - startPoint.x) * dx + (outterPointer.y - startPoint.y) * dy
+      ratio /= (dx * dx + dy * dy)
+      
+      const dropPoint = {
+        x: startPoint.x + dx * ratio,
+        y: startPoint.y + dy * ratio
+      }
+      
+      return dropPoint
+  }
   calculateZoomSpriteBox(originBox: SpriteBox, offset: {x: number, y: number}, orientation: ZoomOrientation): SpriteBox{
     const ratio = this.stage.ratio
     const { x: offsetX, y: offsetY } = offset
@@ -84,72 +107,86 @@ export default class DragManager extends EventEmitter{
     let right = left + width * scaleX
     let bottom = top + height * scaleY
 
-    let zoomScale = 1
     let latestWidth = 0
     let latestHeight = 0
+
+    const topLeftPoint = { x: left, y: top }
+    const topRightPoint = { x: right, y: top }
+    const bottomLeftPoint = { x: left, y: bottom }
+    const bottomRightPoint = { x: right, y: bottom}
+    let startPoint = { x: 0, y: 0 }
+    let endPoint = { x: 0, y: 0 }
+    let dropPoint = { x: 0, y: 0 }
+    let outterPoint = { x: 0, y: 0 }
+
     switch(orientation) {
       case ZoomOrientation.TOPLEFT:
-        top += zoomStageOffsetY
-        left += zoomStageOffsetX
+        startPoint = bottomRightPoint
+        endPoint = topLeftPoint
+        outterPoint = { x: left + zoomStageOffsetX, y: top + zoomStageOffsetY }
+        dropPoint = this.calculateDropPoint(startPoint, endPoint, outterPoint)
+        left = dropPoint.x
+        top = dropPoint.y
         latestWidth = right - left
         latestHeight = bottom - top
-        if(latestWidth < width/2 && latestHeight < height/2) {
-          top = bottom - width/2
-          left = right - height/2
-        } else {
-          if(latestWidth > latestHeight) {
-            top = bottom - latestWidth
-          } else {
-            left = right - latestHeight
-          }
+        if(latestWidth < width/2) {
+          left = right - width/2
+        }
+        if(latestHeight < height/2) {
+          top = bottom - height/2
         }
         break;
       case ZoomOrientation.TOPRIGHT:
-        top += zoomStageOffsetY
-        right += zoomStageOffsetX
+        startPoint = topRightPoint
+        endPoint = bottomLeftPoint
+        outterPoint = { x: right + zoomStageOffsetX, y: top + zoomStageOffsetY }
+        dropPoint = this.calculateDropPoint(startPoint, endPoint, outterPoint)
+        right = dropPoint.x
+        top = dropPoint.y
         latestWidth = right - left
         latestHeight = bottom - top
-        if(latestWidth < width/2 && latestHeight < height/2) {
-          top = bottom - width/2
-          right = left + height/2
-        } else {
-          if(latestWidth > latestHeight) {
-            top = bottom - latestWidth
-          } else {
-            right = left + latestHeight
-          }
+        if(latestWidth < width/2) {
+          right = left + width/2
+        }
+        if(latestHeight < height/2) {
+          top = bottom - height/2
         }
         break;
       case ZoomOrientation.BOTTOMLEFT:
-        bottom += zoomStageOffsetY
-        left += zoomStageOffsetX
+        startPoint = bottomLeftPoint
+        endPoint = topRightPoint
+        outterPoint = { x: left + zoomStageOffsetX, y: bottom + zoomStageOffsetY }
+        dropPoint = this.calculateDropPoint(startPoint, endPoint, outterPoint)
+        left = dropPoint.x
+        bottom = dropPoint.y
         latestWidth = right - left
         latestHeight = bottom - top
-        if(latestWidth < width/2 && latestHeight < height/2) {
-          bottom = top + width/2
-          left = right - height/2
-        } else {
-          if(latestWidth > latestHeight) {
-            bottom = top + latestWidth
-          } else {
-            left = right - latestHeight
-          }
+        if(latestWidth < width/2) {
+          left = right - width/2
+        }
+        if(latestHeight < height/2) {
+          bottom = top + height/2
         }
         break;
       case ZoomOrientation.BOTTOMRIGHT:
-        bottom += zoomStageOffsetX
-        right += zoomStageOffsetY
+        startPoint = topLeftPoint
+        endPoint = bottomRightPoint
+        outterPoint = { x: right + zoomStageOffsetX, y: bottom + zoomStageOffsetY }
+        dropPoint = this.calculateDropPoint(startPoint, endPoint, outterPoint)
+        right = dropPoint.x
+        bottom = dropPoint.y
         latestWidth = right - left
         latestHeight = bottom - top
-        if(latestWidth < width/2 && latestHeight < height/2) {
-          bottom = top + width/2
-          right = left + height/2
+        if(latestWidth < width/2) {
+          right = left + width/2
+        }
+        if(latestHeight < height/2) {
+          bottom = top + height/2
         }
         break;
     }
     latestWidth = right - left
-    latestHeight = bottom - top
-    zoomScale = latestWidth > latestHeight ? latestWidth / width : latestHeight / height
+    const zoomScale = latestWidth / width
     
     return { x: left, y: top, width, height, scale: { x: zoomScale, y: zoomScale } }
   }
@@ -227,6 +264,7 @@ export default class DragManager extends EventEmitter{
       this.resetSelection()
       return
     }
+    this.dragging = true
     this.dragStartPoint = { clientX, clientY }
     this.selectedSprite = sprite
     const { x, y, width, height, scale } = sprite.props
@@ -237,9 +275,11 @@ export default class DragManager extends EventEmitter{
   }
   onDrag = (event: MouseEvent) => {
     this.dragWithChange = true
+    this.dragging = true
     return this.dragType === DragType.ZOOM ? this.onZoomDrag(event) : this.onMoveDrag(event)
   }
   onDragEnd = (event: MouseEvent) => {
+    this.dragging = false
     this.clearDocumentMouseEvent()
     this.fire('dragend', this.selectedSprite, this.dragWithChange)
   }
