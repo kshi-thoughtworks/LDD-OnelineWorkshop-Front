@@ -28,7 +28,14 @@ export default class Stage {
     const zoomContainer = document.createElement('div')
     zoomContainer.innerHTML = `
       <span class="zoom-item top-left" data-orientation="topLeft"></span>
-      <span class="sprite-edit"></span>
+      <span class="sprite-edit">
+        <svg viewBox="64 64 896 896" data-icon="ellipsis" 
+          width="16px" height="16px"
+          style="color: white;transform:translate(1px, 8px) rotate(90deg);"
+          fill="currentColor" aria-hidden="true" focusable="false" class="">
+          <path d="M176 511a56 56 0 1 0 112 0 56 56 0 1 0-112 0zm280 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0zm280 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0z"></path>
+        </svg>
+      </span>
       <span class="zoom-item bottom-left" data-orientation="bottomLeft"></span>
       <span class="zoom-item bottom-right" data-orientation="bottomRight"></span>
     `

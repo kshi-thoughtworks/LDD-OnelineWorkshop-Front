@@ -325,9 +325,9 @@ export default class DataPanorama extends Vue{
                   onMousedown={event => event.stopPropagation()}>
                   <a-menu
                     onClick={this.onClickSpriteMenu}>
-                    <a-menu-item key="edit">编辑</a-menu-item>
-                    <a-menu-item key="copy">复制</a-menu-item>
-                    <a-menu-item key="delete">删除</a-menu-item>
+                    <a-menu-item key="edit"><a-icon type="edit" />编辑</a-menu-item>
+                    <a-menu-item key="copy"><a-icon type="copy" />复制</a-menu-item>
+                    <a-menu-item key="delete"><a-icon type="delete" />删除</a-menu-item>
                   </a-menu>
                 </div>
               )
