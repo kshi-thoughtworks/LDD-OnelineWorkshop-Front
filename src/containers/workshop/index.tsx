@@ -34,7 +34,8 @@ type MemberItem = {
   components: {
       'workshop-modal': WorkshopModal,
       'member-modal': MemberModal,
-      'a-avatar': Avatar
+      'a-avatar': Avatar,
+      'data-panorama': DataPanorama
   }
 })
 export default class Workshop extends Vue{
@@ -76,16 +77,20 @@ export default class Workshop extends Vue{
       })
     })
   }
-
+  renderStageByIndex(h, index){
+    const { name, steps } = this.workshop
+    const step = steps[index]
+    return <data-panorama key={step.id} stepId={step.id} name={name}/>
+  }
   renderByType(h){
     const { currentType } = this
-    const steps = this.workshop.steps
     switch(currentType) {
       case TypeEnum.dataPanorama:
-        const stepId = steps[0].id
-        return h(DataPanorama, { props: { stepId, name: this.workshop.name}})
+        return this.renderStageByIndex(h, 0)
       case TypeEnum.divergenceScene:
+        return this.renderStageByIndex(h, 2)
       case TypeEnum.convergenceScene:
+        return this.renderStageByIndex(h, 3)
       case TypeEnum.technologyCard:
       case TypeEnum.generateReport:
         return <div>敬请期待...</div>
@@ -94,14 +99,15 @@ export default class Workshop extends Vue{
     }
   }
   renderTypes(h) {
+    const { currentType } = this
     return (
       <ul class="workshop-types">
         {
-          map(this.types, type => {
+          map(this.types, (item: TypeItem) => {
             return (
-              <li class="workshop-types-item" onClick={this.onChangeType(type)}>
+              <li class={{'workshop-types-item': true, 'active': item.type === currentType}} onClick={this.onChangeType(item)}>
                 <a-icon type="picture" style={{ fontSize: '18px', color: '#fff' }}></a-icon>
-                <span class="type-name">{type.name}</span>
+                <span class="type-name">{item.name}</span>
               </li>
             )
           })
