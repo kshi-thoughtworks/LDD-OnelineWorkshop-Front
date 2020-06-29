@@ -102,9 +102,6 @@ export default class WorkshopList extends Vue{
             <header class="bench-header">
                 <router-link to="/" class="logo"/>
                 <span class="bench-header-title">我的工作台</span>
-                <a-avatar style="color: #f56a00; backgroundColor: #fde3cf">
-                    U
-                </a-avatar>
             </header>
             <div class="bench">
                 {this.render_workshop_list(h)}

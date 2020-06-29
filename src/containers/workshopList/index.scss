@@ -74,12 +74,13 @@
         display: flex;
         align-items: center;
         height: 60px;
-        justify-content: space-between;
         padding: 0 30px;
 
         &-title {
             color: var(--violet-blue);
             font-weight: 600;
+            right: 48%;
+            position: absolute;
         }
     }
 
