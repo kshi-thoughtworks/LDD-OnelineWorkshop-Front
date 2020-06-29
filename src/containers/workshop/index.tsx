@@ -155,13 +155,17 @@ export default class Workshop extends Vue{
   }
 
   confirmMemeberModal(userIds) {
-    addUsersToWorkshop(this.$route.params.workshopId, userIds)
+    if (userIds.length > 0) {
+      addUsersToWorkshop(this.$route.params.workshopId, userIds)
       .then(() => {
         this.$message.success('添加成功')
         this.updateMemebers()
         this.showMemberModal(false)()
       })
       .catch(error => this.$message.error(error))
+    } else {
+      this.showMemberModal(false)()
+    }
   }
 
   showWorkshopModal(show: boolean) {

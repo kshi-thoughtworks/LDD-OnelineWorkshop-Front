@@ -117,7 +117,7 @@ module.exports = {
           from: path.resolve(__dirname, '../public/*.png'),
           to: path.resolve(__dirname, '../dist'),
           transformPath(targetPath, absolutePath) {
-            return targetPath.replace('public/', '')
+            return targetPath.replace('public', 'workshop')
           },
         }
       ]
