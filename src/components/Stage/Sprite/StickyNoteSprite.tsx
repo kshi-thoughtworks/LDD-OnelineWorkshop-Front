@@ -1,5 +1,6 @@
+import { reduce } from 'lodash'
 import Sprite, { SpriteBox } from './index';
-import { drawText } from './text'
+import { calculateTextFontRows } from './text'
 
 const stickyNoteType = 'sticky'
 export type StickyNoteType = 'sticky'
@@ -80,8 +81,37 @@ export default class StickyNoteSprite extends Sprite<StickyNoteProps>{
     context.restore()
   }
   drawText() {
+    const context = this.stage!.context!
+    context.save()
+    const padding = 30
     const { content, width, height } = this.props
-    drawText(this.stage!.context!, { content, width, height })
+    const maxWidth = width - padding * 2
+    const { fontSize, rows } = calculateTextFontRows(context, maxWidth, content)
+    context.textAlign = 'center'
+    context.font = `bold ${fontSize}px Montserrat, sans-serif`
+    if(rows.length === 1) {
+      context.textBaseline = 'middle'
+      const { content } = rows[0]
+      context.fillText(content, width/2, height/2)
+    }else {
+      const rowsLength = rows.length
+      const textHeight = fontSize * rowsLength
+
+      const maxRowWidth = reduce(rows, (rowWidth: number, row: { width: number })=> {
+        return rowWidth < row.width ? row.width : rowWidth
+      }, 0)
+      const textLeft = (width - maxRowWidth)/2
+      const textTop = (height - textHeight)/2
+
+      context.textAlign = 'left'
+      for(let index = 0; index < rowsLength; index++) {
+        const row = rows[index]
+        const { content } = row
+        context.fillText(content, textLeft, textTop + fontSize * (index + 0.5))
+      }
+    }
+    
+    context.restore()
   }
   draw() {
     const context = this.stage!.context!

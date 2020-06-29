@@ -83,7 +83,8 @@ export default class CardSprite extends Sprite<CardProps>{
     if(rows.length === 1) {
       context.textAlign = 'center'
       const textTop = height - 110
-      context.fillText(rows[0], width/2, textTop)
+      const { content } = rows[0]
+      context.fillText(content, width/2, textTop)
     }else {
       const rowsLength = rows.length
       const textHeight = fontSize * rowsLength
@@ -91,7 +92,7 @@ export default class CardSprite extends Sprite<CardProps>{
       context.textAlign = 'center'
       for(let index = 0; index < rowsLength; index++) {
         const row = rows[index]
-        context.fillText(row, width/2, textTop + fontSize * (index + 0.5))
+        context.fillText(row.content, width/2, textTop + fontSize * (index + 0.5))
       }
     }
     context.restore()

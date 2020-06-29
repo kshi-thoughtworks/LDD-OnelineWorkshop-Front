@@ -40,6 +40,10 @@ export default abstract class Sprite<T extends SpriteBox>{
   
   static build(props: SpriteBox){}
 
+  /**
+   * 判断某点是否在sprite上
+   * 点的位置相对于画布左上角，单位为px
+   */
   pointInSprite(stageOffsetX: number, stageOffsetY: number): boolean{
     const { width, height, x, y, scale: { x: scaleX, y: scaleY} } = this.props
     const left = stageOffsetX / this.stage!.ratio
