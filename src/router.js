@@ -6,7 +6,7 @@ import Workshop from './containers/workshop'
 import WorkshopList from './containers/workshopList'
 
 const routes = [
-    { path: '/', redirect: '/register' },
+    { path: '/', redirect: '/login' },
     { path: '/register', component: Register },
     { path: '/login', component: Login },
     { path: '/workshops', component: WorkshopList },

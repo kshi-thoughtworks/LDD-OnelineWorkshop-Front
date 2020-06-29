@@ -88,7 +88,7 @@ export default class WorkshopList extends Vue{
         } else {
             return (
                 <div class="bench-empty">
-                    <a-icon type="picture" style="fontSize: 90px; color: #c7c8ca" />
+                    <img src="/empty.png"/>
                     <p class="bench-empty-text-no">您还没有工作坊</p>
                     <p class="bench-empty-text-click">请点击右下角“+”<span>创建新的工作坊</span></p>
                 </div>
@@ -108,7 +108,7 @@ export default class WorkshopList extends Vue{
             </header>
             <div class="bench">
                 {this.render_workshop_list(h)}
-                <a-icon type="plus-circle" style="fontSize: 90px; color: #6c0dbc" theme="filled" class="bench-plus"
+                <a-icon type="plus-circle" style="fontSize: 70px; color: #6c0dbc" theme="filled" class="bench-plus"
                         onClick={this.showModal}/>
             </div>
             { this.addWorkshopModalVisibility &&

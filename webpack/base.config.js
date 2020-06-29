@@ -107,14 +107,18 @@ module.exports = {
     new VueLoaderPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
+      title : 'LDD workshop',
       template: './public/index.html',
       filename: 'index.html'
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, '../public/square.png'),
-          to: path.resolve(__dirname, '../dist')
+          from: path.resolve(__dirname, '../public/*.png'),
+          to: path.resolve(__dirname, '../dist'),
+          transformPath(targetPath, absolutePath) {
+            return targetPath.replace('public/', '')
+          },
         }
       ]
     })
