@@ -6,7 +6,7 @@ import DataPanorama from './DataPanorama'
 import WorkshopModal from '../../components/WorkshopModal.vue'
 import MemberModal from '../../components/MemberModal.vue'
 import ToolCards from './ToolCards.vue'
-import { loadWorkshop, updateWorkshop, loadWorkshopUsers, addUsersToWorkshop } from '../service'
+import { loadWorkshop, updateWorkshop, loadWorkshopUsers, addUsersToWorkshop, removeUserFromWorkshop } from '../service'
 
 import './index.scss'
 
@@ -176,6 +176,14 @@ export default class Workshop extends Vue{
     return {'background-color': '#'+(Math.random()*0xffffff<<0).toString(16)}
   }
 
+  removeMemberFromWorkshop(userId: number) {
+    removeUserFromWorkshop(this.$route.params.workshopId, userId).then(() => {
+      this.$message.success('删除工作坊成员成功！')
+      const currentMembers = this.members.filter(member => member.id !== userId)
+      this.members = currentMembers
+    })
+  }
+
   render(h){
     return this.workshop && (
       <div class="workshop">
@@ -200,7 +208,8 @@ export default class Workshop extends Vue{
             modalTitle="编辑工作坊信息" workshopName={this.workshop.name} workshopDescription={this.workshop.description}
             hiddenInvite={true}/>  } 
         { this.editMemberModalVisible &&
-          <member-modal onConfirm={this.confirmMemeberModal} onCancel={this.showMemberModal(false)} members={this.members}/> } 
+          <member-modal onConfirm={this.confirmMemeberModal} onCancel={this.showMemberModal(false)} 
+            onDelete={this.removeMemberFromWorkshop} members={this.members}/> } 
       </div>
     )
   }

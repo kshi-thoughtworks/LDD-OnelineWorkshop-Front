@@ -23,11 +23,18 @@
                         span.select-item-content 
                             p {{member.username}}
                             p {{member.email}}
+                        a-dropdown
+                            a-icon(type="more" style={'font-size': '20px'}).select-item-delete
+                            a-menu(slot="overlay")
+                                a-menu-item
+                                    a-icon(type="delete" theme="filled")
+                                    span(@click="deleteMember(member.id)") 删除
+                        
 </template>
 
 <script>
     import { Select, Avatar } from 'ant-design-vue'
-    import { loadUsers } from '../containers/service'
+    import { loadUsers, removeUserFromWorkshop } from '../containers/service'
 
     export default {
         name: 'MemberModal',
@@ -44,7 +51,11 @@
                     selectedList: []
                 },
                 creator: this.$props.members.find(member => member.role == 'creator'),
-                attendees: this.$props.members.filter(member => member.role != 'creator'),
+            }
+        },
+        computed: {
+            attendees() {
+                return this.$props.members.filter(member => member.role != 'creator')
             }
         },
         mounted() {
@@ -65,7 +76,7 @@
                     const user = this.form.allUsers.find(user => user.username == selectedUserName)
                     return user.id
                 })
-                const {confirm} = this.$listeners
+                const { confirm } = this.$listeners
                 confirm(userIds)
             },
             onCancel() {
@@ -90,6 +101,12 @@
             },
             getRandomColor() {
                 return {'background-color': '#'+(Math.random()*0xffffff<<0).toString(16)}
+            },
+            deleteMember(userId) {
+                const { delete: deleteUser } = this.$listeners
+                deleteUser(userId)
+                const userIndex = this.form.allUsers.findIndex(user => user.id == userId)
+                this.form.allUsers[userIndex].choosable = true
             }
         },
     }
@@ -107,7 +124,16 @@
         margin-bottom: 0;
     }
 }
+.select-item {
+    position: relative;
+}
 .select-item-disbaled {
     color: var(--slate-grey);
+}
+.select-item-delete {
+    top: 18px;
+    right: 8px;
+    position: absolute;
+    cursor: pointer;
 }
 </style>

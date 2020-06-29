@@ -70,6 +70,10 @@ export const loadWorkshopUsers = (workshopId) => {
   return http.get(`/api/workbenches/${workshopId}/users`)
 }
 
+export const removeUserFromWorkshop = (workshopId, userId) => {
+  return http.delete(`/api/workbenches/${workshopId}/users/${userId}`)
+}
+
 export const loadToolCards = () => {
   return http.get('api/cards/tools')
 }
