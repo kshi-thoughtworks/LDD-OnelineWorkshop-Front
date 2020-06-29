@@ -13,7 +13,18 @@ module.exports = merge(baseWebpack, {
     /**
      * 模块热替换开启时，显示更新module的相对路径
      */
-    new webpack.NamedModulesPlugin()
+    new webpack.NamedModulesPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, '../public/*.png'),
+          to: path.resolve(__dirname, '../dist'),
+          transformPath(targetPath, absolutePath) {
+            return targetPath.replace('public', 'static')
+          },
+        }
+      ]
+    })
   ],
   devServer: {
     publicPath: '/',

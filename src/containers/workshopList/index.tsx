@@ -88,7 +88,7 @@ export default class WorkshopList extends Vue{
         } else {
             return (
                 <div class="bench-empty">
-                    <img src="/workshop/empty.png"/>
+                    <img src="/static/empty.png"/>
                     <p class="bench-empty-text-no">您还没有工作坊</p>
                     <p class="bench-empty-text-click">请点击右下角“+”<span>创建新的工作坊</span></p>
                 </div>
