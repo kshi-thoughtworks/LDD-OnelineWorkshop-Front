@@ -4,7 +4,8 @@ import { calculateTextRows } from './text'
 export enum CardImageType{
   VISION = 'vision',
   SCENE = 'scene',
-  DATA = 'data'
+  DATA = 'data',
+  VALUE = 'value'
 }
 
 type CardInfoType = {

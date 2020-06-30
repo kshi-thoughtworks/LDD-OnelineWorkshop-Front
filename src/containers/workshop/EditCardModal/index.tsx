@@ -46,6 +46,9 @@ export default class EditCardModal extends Vue{
     const name = this.name
     const owner = this.owner
     const rate = this.rate
+    if (!name || !owner) {
+      return
+    }
     const value = {name, owner, rate}
     confirm(JSON.stringify(value), this.editable)
   }
@@ -65,11 +68,11 @@ export default class EditCardModal extends Vue{
         okText={this.editable ? '保存' : '添加'} 
         cancelText="取消">
           <label>数据资源名称</label>
-          <ant-input ref="name" maxLength={20} v-model={this.name}/>
+          <ant-input maxLength={20} v-model={this.name} class="data-card-input"/>
           <label>数据拥有者</label>
-          <ant-input ref="owner" maxLength={20} v-model={this.owner}/>
+          <ant-input maxLength={20} v-model={this.owner} class="data-card-input"/>
           <label>数据完备情况</label>
-          <a-rate ref="rate" v-model={this.rate}/>
+          <a-rate v-model={this.rate}/>
       </a-modal>
       )
     }

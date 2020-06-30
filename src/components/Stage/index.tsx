@@ -5,6 +5,8 @@ import { getSpriteResiters } from './SpriteRegister'
 import { CardImageType } from './Sprite/CardSprite'
 import VisionPng from '../../assets/images/cards/vision.png'
 import ScenePng from '../../assets/images/cards/scene.png'
+import DataPng from '../../assets/images/cards/data.png'
+import valuePng from '../../assets/images/cards/value.png'
 import './index.scss'
 
 export type CanvasContext = CanvasRenderingContext2D | null
@@ -71,12 +73,17 @@ export default class Stage {
   preLoadCardImages() {
     const visionImage = new Image()
     const sceneImage = new Image()
+    const dataImage = new Image()
+    const valueImage = new Image()
     visionImage.src = VisionPng
     sceneImage.src = ScenePng
+    dataImage.src = DataPng
+    valueImage.src = valuePng
     this.cardImages = {
       vision: visionImage,
       scene: sceneImage,
-      data: sceneImage
+      data: dataImage,
+      value: valueImage
     }
   }
 
