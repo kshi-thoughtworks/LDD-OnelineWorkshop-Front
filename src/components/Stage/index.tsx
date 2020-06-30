@@ -75,7 +75,8 @@ export default class Stage {
     sceneImage.src = ScenePng
     this.cardImages = {
       vision: visionImage,
-      scene: sceneImage
+      scene: sceneImage,
+      data: sceneImage
     }
   }
 

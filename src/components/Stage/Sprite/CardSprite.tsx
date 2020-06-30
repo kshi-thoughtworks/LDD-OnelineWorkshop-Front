@@ -3,7 +3,8 @@ import { calculateTextRows } from './text'
 
 export enum CardImageType{
   VISION = 'vision',
-  SCENE = 'scene'
+  SCENE = 'scene',
+  DATA = 'data'
 }
 
 type CardInfoType = {
@@ -70,7 +71,12 @@ export default class CardSprite extends Sprite<CardProps>{
 
   drawText(){
     const context = this.stage!.context!
-    const { width, height, content } = this.props
+    const { width, height } = this.props
+    let { content } = this.props
+    const cardType = this.props.card?.type
+    if (cardType == CardImageType.DATA && content) {
+      content = JSON.parse(content).name
+    }
     const padding = 48
     const maxWidth = width - padding * 2
     const fontSize = 35

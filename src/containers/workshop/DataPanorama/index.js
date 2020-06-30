@@ -345,6 +345,7 @@ export default class DataPanorama extends Vue{
                   ? this.selectedSprite.content
                   : this.selectedCard.name
                 }
+                cardType={this.selectedCard.type}
                 onConfirm={this.onEditCard} 
                 onClose={()=> this.selectedCard = null} />
         }
