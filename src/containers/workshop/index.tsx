@@ -96,7 +96,11 @@ export default class Workshop extends Vue{
       case TypeEnum.technologyCard:
         return <tool-cards/>
       case TypeEnum.generateReport:
-        return <div>敬请期待...</div>
+        return (
+          <div class="report">
+            <img src="/static/empty.png"/>
+            <p>敬请期待...</p>
+          </div> )
       default:
         return null
     }

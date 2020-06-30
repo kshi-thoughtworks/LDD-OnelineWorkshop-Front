@@ -109,10 +109,10 @@ export default class DataPanorama extends Vue{
     this.editMenuPosition = null
   }
   onCopyCard(){
-    const { id, title, content, card, ...meta} = this.selectedSprite
+    const { id, content, card, ...meta} = this.selectedSprite
     meta.x += 100
     meta.y += 100
-    createCard(this.stepId, title, content, meta, card.id).then(({ element_id }) => {
+    createCard(this.stepId, content, meta, card.id).then(({ element_id }) => {
       this.stage.dragManager.resetSelection()
       const spriteProps = { ...meta, id: element_id, content, type: 'card' }
       this.stage.addSprite(spriteProps)

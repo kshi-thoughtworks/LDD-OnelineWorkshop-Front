@@ -86,6 +86,9 @@
 
     &-empty {
         padding-top: 150px; 
+        img {
+            width: 320px;
+        }
         &-text-no {
             color: var(--slate-grey);
             margin-top: 50px;
