@@ -1,6 +1,8 @@
 process.env.NODE_ENV = 'devlopment'
+const path = require('path')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const baseWebpack = require('./base.config.js')
 
 module.exports = merge(baseWebpack, {

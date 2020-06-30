@@ -3,7 +3,6 @@ const projectDir = path.resolve(__dirname, '../')
 const distDir = path.resolve(__dirname, '../dist')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 
