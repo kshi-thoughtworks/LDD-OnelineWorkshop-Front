@@ -6,7 +6,7 @@ import { CardImageType } from './Sprite/CardSprite'
 import VisionPng from '../../assets/images/cards/vision.png'
 import ScenePng from '../../assets/images/cards/scene.png'
 import DataPng from '../../assets/images/cards/data.png'
-import valuePng from '../../assets/images/cards/value.png'
+import ValuePng from '../../assets/images/cards/value.png'
 import './index.scss'
 
 export type CanvasContext = CanvasRenderingContext2D | null
@@ -78,7 +78,7 @@ export default class Stage {
     visionImage.src = VisionPng
     sceneImage.src = ScenePng
     dataImage.src = DataPng
-    valueImage.src = valuePng
+    valueImage.src = ValuePng
     this.cardImages = {
       vision: visionImage,
       scene: sceneImage,
@@ -162,7 +162,7 @@ export default class Stage {
         const isSame = sprite.props.compare!<SpriteBox>(spriteProp)
         if(!isSame) {
           const dragSpriteId = this.dragManager?.selectedSprite?.id
-          const isDragging = dragSpriteId === spriteProp.id && this.dragManager!.dragging
+          const isDragging = dragSpriteId === spriteProp.id
           const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
           // 如果正在拖动，只能改变其内容，位置与scale维持当前操作状态
           if(isDragging) {

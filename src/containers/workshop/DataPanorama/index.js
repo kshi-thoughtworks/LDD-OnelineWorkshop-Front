@@ -14,6 +14,7 @@ import {
   deleteElement
 } from '../../service'
 import './index.scss'
+import { CardImageType } from '../../../components/Stage/Sprite/CardSprite'
 
 const operations = [
   { type: 'selector', tooltip: 'selector' },
@@ -54,9 +55,13 @@ export default class DataPanorama extends Vue{
     if(!changed) {
       return
     }
-    const { id, title, content, card, ...meta } = sprite.props
+    let { id, title, content, owner, rate, card, ...meta } = sprite.props
     const metaProps = { ...meta }
     delete metaProps.type
+
+    if(card && card.type === CardImageType.DATA) {
+      content = JSON.stringify({owner, rate, content})
+    }
     updateElement(id, content, metaProps)
   }
   onClickSprite(sprite) {
@@ -122,6 +127,32 @@ export default class DataPanorama extends Vue{
     deleteElement(this.selectedSprite.id).then(() => {
       this.loadElementsInterval()
     })
+  }
+  onEditDataCard({content, owner, rate}, editable) {
+    const info = JSON.stringify({ content, owner, rate })
+    if(editable) {
+      const { 
+        id, 
+        content: oldContent, 
+        owner: oldOwner, 
+        rate: oldRate, 
+        ...meta 
+      } = this.selectedSprite
+      updateElement(id, info, meta).then( () => {
+        const sprite = this.stage.findSpriteById(id)
+        sprite.props.content = content
+        sprite.props.owner = owner
+        sprite.props.rate = rate
+        this.stage.draw()
+      })
+    } else {
+      const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
+      createCard(this.stepId, info, meta, this.selectedCard.id).then(({ element_id }) => {
+        const spriteProps = { ...meta, id: element_id, type: 'card', content, owner, rate}
+        this.stage.addSprite(spriteProps)
+      })
+    }
+    this.selectedCard = null
   }
   onEditCard(content, editable){
     if(editable) {
@@ -214,20 +245,12 @@ export default class DataPanorama extends Vue{
       this.cards = cards
     })
   }
-  loadElements() {
-    return loadElements(this.stepId).then(elements => {
-      return map(elements, element => {
-        const { id, type, title, content, meta, card } = element
-        return { id, type, title, content, ...meta, card }
-      })
-    })
-  }
   loadElementsInterval() {
     if(this.timerId) {
       clearInterval(this.timerId)
     }
     const loadAction = () => {
-      this.loadElements().then(sprites => {
+      loadElements(this.stepId).then(sprites => {
         this.stage.patchSprites(sprites)
       })
     }
@@ -345,8 +368,10 @@ export default class DataPanorama extends Vue{
                   ? this.selectedSprite.content
                   : this.selectedCard.name
                 }
+                owner={this.selectedSprite && this.selectedSprite.owner}
+                rate={this.selectedSprite && this.selectedSprite.rate}
                 cardType={this.selectedCard.type}
-                onConfirm={this.onEditCard} 
+                onConfirm={this.selectedCard.type === CardImageType.DATA ? this.onEditDataCard : this.onEditCard} 
                 onClose={()=> this.selectedCard = null} />
         }
       </div>

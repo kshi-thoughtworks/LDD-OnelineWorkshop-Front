@@ -13,25 +13,20 @@ import './index.scss'
 export default class EditCardModal extends Vue{
   @Prop() editable!: boolean
   @Prop({default: ''}) content!: string
+  @Prop({default: ''}) owner!: string
+  @Prop({default: 0}) rate!: number
   @Prop() cardType!: string
 
   name!: string
-  owner!: string
-  rate!: Number
+  currentOwner!: string
+  currentRate!: number
 
   data(){
-    const { content } = this.$props
-    if (this.cardType == CardImageType.DATA) {
-      try {
-        return JSON.parse(content)        
-      } catch (error) {
-        return {
-          name: content
-        }
-      }
-    }
+    const { content, owner, rate } = this.$props
     return {
-      name: content
+      name: content,
+      currentOwner: owner,
+      currentRate: rate
     }
   }
 
@@ -48,15 +43,14 @@ export default class EditCardModal extends Vue{
 
   onDataConfrim() {
     const { confirm } = this.$listeners as 
-      { confirm: (name: string, editable: boolean) => void }
+      { confirm: (info: {content: string, owner: string, rate: number}, editable: boolean) => void }
     const name = this.name
-    const owner = this.owner
-    const rate = this.rate
-    if (!name || !owner) {
+    const owner = this.currentOwner
+    const rate = this.currentRate
+    if (!name || !rate) {
       return
     }
-    const value = {name, owner, rate}
-    confirm(JSON.stringify(value), this.editable)
+    confirm({content: name, owner, rate }, this.editable)
   }
 
   render(h) {
@@ -76,9 +70,9 @@ export default class EditCardModal extends Vue{
           <label>数据资源名称</label>
           <ant-input maxLength={20} v-model={this.name} class="data-card-input"/>
           <label>数据拥有者</label>
-          <ant-input maxLength={20} v-model={this.owner} class="data-card-input"/>
+          <ant-input maxLength={20} v-model={this.currentOwner} class="data-card-input"/>
           <label>数据完备情况</label>
-          <a-rate v-model={this.rate}/>
+          <a-rate v-model={this.currentRate}/>
       </a-modal>
       )
     }

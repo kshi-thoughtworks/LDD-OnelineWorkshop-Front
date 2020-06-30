@@ -8,6 +8,13 @@ export enum CardImageType{
   VALUE = 'value'
 }
 
+const CardColors = {
+  vision: '#7825be',
+  scene: '#8a3719',
+  data: '#387259',
+  value: '#a88103'
+}
+
 type CardInfoType = {
   id: number
   name: string
@@ -28,9 +35,11 @@ export class CardProps implements SpriteBox {
   content?: string
   card?: CardInfoType
   version?: string
+  owner?: string
+  rate?: number
 
   compare<CardProps>(props): boolean{
-    const { x, y, content, color, scale, version } = props
+    const { x, y, content, color, scale, version, owner, rate } = props
     const scaleX = scale && scale.x ? scale.x : 1
     const scaleY = scale && scale.y ? scale.y : 1
     const thisScaleX = this.scale && this.scale.x ? this.scale.x : 1
@@ -40,7 +49,9 @@ export class CardProps implements SpriteBox {
             && this.content === content 
             && thisScaleX === scaleX
             && thisScaleY === scaleY
-            && this.version === version;
+            && this.version === version
+            && this.owner === owner
+            && this.rate === rate;
   }
 
   static build(props: CardProps): CardProps {
@@ -55,6 +66,8 @@ export class CardProps implements SpriteBox {
     cardProps.scale = props.scale || { x: 1, y: 1 }
 
     cardProps.content = props.content
+    cardProps.owner = props.owner
+    cardProps.rate = props.rate
     cardProps.card = props.card
     cardProps.version = props.version
     return cardProps
@@ -74,10 +87,8 @@ export default class CardSprite extends Sprite<CardProps>{
     const context = this.stage!.context!
     const { width, height } = this.props
     let { content } = this.props
-    const cardType = this.props.card?.type
-    if (cardType == CardImageType.DATA && content) {
-      content = JSON.parse(content).name
-    }
+    const cardType = this.props.card!.type
+    const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
     const padding = 48
     const maxWidth = width - padding * 2
     const fontSize = 35
@@ -85,7 +96,7 @@ export default class CardSprite extends Sprite<CardProps>{
     context.save()
     context.textAlign = 'left'
     context.font = `bold ${fontSize}px Montserrat, sans-serif`
-    context.fillStyle='#7825be'
+    context.fillStyle = cardColor
     const rows = calculateTextRows(context, maxWidth, content, fontSize)
     if(rows.length === 1) {
       context.textAlign = 'center'

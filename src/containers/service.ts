@@ -1,26 +1,43 @@
 import { map } from 'lodash'
 import { http } from '../services/http'
+import { CardImageType } from '../components/Stage/Sprite/CardSprite'
 
 export const loadWorkshop = workshopId => {
   return http.get(`/api/workbenches/${workshopId}`)
 }
 
+const getCardExternalInfo = element => {
+  const { content: contentString, card } = element
+  if(card && card.type === CardImageType.DATA) {
+    try{
+      const { content, owner, rate } = JSON.parse(contentString)
+      return { content, owner, rate }
+    }catch(error) {
+      return { content: contentString }
+    }
+  } else {
+    return { content: contentString }
+  }
+}
+
+const elementConvert = element => {
+  const { id, title, type, meta, card, version } = element
+  const defaultProps = { x: 100, y: 100, width: 480, height: 480, color: '#ffe562' }
+  const metaJson = meta ? JSON.parse(meta) : defaultProps
+  return {
+    id,
+    type,
+    title,
+    ...metaJson,
+    card,
+    version,
+    ...getCardExternalInfo(element)
+  }
+}
+
 export const loadElements =  stepId => {
   return http.get(`/api/steps/${stepId}/elements`).then(elements => {
-    return map(elements, element => {
-      const { id, title, content, type, meta, card, version } = element
-      const defaultProps = { x: 100, y: 100, width: 480, height: 480, color: '#ffe562' }
-      const metaJson = meta ? JSON.parse(meta) : defaultProps
-      return {
-        id,
-        type,
-        title,
-        content,
-        meta: metaJson,
-        card,
-        version
-      }
-    })
+    return map(elements, elementConvert)
   })
 }
 
