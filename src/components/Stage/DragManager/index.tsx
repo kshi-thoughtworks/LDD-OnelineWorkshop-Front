@@ -48,7 +48,7 @@ export default class DragManager extends EventEmitter{
     this.zoomContainer.addEventListener('mousedown', this.onZoomMouseDown)
     this.zoomContainer.addEventListener('dblclick', this.onDoubleClick)
 
-    document.addEventListener('mousedown', this.onDocumentMouseDown)
+    // document.addEventListener('mousedown', this.onDocumentMouseDown)
   }
   addDocumentMouseEvent(){
     document.addEventListener('mousemove', this.onDrag)

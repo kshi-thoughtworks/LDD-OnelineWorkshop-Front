@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import { filter, find, map, some } from 'lodash'
 import { Component, Prop } from 'vue-property-decorator'
-import Stage from '../../../components/Stage'
-import DragManager from '../../../components/Stage/DragManager'
+import StageComponent from '../../../components/Stage/StageComponent'
 import EditStickerModal from '../EditStickerModal'
 import EditCardModal from '../EditCardModal'
 import { 
@@ -25,7 +24,11 @@ const operations = [
   { type: 'export', tooltip: 'export' },
 ]
 
-@Component
+@Component({
+  components: {
+    'stage-component': StageComponent
+  }
+})
 export default class DataPanorama extends Vue{
   @Prop() stepId
   @Prop() name
@@ -33,7 +36,6 @@ export default class DataPanorama extends Vue{
   cards = []
   selectedCard = null
   selectedSprite = null
-  editMenuPosition = null
   operateCardType = null
   operateStickyType = null
   constructor(props) {
@@ -229,16 +231,7 @@ export default class DataPanorama extends Vue{
         this.onDeleteStiker()
         break;
     }
-    this.editMenuPosition = null
     this.stage.dragManager.resetSelection()
-  }
-  onShowEditMenu(sprite) {
-    if(this.editMenuPosition) {
-      this.editMenuPosition = null
-      return
-    }
-    const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
-    this.editMenuPosition = { x: x + width, y }
   }
   loadCards(){
     loadCards().then(cards => {
@@ -250,23 +243,19 @@ export default class DataPanorama extends Vue{
       clearInterval(this.timerId)
     }
     const loadAction = () => {
+<<<<<<< HEAD
       loadElements(this.stepId).then(sprites => {
         this.stage.patchSprites(sprites)
+=======
+      this.loadElements().then(sprites => {
+        this.$refs.stageComponent.setSprites(sprites)
+>>>>>>> 13afdbc... refactor stage
       })
     }
     loadAction()
     this.timerId = setInterval(loadAction, 5000)
   }
   mounted(){
-    const { stage } = this.$refs
-    this.stage = new Stage(stage)
-    const dragManager = new DragManager(this.stage)
-    dragManager.addEventListener('dragstart', this.onDragStart)
-    dragManager.addEventListener('dragend', this.onDragEnd)
-    dragManager.addEventListener('dblclick', this.onClickSprite)
-    dragManager.addEventListener('edit-operation', this.onShowEditMenu)
-    dragManager.addEventListener('resetselection', () => this.editMenuPosition = null)
-    
     this.loadElementsInterval()
     this.loadCards()
   }
@@ -330,27 +319,24 @@ export default class DataPanorama extends Vue{
     )
   }
   render(h){
-    const { x: menuLeft, y: menuRight } = this.editMenuPosition || { x: -1000, y: -1000 }
     return (
       <div ref="container" class="data-panorama">
         { this.renderOperations(h) }
         <div class="data-panorama-wrapper">
-          <div ref="stage" class="sprite-stage">
-            {
-              this.editMenuPosition && (
-                <div class="sprite-edit-menu" 
-                  style={{ left: `${menuLeft}px`, top: `${menuRight}px` }}
-                  onMousedown={event => event.stopPropagation()}>
-                  <a-menu
-                    onClick={this.onClickSpriteMenu}>
-                    <a-menu-item key="edit"><a-icon type="edit" />编辑</a-menu-item>
-                    <a-menu-item key="copy"><a-icon type="copy" />复制</a-menu-item>
-                    <a-menu-item key="delete"><a-icon type="delete" />删除</a-menu-item>
-                  </a-menu>
-                </div>
-              )
-            }
-          </div>
+          <stage-component 
+            ref="stageComponent" 
+            readonly={false}
+            onDragStart={sprite => console.log(sprite)}
+            onDragEnd={sprite => console.log(sprite)}
+            onDblClickSprite={sprite => console.log(sprite)}
+            >
+            <a-menu slot="menu"
+              onClick={this.onClickSpriteMenu}>
+              <a-menu-item key="edit"><a-icon type="edit" />编辑</a-menu-item>
+              <a-menu-item key="copy"><a-icon type="copy" />复制</a-menu-item>
+              <a-menu-item key="delete"><a-icon type="delete" />删除</a-menu-item>
+            </a-menu>
+          </stage-component>
         </div>
         { this.toggleStickerModalVisibility
           && <EditStickerModal

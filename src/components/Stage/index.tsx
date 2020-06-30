@@ -32,22 +32,6 @@ export default class Stage {
 
   constructor(container: HTMLDivElement) {
     this.container = container
-    const zoomContainer = document.createElement('div')
-    zoomContainer.innerHTML = `
-      <span class="zoom-item top-left" data-orientation="topLeft"></span>
-      <span class="sprite-edit">
-        <svg viewBox="64 64 896 896" data-icon="ellipsis" 
-          width="16px" height="16px"
-          style="color: white;transform:translate(1px, 8px) rotate(90deg);"
-          fill="currentColor" aria-hidden="true" focusable="false" class="">
-          <path d="M176 511a56 56 0 1 0 112 0 56 56 0 1 0-112 0zm280 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0zm280 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0z"></path>
-        </svg>
-      </span>
-      <span class="zoom-item bottom-left" data-orientation="bottomLeft"></span>
-      <span class="zoom-item bottom-right" data-orientation="bottomRight"></span>
-    `
-    zoomContainer.className = 'sprite-operation-container'
-    this.container.appendChild(zoomContainer)
     this.zoomContainer = this.container.querySelector('.sprite-operation-container')
 
     this.canvas = document.createElement('canvas')
@@ -96,24 +80,26 @@ export default class Stage {
   }
 
   onResetSelection = () => {
-    this.zoomContainer!.style.display = 'none'
     this.draw()
+  }
+
+  resetSelection = () => {
+    this.dragManager?.resetSelection()
   }
 
   updateSelection = () => {
     const sprite = this.dragManager?.selectedSprite
+    const style = this.zoomContainer!.style
     if(!sprite) {
+      style.display = 'none'
       return
     }
-    const style = this.zoomContainer!.style
     const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
     style.left = `${x}px`
     style.top = `${y}px`
     style.width = `${width}px`
     style.height = `${height}px`
     style.display = 'block'
-
-    this.draw()
   }
   
   findSpriteByPoint(left: number, top: number) : Sprite<SpriteBox>{
@@ -232,6 +218,7 @@ export default class Stage {
       sprite.draw()
     })
     this.dragManager?.selectedSprite?.draw()
+    this.updateSelection()
   }
 
   resize() {
