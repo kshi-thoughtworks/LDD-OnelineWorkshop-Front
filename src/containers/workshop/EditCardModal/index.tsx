@@ -22,7 +22,13 @@ export default class EditCardModal extends Vue{
   data(){
     const { content } = this.$props
     if (this.cardType == CardImageType.DATA) {
-      return JSON.parse(content)
+      try {
+        return JSON.parse(content)        
+      } catch (error) {
+        return {
+          name: content
+        }
+      }
     }
     return {
       name: content
