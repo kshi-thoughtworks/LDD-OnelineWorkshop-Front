@@ -1,6 +1,9 @@
 import { map } from 'lodash'
+import axios, { Canceler } from 'axios'
 import { http } from '../services/http'
-import { CardImageType } from '../components/Stage/Sprite/CardSprite'
+import { CardType } from '../common/Card'
+
+const { CancelToken } = axios
 
 export const loadWorkshop = workshopId => {
   return http.get(`/api/workbenches/${workshopId}`)
@@ -8,7 +11,8 @@ export const loadWorkshop = workshopId => {
 
 const getCardExternalInfo = element => {
   const { content: contentString, card } = element
-  if(card && card.type === CardImageType.DATA) {
+  const isDataCard = card && card.type === CardType.DATA
+  if(isDataCard) {
     try{
       const { content, owner, rate } = JSON.parse(contentString)
       return { content, owner, rate }
@@ -35,10 +39,19 @@ const elementConvert = element => {
   }
 }
 
-export const loadElements =  stepId => {
+export const loadElements = stepId => {
   return http.get(`/api/steps/${stepId}/elements`).then(elements => {
     return map(elements, elementConvert)
   })
+}
+
+export const cancelableLoadElements = (stepId: number): { response: Promise<any>, getCancelAction: () => Canceler} => {
+  let cancelAction: Canceler
+  const cancelToken = new CancelToken(canceler => cancelAction = canceler)
+  const responsePromise = http.get(`/api/steps/${stepId}/elements`, { cancelToken }).then(elements => {
+    return map(elements, elementConvert)
+  })
+  return { response: responsePromise, getCancelAction: () => cancelAction }
 }
 
 export const createStickyNote = (stepId, content, meta, ) => {

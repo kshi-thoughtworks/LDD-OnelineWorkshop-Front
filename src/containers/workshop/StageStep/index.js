@@ -6,14 +6,14 @@ import EditStickerModal from '../EditStickerModal'
 import EditCardModal from '../EditCardModal'
 import { 
   loadCards, 
-  loadElements, 
+  cancelableLoadElements,
   createStickyNote, 
   createCard, 
   updateElement,
   deleteElement
 } from '../../service'
 import './index.scss'
-import { CardImageType } from '../../../components/Stage/Sprite/CardSprite'
+import { CardType } from '../../../common/Card'
 
 const operations = [
   { type: 'selector', tooltip: 'selector' },
@@ -29,30 +29,27 @@ const operations = [
     'stage-component': StageComponent
   }
 })
-export default class DataPanorama extends Vue{
+export default class StageStep extends Vue{
   @Prop() stepId
   @Prop() name
   toggleStickerModalVisibility = false
-  cards = []
+  cards = null
   selectedCard = null
   selectedSprite = null
   operateCardType = null
   operateStickyType = null
-  constructor(props) {
-    super(props)
-    window.addEventListener('resize', this.onResize)
-  }
+
+  cancelAction = undefined
+
   get workshopId(){
     const { params: { workshopId } } = this.$route
     return workshopId
   }
-  onResize() {
-    this.stage.resize()
-  }
+
   onDragStart(sprite){
-    this.selectedSprite = { ...sprite.props }
-    this.editMenuPosition = null
+    this.selectedSprite = sprite.props
   }
+
   onDragEnd = (sprite, changed) => {
     if(!changed) {
       return
@@ -61,12 +58,13 @@ export default class DataPanorama extends Vue{
     const metaProps = { ...meta }
     delete metaProps.type
 
-    if(card && card.type === CardImageType.DATA) {
+    const isDataCard = card && card.type === CardType.DATA
+    if(isDataCard) {
       content = JSON.stringify({owner, rate, content})
     }
-    updateElement(id, content, metaProps)
+    updateElement(id, content, metaProps).then(() => this.loadElementsInterval())
   }
-  onClickSprite(sprite) {
+  onDblClickSprite() {
     const { type, card } = this.selectedSprite
     const isSticky = type === 'sticky'
 
@@ -82,11 +80,10 @@ export default class DataPanorama extends Vue{
     if(editable) {
       const { id, content: oldContent, ...meta} = this.selectedSprite
       meta.color = color
-      updateElement(id, content, meta).then(() => this.toggleStickerModalVisibility = false)
-      const sprite = this.stage.findSpriteById(id)
-      sprite.props.content = content
-      sprite.props.color = color
-      this.stage.draw()
+      updateElement(id, content, meta).then(() => {
+        this.toggleStickerModalVisibility = false
+        this.loadElementsInterval()
+      })
     } else {
       const meta = {
         color,
@@ -96,10 +93,8 @@ export default class DataPanorama extends Vue{
         height: 480,
         scale: { x: 1, y: 1 }
       }
-      createStickyNote(this.stepId, content, meta).then(({ element_id }) => {
-        const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
-        this.stage.addSprite(spriteProps)
-        
+      createStickyNote(this.stepId, content, meta).then(() => {
+        this.loadElementsInterval()
         this.toggleStickerModalVisibility = false
       })
     }
@@ -109,20 +104,17 @@ export default class DataPanorama extends Vue{
     meta.x += 100
     meta.y += 100
     createStickyNote(this.stepId, content, meta).then(({ element_id }) => {
-      this.stage.dragManager.resetSelection()
-      const spriteProps = { ...meta, id: element_id, content, type: 'sticky' }
-      this.stage.addSprite(spriteProps)
+      this.$refs.stageComponent.clearSelection()
+      this.loadElementsInterval()
     })
-    this.editMenuPosition = null
   }
   onCopyCard(){
     const { id, content, card, ...meta} = this.selectedSprite
     meta.x += 100
     meta.y += 100
     createCard(this.stepId, content, meta, card.id).then(({ element_id }) => {
-      this.stage.dragManager.resetSelection()
-      const spriteProps = { ...meta, id: element_id, content, type: 'card' }
-      this.stage.addSprite(spriteProps)
+      this.$refs.stageComponent.clearSelection()
+      this.loadElementsInterval()
     })
   }
   onDeleteStiker() {
@@ -141,17 +133,12 @@ export default class DataPanorama extends Vue{
         ...meta 
       } = this.selectedSprite
       updateElement(id, info, meta).then( () => {
-        const sprite = this.stage.findSpriteById(id)
-        sprite.props.content = content
-        sprite.props.owner = owner
-        sprite.props.rate = rate
-        this.stage.draw()
+        this.loadElementsInterval()
       })
     } else {
       const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
       createCard(this.stepId, info, meta, this.selectedCard.id).then(({ element_id }) => {
-        const spriteProps = { ...meta, id: element_id, type: 'card', content, owner, rate}
-        this.stage.addSprite(spriteProps)
+        this.loadElementsInterval()
       })
     }
     this.selectedCard = null
@@ -160,15 +147,12 @@ export default class DataPanorama extends Vue{
     if(editable) {
       const { id, content: oldContent, ...meta} = this.selectedSprite
       updateElement(id, content, meta).then( () => {
-        const sprite = this.stage.findSpriteById(id)
-        sprite.props.content = content
-        this.stage.draw()
+        this.loadElementsInterval()
       })
     } else {
       const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
       createCard(this.stepId, content, meta, this.selectedCard.id).then(({ element_id }) => {
-        const spriteProps = { ...meta, id: element_id, type: 'card', content}
-        this.stage.addSprite(spriteProps)
+        this.loadElementsInterval()
       })
     }
     this.selectedCard = null
@@ -218,6 +202,7 @@ export default class DataPanorama extends Vue{
     switch(key) {
       case 'edit':
         if(isSticky) {
+          this.operateStickyType = 'edit'
           this.toggleStickerModalVisibility = true
         } else {
           this.operateCardType = 'edit'
@@ -231,7 +216,8 @@ export default class DataPanorama extends Vue{
         this.onDeleteStiker()
         break;
     }
-    this.stage.dragManager.resetSelection()
+    const { stageComponent } = this.$refs
+    stageComponent.hideMenu()
   }
   loadCards(){
     loadCards().then(cards => {
@@ -240,16 +226,14 @@ export default class DataPanorama extends Vue{
   }
   loadElementsInterval() {
     if(this.timerId) {
+      this.cancelAction && this.cancelAction()
       clearInterval(this.timerId)
     }
     const loadAction = () => {
-<<<<<<< HEAD
-      loadElements(this.stepId).then(sprites => {
-        this.stage.patchSprites(sprites)
-=======
-      this.loadElements().then(sprites => {
+      const { response, getCancelAction } = cancelableLoadElements(this.stepId)
+      this.cancelAction = getCancelAction()
+      response.then(this.stepId).then(sprites => {
         this.$refs.stageComponent.setSprites(sprites)
->>>>>>> 13afdbc... refactor stage
       })
     }
     loadAction()
@@ -260,7 +244,6 @@ export default class DataPanorama extends Vue{
     this.loadCards()
   }
   destroyed(){
-    window.removeEventListener('resize', this.onResize)
     clearInterval(this.timerId)
   }
   renderCardMenu(h, operation) {
@@ -289,7 +272,7 @@ export default class DataPanorama extends Vue{
     }
     return (
       <a-dropdown>
-        <li class={`data-panorama-menu-item operation-${operation.type}`} />
+        <li class={`stage-step-menu-item operation-${operation.type}`} />
         <a-menu slot="overlay" class="card-menu" onClick={this.onClickCardMenu}>
           {
             map(rootCards, card => {
@@ -302,7 +285,7 @@ export default class DataPanorama extends Vue{
   }
   renderOperations(h){
     return (
-      <ul class="data-panorama-menu">
+      <ul class="stage-step-menu">
         {
           map(operations, operation => {
             if(operation.type === 'card') {
@@ -310,7 +293,7 @@ export default class DataPanorama extends Vue{
             }
             return (
               <li 
-                class={`data-panorama-menu-item operation-${operation.type}`} 
+                class={`stage-step-menu-item operation-${operation.type}`} 
                 onClick={this.onOperation(operation.type)}/>
             )
           })
@@ -320,15 +303,15 @@ export default class DataPanorama extends Vue{
   }
   render(h){
     return (
-      <div ref="container" class="data-panorama">
+      <div ref="container" class="stage-step">
         { this.renderOperations(h) }
-        <div class="data-panorama-wrapper">
+        <div class="stage-step-wrapper">
           <stage-component 
             ref="stageComponent" 
             readonly={false}
-            onDragStart={sprite => console.log(sprite)}
-            onDragEnd={sprite => console.log(sprite)}
-            onDblClickSprite={sprite => console.log(sprite)}
+            onDragStart={this.onDragStart}
+            onDragEnd={this.onDragEnd}
+            onDblClickSprite={this.onDblClickSprite}
             >
             <a-menu slot="menu"
               onClick={this.onClickSpriteMenu}>
@@ -357,7 +340,7 @@ export default class DataPanorama extends Vue{
                 owner={this.selectedSprite && this.selectedSprite.owner}
                 rate={this.selectedSprite && this.selectedSprite.rate}
                 cardType={this.selectedCard.type}
-                onConfirm={this.selectedCard.type === CardImageType.DATA ? this.onEditDataCard : this.onEditCard} 
+                onConfirm={this.selectedCard.type === CardType.DATA ? this.onEditDataCard : this.onEditCard} 
                 onClose={()=> this.selectedCard = null} />
         }
       </div>

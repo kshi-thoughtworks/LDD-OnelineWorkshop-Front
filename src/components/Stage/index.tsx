@@ -2,7 +2,7 @@ import { find, findLast, forEach, reduce } from 'lodash'
 import Sprite, { SpriteClass, SpriteBox } from './Sprite'
 import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
-import { CardImageType } from './Sprite/CardSprite'
+import { CardType } from '../../common/Card'
 import VisionPng from '../../assets/images/cards/vision.png'
 import ScenePng from '../../assets/images/cards/scene.png'
 import DataPng from '../../assets/images/cards/data.png'
@@ -28,13 +28,13 @@ export default class Stage {
 
   dragManager?: DragManager
   
-  cardImages!: { [key in CardImageType]: HTMLImageElement }
+  cardImages!: { [key in CardType]: HTMLImageElement }
 
   constructor(container: HTMLDivElement) {
     this.container = container
     this.zoomContainer = this.container.querySelector('.sprite-operation-container')
 
-    this.canvas = document.createElement('canvas')
+    this.canvas = this.container.querySelector('canvas') as HTMLCanvasElement
     this.context = this.canvas.getContext('2d')
     this.container.append(this.canvas)
 
@@ -148,12 +148,12 @@ export default class Stage {
         const isSame = sprite.props.compare!<SpriteBox>(spriteProp)
         if(!isSame) {
           const dragSpriteId = this.dragManager?.selectedSprite?.id
-          const isDragging = dragSpriteId === spriteProp.id
+          const isDragging = dragSpriteId === spriteProp.id && this.dragManager?.dragging
           const spriteInstance: Sprite<SpriteBox> = this.buildSprite(spriteProp)
           // 如果正在拖动，只能改变其内容，位置与scale维持当前操作状态
           if(isDragging) {
             const { x, y, width, height, scale, ...others } = spriteInstance.props
-            Object.assign(sprite.props, {...others})
+            Object.assign(sprite.props, { ...others })
           } else {
             sprite.updateProps(spriteInstance.props)
           }

@@ -48,9 +48,21 @@ export default class StageComponent extends Vue{
     this.stage.patchSprites(sprites)
   }
 
+  getSprite(spriteId){
+    return this.stage.findSpriteById(spriteId)
+  }
+
+  hideMenu(){
+    this.menuPosition = null
+  }
+
+  clearSelection() {
+    this.stage?.dragManager?.resetSelection()
+  }
+
   onDragStart(sprite){
     this.selectedSpriteId = sprite.id
-    this.menuPosition = null
+    this.hideMenu()
     const { dragStart } = this.$listeners as StageListeners
     dragStart && dragStart(sprite)
   }
@@ -68,9 +80,12 @@ export default class StageComponent extends Vue{
     dblClickSprite && dblClickSprite(sprite)
   }
 
-  onToggleMenu(){
+  onToggleMenu(sprite: Sprite<SpriteBox>){
+    const { dragStart } = this.$listeners as StageListeners
+    dragStart && dragStart(sprite)
+
     if(this.menuPosition) {
-      this.menuPosition = null
+      this.hideMenu()
       return
     }
     this.menuPosition = this.getMenuPosition()
@@ -78,11 +93,20 @@ export default class StageComponent extends Vue{
 
   onResetSelection(){
     this.selectedSpriteId = null
-    this.menuPosition = null
+    this.hideMenu()
+  }
+
+  onResize() {
+    this.stage.resize()
   }
 
   mounted() {
     this.initStage()
+    window.addEventListener('resize', this.onResize)
+  }
+
+  destroyed(){
+    window.removeEventListener('resize', this.onResize)
   }
 
   render(h) {
@@ -90,6 +114,7 @@ export default class StageComponent extends Vue{
     const { x, y } = this.menuPosition || { x: -1000, y: -1000 }
     return (
       <div ref="stage" class="sprite-stage">
+        <canvas></canvas>
         <div class="sprite-operation-container">
           <span class="zoom-item top-left" data-orientation="topLeft"></span>
           <span class="sprite-edit">
@@ -103,7 +128,7 @@ export default class StageComponent extends Vue{
           <span class="zoom-item bottom-left" data-orientation="bottomLeft"></span>
           <span class="zoom-item bottom-right" data-orientation="bottomRight"></span>
         </div>
-        <div class="sprite-edit-menu" style={{ left: `${x}px`, top: `${y}px` }}>
+        <div class="sprite-edit-menu" style={{ left: `${x}px`, top: `${y}px` }} onMousedown={event => event.stopPropagation()}>
           { menu }
         </div>
       </div>

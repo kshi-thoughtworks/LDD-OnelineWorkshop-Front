@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { map } from 'lodash'
 import { Component } from 'vue-property-decorator'
 import { Avatar } from 'ant-design-vue'
-import DataPanorama from './DataPanorama'
+import StageStep from './StageStep'
 import WorkshopModal from '../../components/WorkshopModal.vue'
 import MemberModal from '../../components/MemberModal.vue'
 import ToolCards from './ToolCards.vue'
@@ -36,7 +36,7 @@ type MemberItem = {
       'workshop-modal': WorkshopModal,
       'member-modal': MemberModal,
       'a-avatar': Avatar,
-      'data-panorama': DataPanorama,
+      'stage-step': StageStep,
       'tool-cards': ToolCards,
   }
 })
@@ -82,7 +82,7 @@ export default class Workshop extends Vue{
   renderStageByIndex(h, index){
     const { name, steps } = this.workshop
     const step = steps[index]
-    return <data-panorama key={step.id} stepId={step.id} name={name}/>
+    return <stage-step key={step.id} stepId={step.id} name={name}/>
   }
   renderByType(h){
     const { currentType } = this

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { Input, Rate } from 'ant-design-vue';
 import { Component, Prop } from 'vue-property-decorator'
-import { CardImageType } from '../../../components/Stage/Sprite/CardSprite'
+import { CardType } from '../../../common/Card'
 import './index.scss'
 
 @Component({
@@ -56,7 +56,8 @@ export default class EditCardModal extends Vue{
   render(h) {
     const { close } = this.$listeners
     const { name } = this
-    if (this.cardType == CardImageType.DATA) {
+    const isDataCard = this.cardType == CardType.DATA
+    if (isDataCard) {
       return (
         <a-modal
         width={620}

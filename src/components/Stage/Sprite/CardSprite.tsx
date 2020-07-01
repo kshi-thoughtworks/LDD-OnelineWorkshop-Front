@@ -1,27 +1,14 @@
 import Sprite, { SpriteBox } from './index';
 import { calculateTextRows } from './text'
-
-export enum CardImageType{
-  VISION = 'vision',
-  SCENE = 'scene',
-  DATA = 'data',
-  VALUE = 'value'
-}
-
-const CardColors = {
-  vision: '#7825be',
-  scene: '#8a3719',
-  data: '#387259',
-  value: '#a88103'
-}
+import { CardType, CardColors } from '../../../common/Card'
 
 type CardInfoType = {
   id: number
   name: string
   description: string
-  type: CardImageType
+  type: CardType
 }
-export type CardType = 'card'
+export type SpriteCardType = 'card'
 
 export class CardProps implements SpriteBox {
   id?: number
@@ -31,7 +18,7 @@ export class CardProps implements SpriteBox {
   height!: number
   scale: { x: number, y: number } = { x: 1, y: 1}
 
-  type: CardType = 'card'
+  type: SpriteCardType = 'card'
   content?: string
   card?: CardInfoType
   version?: string
@@ -87,7 +74,7 @@ export default class CardSprite extends Sprite<CardProps>{
     const context = this.stage!.context!
     const { width, height } = this.props
     let { content } = this.props
-    const cardType = this.props.card!.type
+    const cardType = this.props.card?.type || CardColors[CardType.VISION]
     const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
     const padding = 48
     const maxWidth = width - padding * 2
@@ -120,8 +107,8 @@ export default class CardSprite extends Sprite<CardProps>{
     const context = this.stage!.context!
     const { x, y, width, height, scale: { x: scaleX, y: scaleY } = { x: 1, y: 1 }, card } = this.props
     const cardImages = this.stage!.cardImages
-    const cardImageType = (card && card.type) as CardImageType
-    const cardImage = cardImages[cardImageType] ? cardImages[cardImageType] : cardImages[CardImageType.VISION]
+    const cardType = (card && card.type) as CardType
+    const cardImage = cardImages[cardType] ? cardImages[cardType] : cardImages[CardType.VISION]
 
     context.save()
     context.translate(x, y)
