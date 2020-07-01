@@ -52,7 +52,7 @@ export default class Workshop extends Vue{
     super(props)
     this.types = [
       { type: TypeEnum.dataPanorama, name: '数据全景图' },
-      { type: TypeEnum.technologyCard, name: '技术卡' },
+      { type: TypeEnum.technologyCard, name: '工具卡' },
       { type: TypeEnum.divergenceScene, name: '发散场景' },
       { type: TypeEnum.convergenceScene, name: '收敛场景' },
       { type: TypeEnum.generateReport, name: '生成报告' },

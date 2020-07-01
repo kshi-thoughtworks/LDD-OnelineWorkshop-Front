@@ -1,22 +1,26 @@
 <template lang="pug">
     div
-        ul.tool-list
-            li(v-for="card in cards" @click="showDetail(card)").tool-card 
-                p.tool-card-name {{card.name}}
+        div(v-for="type in Object.keys(toolTypes)").tool-list-container
+            p.tool-list-title 工具卡-{{toolTypes[type]}}
+            ul.tool-list
+                li(v-for="card in cardsOfType(type)" @click="showDetail(card)" :class="`tool-card-${card.sup_type}`").tool-card 
+                    p.tool-card-name {{card.name}}
 </template>
 
 <script>
-    import { Modal } from 'ant-design-vue';
     import { loadToolCards } from '../service'
-    import Vue from 'vue'
-
-    Vue.use(Modal)
 
     export default {
         name: 'ToolCards',
         data() {
             return {
-                cards: []
+                cards: [],
+                toolTypes: {
+                    'subject': '主题', 
+                    'class': '类别', 
+                    'tech': '技能', 
+                    'monetizing': '价值'
+                }
             }
         },
         mounted() {
@@ -27,7 +31,7 @@
                 const content = JSON.parse(card.description)
                 const h = this.$createElement;
                 this.$info({
-                    title: card.name,
+                    title: '工具卡—' + card.name,
                     content: h('div', {}, [
                         h('a-icon', {props: {
                             type: 'book',
@@ -45,36 +49,57 @@
                     maskClosable: true,
                     class: 'tool-card-detail',
                 })
+            },
+            cardsOfType(type) {
+                return this.cards.filter(card => card.sup_type == type)
             }
         }
     }
 </script>
 
 <style lang="scss">
+.tool-list-container {
+    margin: 30px 100px;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.tool-list-title {
+    text-align: left;
+    padding-left: 6px;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--midnight-purple);
+}
+
 .tool-list {
     display: flex;
     flex-wrap: wrap;
     list-style-type: none;
-    padding: 40px;
-    margin: 30px 100px;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+    padding: 0;
+    justify-content: space-between;
 }
 
 .tool-card {
     height: 300px;
     width: 18%;
-    margin: 10px;
     position: relative;
     border-radius: 8px;
-    background-color: var(--violet-blue);
+    background-repeat: round;
+    cursor: pointer;
 
     &-name {
-        color: #ffffff;
+        color: #6c684b;
         bottom: 20px;
         position: absolute;
         width: 100%;
-        font-size: 20px;
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    &-tech {
+        background-image: url(../../assets/images/cards/tech.png);
     }
 }
 
