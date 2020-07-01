@@ -1,8 +1,6 @@
 process.env.NODE_ENV = 'devlopment'
-const path = require('path')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 const baseWebpack = require('./base.config.js')
 
 module.exports = merge(baseWebpack, {
@@ -15,18 +13,7 @@ module.exports = merge(baseWebpack, {
     /**
      * 模块热替换开启时，显示更新module的相对路径
      */
-    new webpack.NamedModulesPlugin(),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, '../public/*.png'),
-          to: path.resolve(__dirname, '../dist'),
-          transformPath(targetPath, absolutePath) {
-            return targetPath.replace('public', 'static')
-          },
-        }
-      ]
-    })
+    new webpack.NamedModulesPlugin()
   ],
   devServer: {
     publicPath: '/',

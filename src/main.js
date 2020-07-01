@@ -19,6 +19,5 @@ Vue.prototype.$info = Modal.info
 
 new Vue({
   router,
-  template: '<App/>',
-  components: { App }
+  render: createElement => createElement(App)
 }).$mount('#app')

@@ -4,6 +4,7 @@ const distDir = path.resolve(__dirname, '../dist')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -28,7 +29,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      vue$: 'vue/dist/vue.esm.js'
+      vue$: 'vue/dist/vue.runtime.esm.js'
     },
     extensions: ['.vue', '.js', '.ts', '.tsx']
   },
@@ -109,6 +110,17 @@ module.exports = {
       title : 'LDD workshop',
       template: './public/index.html',
       filename: 'index.html'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, '../public/*.png'),
+          to: path.resolve(__dirname, '../dist'),
+          transformPath(targetPath) {
+            return targetPath.replace('public', isProduction ? '' : 'static')
+          },
+        }
+      ]
     })
   ]
 }
