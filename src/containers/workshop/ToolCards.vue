@@ -67,7 +67,7 @@
 
 .tool-list-title {
     text-align: left;
-    padding-left: 6px;
+    padding-left: 16px;
     font-size: 24px;
     font-weight: 600;
     color: var(--midnight-purple);
@@ -78,7 +78,6 @@
     flex-wrap: wrap;
     list-style-type: none;
     padding: 0;
-    justify-content: space-between;
 }
 
 .tool-card {
@@ -88,6 +87,7 @@
     border-radius: 8px;
     background-repeat: round;
     cursor: pointer;
+    margin: 10px;
 
     &-name {
         color: #6c684b;
