@@ -96,10 +96,23 @@
         width: 100%;
         font-size: 22px;
         font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    &-subject {
+        background-image: url(../../assets/images/cards/subject.png);
+    }
+
+    &-class {
+        background-image: url(../../assets/images/cards/class.png);
     }
 
     &-tech {
         background-image: url(../../assets/images/cards/tech.png);
+    }
+
+    &-monetizing {
+        background-image: url(../../assets/images/cards/monetizing.png);
     }
 }
 
