@@ -1,5 +1,5 @@
 <template lang="pug">
-    div
+    div.tool-list-step
         div(v-for="type in Object.keys(toolTypes)").tool-list-container
             p.tool-list-title 工具卡-{{toolTypes[type]}}
             ul.tool-list
@@ -58,11 +58,17 @@
 </script>
 
 <style lang="scss">
+.tool-list-step {
+    background-color: #f9f9f9;
+    padding: 30px 0;
+}
+
 .tool-list-container {
     margin: 30px 100px;
     padding: 30px 40px;
     border-radius: 8px;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+    background-color: var(--white);
 }
 
 .tool-list-title {
@@ -94,7 +100,7 @@
         bottom: 20px;
         position: absolute;
         width: 100%;
-        font-size: 22px;
+        font-size: 21px;
         font-weight: 600;
         margin-bottom: 20px;
     }
