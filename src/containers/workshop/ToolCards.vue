@@ -67,7 +67,7 @@
 
 .tool-list-title {
     text-align: left;
-    padding-left: 16px;
+    padding-left: 24px;
     font-size: 24px;
     font-weight: 600;
     color: var(--midnight-purple);
@@ -82,12 +82,12 @@
 
 .tool-card {
     height: 300px;
-    width: 18%;
+    width: 188px;
     position: relative;
     border-radius: 8px;
     background-repeat: round;
     cursor: pointer;
-    margin: 10px;
+    margin: 10px 20px;
 
     &-name {
         color: #6c684b;
