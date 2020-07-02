@@ -2,6 +2,7 @@
   position: relative;
   height: calc(100vh - 120px);
   background-color: #f9f9f9;
+  user-select: none;
   &-menu{
     display: flex;
     flex-direction: column;

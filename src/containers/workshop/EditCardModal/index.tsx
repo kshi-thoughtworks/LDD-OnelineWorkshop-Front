@@ -69,9 +69,9 @@ export default class EditCardModal extends Vue{
         okText={this.editable ? '保存' : '添加'} 
         cancelText="取消">
           <label>数据资源名称</label>
-          <ant-input maxLength={20} v-model={this.name} class="data-card-input"/>
+          <ant-input maxLength={16} v-model={this.name} class="data-card-input"/>
           <label>数据拥有者</label>
-          <ant-input maxLength={20} v-model={this.currentOwner} class="data-card-input"/>
+          <ant-input maxLength={16} v-model={this.currentOwner} class="data-card-input"/>
           <label>数据完备情况</label>
           <a-rate v-model={this.currentRate}/>
       </a-modal>
@@ -87,7 +87,7 @@ export default class EditCardModal extends Vue{
         onOk={this.onConfirm}
         okText={this.editable ? '保存' : '添加'} 
         cancelText="取消">
-          <ant-input ref="name" maxLength={20} defaultValue={name} placeholder="请输入标题"/>
+          <ant-input ref="name" maxLength={16} defaultValue={name} placeholder="请输入标题"/>
       </a-modal>
     )
   }

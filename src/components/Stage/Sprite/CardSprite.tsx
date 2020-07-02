@@ -97,8 +97,8 @@ export default class CardSprite extends Sprite<CardProps>{
     const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
     const padding = 48
     const maxWidth = width - padding * 2
-    const fontSize = 35
-    const ownerFontSize = 18
+    const fontSize = 48
+    const ownerFontSize = 24
 
     context.save()
     context.textAlign = 'left'
@@ -107,13 +107,13 @@ export default class CardSprite extends Sprite<CardProps>{
     
     const contentRows = calculateTextRows(context, maxWidth, content, fontSize)
     if(isDataCard(cardType) && owner) {
-      this.drawContent(width, height, fontSize, 140, contentRows, 40)
+      this.drawContent(width, height, fontSize, 140, contentRows, 25)
 
       context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
       const ownerRows = calculateTextRows(context, maxWidth, owner, ownerFontSize)
       this.drawContent(width, height, ownerFontSize, 100, ownerRows)
     } else {
-      this.drawContent(width, height, fontSize, 110, contentRows)
+      this.drawContent(width, height, fontSize, 110, contentRows, -10)
     }
 
     context.restore()

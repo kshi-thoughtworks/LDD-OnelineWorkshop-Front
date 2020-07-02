@@ -13,7 +13,7 @@ import {
   deleteElement
 } from '../../service'
 import './index.scss'
-import { CardType } from '../../../common/Card'
+import { CardType, isToolkitCard } from '../../../common/Card'
 
 const operations = [
   { type: 'selector', tooltip: 'selector' },
@@ -72,6 +72,9 @@ export default class StageStep extends Vue{
       this.operateStickyType = 'edit'
       this.toggleStickerModalVisibility = true
     } else {
+      if(isToolkitCard(card.type)) {
+        return
+      } 
       this.operateCardType = 'edit'
       this.selectedCard = card
     }
@@ -192,8 +195,12 @@ export default class StageStep extends Vue{
   onClickCardMenu(event){
     const { key } = event
     const card = find(this.cards, card => card.id === key)
-    this.operateCardType = 'create'
     this.selectedCard = card
+    if(isToolkitCard(card.sup_type)) {
+      this.onEditCard(card.name)
+    } else {
+      this.operateCardType = 'create'
+    }
   }
   onClickSpriteMenu(event) {
     const { key } = event
@@ -302,6 +309,8 @@ export default class StageStep extends Vue{
     )
   }
   render(h){
+    const cardType = this.selectedSprite?.card?.type
+    const isToolkit = isToolkitCard(cardType)
     return (
       <div ref="container" class="stage-step">
         { this.renderOperations(h) }
@@ -315,7 +324,7 @@ export default class StageStep extends Vue{
             >
             <a-menu slot="menu"
               onClick={this.onClickSpriteMenu}>
-              <a-menu-item key="edit"><a-icon type="edit" />编辑</a-menu-item>
+              { !isToolkit && <a-menu-item key="edit"><a-icon type="edit" />编辑</a-menu-item> }
               <a-menu-item key="copy"><a-icon type="copy" />复制</a-menu-item>
               <a-menu-item key="delete"><a-icon type="delete" />删除</a-menu-item>
             </a-menu>
