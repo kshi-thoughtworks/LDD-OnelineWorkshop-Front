@@ -16,8 +16,10 @@ export default abstract class Sprite<T extends SpriteBox>{
   id!: number
   props: T
   stage?: Stage
+  zIndex: number = 0
   constructor(props: T) {
     this.props = props
+    this.zIndex = 0
   }
   updateBox(box: SpriteBox){
     const { props } = this

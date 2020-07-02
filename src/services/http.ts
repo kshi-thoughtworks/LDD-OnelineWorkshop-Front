@@ -45,7 +45,9 @@ export default class Http {
 
   httpErrorHandler = error => {
     let errorMessage: string = ''
-    if (error.message.indexOf('Network Error') !== -1) {
+    if (axios.isCancel(error)) {
+      errorMessage = 'cancel'
+    } else if(error.message.indexOf('Network Error') !== -1) {
       errorMessage = '网络异常，请检查当前设备网络状况。'
     } else if (error.message.indexOf('timeout') !== -1) {
       errorMessage = '网络超时，请稍后重试。'

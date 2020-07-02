@@ -45,10 +45,11 @@ export default class DragManager extends EventEmitter{
   }
   addMouseEventListeners() {
     this.container.addEventListener('mousedown', this.onMoveStart)
+    this.container.addEventListener('contextmenu', this.onContextMenu)
     this.zoomContainer.addEventListener('mousedown', this.onZoomMouseDown)
     this.zoomContainer.addEventListener('dblclick', this.onDoubleClick)
 
-    // document.addEventListener('mousedown', this.onDocumentMouseDown)
+    document.addEventListener('mousedown', this.onDocumentMouseDown)
   }
   addDocumentMouseEvent(){
     document.addEventListener('mousemove', this.onDrag)
@@ -190,6 +191,9 @@ export default class DragManager extends EventEmitter{
     
     return { x: left, y: top, width, height, scale: { x: zoomScale, y: zoomScale } }
   }
+  onContextMenu(event: MouseEvent){
+    event.preventDefault()
+  }
   onDocumentMouseDown = () => {
     this.resetSelection()
   }
@@ -238,10 +242,7 @@ export default class DragManager extends EventEmitter{
     const offsetY = clientY - originClientY
     
     const spriteBox = this.calculateZoomSpriteBox(this.selectedSpriteBox!, { x: offsetX, y: offsetY}, this.orientation as ZoomOrientation)
-    this.selectedSprite!.updateBox(spriteBox)
-
-    this.stage.draw()
-    this.fire('drag', this.selectedSprite)
+    this.fire('drag', this.selectedSprite, spriteBox)
   }
   onMoveDrag = (event: MouseEvent) => {
     const { clientX, clientY } = event
@@ -250,10 +251,7 @@ export default class DragManager extends EventEmitter{
     const offsetY = clientY - originClientY
     
     const spriteBox = this.calculateMoveSpriteBox(this.selectedSpriteBox!, { x: offsetX, y: offsetY})
-    this.selectedSprite!.updateBox(spriteBox)
-
-    this.stage.draw()
-    this.fire('drag', this.selectedSprite)
+    this.fire('drag', this.selectedSprite, spriteBox)
   }
   onDragStart = (event: MouseEvent) => {
     this.dragWithChange = false
@@ -286,6 +284,7 @@ export default class DragManager extends EventEmitter{
 
   clearMouseEvent(){
     this.container.removeEventListener('mousedown', this.onDragStart)
+    this.container.removeEventListener('contextmenu', this.onContextMenu)
 
     this.zoomContainer.removeEventListener('mousedown', this.onZoomMouseDown)
     this.zoomContainer.removeEventListener('dblclick', this.onDoubleClick)

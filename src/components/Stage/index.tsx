@@ -1,4 +1,4 @@
-import { find, findLast, forEach, reduce } from 'lodash'
+import { find, findLast, forEach, orderBy, reduce } from 'lodash'
 import Sprite, { SpriteClass, SpriteBox } from './Sprite'
 import DragManager from './DragManager'
 import { getSpriteResiters } from './SpriteRegister'
@@ -74,43 +74,23 @@ export default class Stage {
   setDragManager(dragManager: DragManager){
     this.dragManager = dragManager
     this.dragManager.setup()
-    this.dragManager.addEventListener('resetselection', this.onResetSelection)
-    this.dragManager.addEventListener('dragstart', this.updateSelection)
-    this.dragManager.addEventListener('drag', this.updateSelection)
-  }
-
-  onResetSelection = () => {
-    this.draw()
   }
 
   resetSelection = () => {
     this.dragManager?.resetSelection()
   }
 
-  updateSelection = () => {
-    const sprite = this.dragManager?.selectedSprite
-    const style = this.zoomContainer!.style
-    if(!sprite) {
-      style.display = 'none'
-      return
-    }
-    const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
-    style.left = `${x}px`
-    style.top = `${y}px`
-    style.width = `${width}px`
-    style.height = `${height}px`
-    style.display = 'block'
-  }
-  
   findSpriteByPoint(left: number, top: number) : Sprite<SpriteBox>{
-    if(this.dragManager?.selectedSprite?.pointInSprite(left, top)) {
-      return this.dragManager.selectedSprite
-    }
-    return findLast(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.pointInSprite(left, top))
+    const orderSprites = this.getOrderSpritesByZIndex()
+    return findLast(orderSprites, (sprite: Sprite<SpriteBox>) => sprite.pointInSprite(left, top))
   }
 
   findSpriteById(id): Sprite<SpriteBox>{
     return find(this.sprites, (sprite: Sprite<SpriteBox>) => sprite.id === id)
+  }
+
+  getOrderSpritesByZIndex(){
+    return orderBy(this.sprites, sprite => sprite.zIndex)
   }
 
   readSprites(spriteProps) {
@@ -131,12 +111,11 @@ export default class Stage {
         return accumulator
       }, {})
     }
-    const spriteMap = toMap(spriteProps)
 
     const latestSprites: Array<Sprite<SpriteBox>> = []
     let spritesChanged = spriteProps.length !== this.sprites.length
     forEach(spriteProps, spriteProp => {
-      const { id, version } = spriteProp
+      const { id } = spriteProp
       const sprite = this.spriteMap[id]
       const notExist = !sprite
       if(notExist) {
@@ -168,9 +147,6 @@ export default class Stage {
     this.sprites = latestSprites
     this.spriteMap = toMap(latestSprites)
 
-    if(this.dragManager?.selectedSprite && !spriteMap[this.dragManager.selectedSprite.id]) {
-      this.dragManager.resetSelection()
-    }    
     this.draw()
   }
 
@@ -211,21 +187,15 @@ export default class Stage {
 
   draw(){
     this.context!.clearRect(0, 0, stageBox.width, stageBox.height)
-    forEach(this.sprites, (sprite: Sprite<SpriteBox>) => {
-      if(sprite === this.dragManager?.selectedSprite) {
-        return
-      }
+    const orderSprites = this.getOrderSpritesByZIndex()
+    forEach(orderSprites, (sprite: Sprite<SpriteBox>) => {
       sprite.draw()
     })
-    this.dragManager?.selectedSprite?.draw()
-    this.updateSelection()
   }
 
   resize() {
     this.updateBoxRect()
     this.draw()
-
-    this.updateSelection()
   }
 
   destroy() {

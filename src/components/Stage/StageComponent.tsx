@@ -31,12 +31,24 @@ export default class StageComponent extends Vue{
     return { x: -1000, y: -1000}
   }
 
+  calculateSelectionBoxStyle(){
+    const hideStyle = { display: 'none' }
+    const sprite = this.selectedSpriteId && this.stage.findSpriteById(this.selectedSpriteId)
+    if(!sprite) {
+      return hideStyle
+    }
+    
+    const { x, y, width, height } = sprite.calcaulateSpritePixelBox()
+    return { left: `${x}px`, top: `${y}px`, width: `${width}px`, height: `${height}px`, display: 'block' }
+  }
+
   initStage() {
     const { stage } = this.$refs
     this.stage = new Stage(stage as HTMLDivElement)
     if(!this.readOnly) {
       const dragManager = new DragManager(this.stage)
       dragManager.addEventListener('dragstart', this.onDragStart)
+      dragManager.addEventListener('drag', this.onDrag)
       dragManager.addEventListener('dragend', this.onDragEnd)
       dragManager.addEventListener('dblclick', this.onDblClickSprite)
       dragManager.addEventListener('edit-operation', this.onToggleMenu)
@@ -46,6 +58,7 @@ export default class StageComponent extends Vue{
 
   setSprites(sprites) {
     this.stage.patchSprites(sprites)
+    this.$forceUpdate() // sprites更新并不会触发组件的更新，并没有监听sprites
   }
 
   getSprite(spriteId){
@@ -57,14 +70,32 @@ export default class StageComponent extends Vue{
   }
 
   clearSelection() {
-    this.stage?.dragManager?.resetSelection()
+    this.stage.resetSelection()
+  }
+
+  resetSpriteZIndex(){
+    const prevSprite = this.selectedSpriteId && this.stage.findSpriteById(this.selectedSpriteId)
+    if(prevSprite) {
+      prevSprite.zIndex = 0
+    }
   }
 
   onDragStart(sprite){
+    this.resetSpriteZIndex()
+
     this.selectedSpriteId = sprite.id
+    sprite.zIndex = 1
+    this.stage.draw()
+    
     this.hideMenu()
     const { dragStart } = this.$listeners as StageListeners
     dragStart && dragStart(sprite)
+  }
+
+  onDrag(sprite: Sprite<SpriteBox>, spriteBox: SpriteBox){
+    sprite.updateBox(spriteBox)
+    this.stage.draw()
+    this.$forceUpdate()
   }
 
   onDragEnd(sprite: Sprite<SpriteBox>, changed: boolean){
@@ -92,12 +123,16 @@ export default class StageComponent extends Vue{
   }
 
   onResetSelection(){
+    this.resetSpriteZIndex()
+
+    this.stage.draw()
     this.selectedSpriteId = null
     this.hideMenu()
   }
 
   onResize() {
     this.stage.resize()
+    this.$forceUpdate()
   }
 
   mounted() {
@@ -115,7 +150,7 @@ export default class StageComponent extends Vue{
     return (
       <div ref="stage" class="sprite-stage">
         <canvas></canvas>
-        <div class="sprite-operation-container">
+        <div class="sprite-operation-container" style={this.calculateSelectionBoxStyle()}>
           <span class="zoom-item top-left" data-orientation="topLeft"></span>
           <span class="sprite-edit">
             <svg viewBox="64 64 896 896" data-icon="ellipsis" 
