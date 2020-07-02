@@ -82,12 +82,12 @@
 
 .tool-card {
     height: 300px;
-    width: 188px;
+    width: 200px;
     position: relative;
     border-radius: 8px;
     background-repeat: round;
     cursor: pointer;
-    margin: 10px 20px;
+    margin: 10px 16px;
 
     &-name {
         color: #6c684b;
