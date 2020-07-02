@@ -85,6 +85,28 @@
       &:first-child{
         margin-left: 0;
       }
+      .type-icon{
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        &.dataPanorama{
+          background-image: url(../../assets/images/icons/data-panorama.svg);
+        }
+        &.technologyCard{
+          background-image: url(../../assets/images/icons/tool-cards.svg);
+        }
+        &.divergenceScene{
+          background-image: url(../../assets/images/icons/divergence-scene.svg);
+        }
+        &.convergenceScene{
+          background-image: url(../../assets/images/icons/convergence-scene.svg);
+        }
+        &.generateReport{
+          background-image: url(../../assets/images/icons/report.svg);
+        }
+      }
       .type-name{
         margin-top: 7px;
         font-size: 10px;

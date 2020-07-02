@@ -113,7 +113,7 @@ export default class Workshop extends Vue{
           map(this.types, (item: TypeItem) => {
             return (
               <li class={{'workshop-types-item': true, 'active': item.type === currentType}} onClick={this.onChangeType(item)}>
-                <a-icon type="picture" style={{ fontSize: '18px', color: '#fff' }}></a-icon>
+                <span class={{'type-icon': true, [item.type]: true }}></span>
                 <span class="type-name">{item.name}</span>
               </li>
             )
