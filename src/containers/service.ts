@@ -1,7 +1,7 @@
 import { map } from 'lodash'
 import axios, { Canceler } from 'axios'
 import { http } from '../services/http'
-import { CardType } from '../common/Card'
+import { CardType, isDataCard, isToolkitCard } from '../common/Card'
 
 const { CancelToken } = axios
 
@@ -11,8 +11,8 @@ export const loadWorkshop = workshopId => {
 
 const getCardExternalInfo = element => {
   const { content: contentString, card } = element
-  const isDataCard = card && card.type === CardType.DATA
-  if(isDataCard) {
+  const cardType = card ? card.type : ''
+  if(isDataCard(cardType)) {
     try{
       const { content, owner, rate } = JSON.parse(contentString)
       return { content, owner, rate }
@@ -24,6 +24,14 @@ const getCardExternalInfo = element => {
   }
 }
 
+const normilizeCard = card => {
+  const superType = card ? card.sup_type : ''
+  if(isToolkitCard(superType)) {
+    card.type = card.sup_type
+  }
+  return card
+}
+
 const elementConvert = element => {
   const { id, title, type, meta, card, version } = element
   const defaultProps = { x: 100, y: 100, width: 480, height: 480, color: '#ffe562' }
@@ -33,7 +41,7 @@ const elementConvert = element => {
     type,
     title,
     ...metaJson,
-    card,
+    card: normilizeCard(card),
     version,
     ...getCardExternalInfo(element)
   }

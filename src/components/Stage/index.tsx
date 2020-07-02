@@ -7,6 +7,10 @@ import VisionPng from '../../assets/images/cards/vision.png'
 import ScenePng from '../../assets/images/cards/scene.png'
 import DataPng from '../../assets/images/cards/data.png'
 import ValuePng from '../../assets/images/cards/value.png'
+import SubjectPng from '../../assets/images/cards/subject.png'
+import TechPng from '../../assets/images/cards/tech.png'
+import ClassPng from '../../assets/images/cards/class.png'
+import MonetizingPng from '../../assets/images/cards/monetizing.png'
 import './index.scss'
 
 export type CanvasContext = CanvasRenderingContext2D | null
@@ -15,6 +19,17 @@ export const stageBox = {
   height: 2160
 }
 const stageRatio = stageBox.width/stageBox.height
+
+const cardImagesMap: { [key in CardType]: string} = {
+  [CardType.VISION]: VisionPng,
+  [CardType.SCENE]: ScenePng,
+  [CardType.DATA]: DataPng,
+  [CardType.VALUE]: ValuePng,
+  [CardType.SUBJECT]: SubjectPng,
+  [CardType.TECH]: TechPng,
+  [CardType.CLASS]: ClassPng,
+  [CardType.MONETIZING]: MonetizingPng,
+}
 
 export default class Stage {
   container: HTMLDivElement
@@ -55,19 +70,12 @@ export default class Stage {
   }
 
   preLoadCardImages() {
-    const visionImage = new Image()
-    const sceneImage = new Image()
-    const dataImage = new Image()
-    const valueImage = new Image()
-    visionImage.src = VisionPng
-    sceneImage.src = ScenePng
-    dataImage.src = DataPng
-    valueImage.src = ValuePng
-    this.cardImages = {
-      vision: visionImage,
-      scene: sceneImage,
-      data: dataImage,
-      value: valueImage
+    this.cardImages = {} as { [key in CardType]: HTMLImageElement }
+    for(let key in cardImagesMap) {
+      const image = new Image()
+      const url = cardImagesMap[key]
+      image.src = url
+      this.cardImages[key] = image
     }
   }
 
