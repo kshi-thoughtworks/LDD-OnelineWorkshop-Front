@@ -1,11 +1,12 @@
 import Sprite, { SpriteBox } from './index';
 import { calculateTextRows } from './text'
-import { CardType, CardColors } from '../../../common/Card'
+import { CardType, CardColors, isDataCard } from '../../../common/Card'
 
 type CardInfoType = {
   id: number
   name: string
   description: string
+  owner: string
   type: CardType
 }
 export type SpriteCardType = 'card'
@@ -70,36 +71,51 @@ export default class CardSprite extends Sprite<CardProps>{
     this.props = props
   }
 
-  drawText(){
+  drawContent(width, height, fontSize, bottom, rows, textOffset = 20) {
     const context = this.stage!.context!
-    const { width, height } = this.props
-    let { content } = this.props
-    const cardType = this.props.card?.type || CardColors[CardType.VISION]
-    const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
-    const padding = 48
-    const maxWidth = width - padding * 2
-    const fontSize = 35
-
-    context.save()
-    context.textAlign = 'left'
-    context.font = `bold ${fontSize}px Montserrat, sans-serif`
-    context.fillStyle = cardColor
-    const rows = calculateTextRows(context, maxWidth, content, fontSize)
     if(rows.length === 1) {
       context.textAlign = 'center'
-      const textTop = height - 110
+      const textTop = height - bottom
       const { content } = rows[0]
       context.fillText(content, width/2, textTop)
     }else {
       const rowsLength = rows.length
       const textHeight = fontSize * rowsLength
-      const textTop = height - textHeight * 2 - 20
+      const textTop = height - textHeight * 2 - textOffset
       context.textAlign = 'center'
       for(let index = 0; index < rowsLength; index++) {
         const row = rows[index]
         context.fillText(row.content, width/2, textTop + fontSize * (index + 0.5))
       }
     }
+  }
+
+  drawText(){
+    const context = this.stage!.context!
+    const { width, height, card, content, owner } = this.props
+    const cardType = card?.type || CardColors[CardType.VISION]
+    const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
+    const padding = 48
+    const maxWidth = width - padding * 2
+    const fontSize = 35
+    const ownerFontSize = 18
+
+    context.save()
+    context.textAlign = 'left'
+    context.font = `bold ${fontSize}px Montserrat, sans-serif`
+    context.fillStyle = cardColor
+    
+    const contentRows = calculateTextRows(context, maxWidth, content, fontSize)
+    if(isDataCard(cardType) && owner) {
+      this.drawContent(width, height, fontSize, 140, contentRows, 40)
+
+      context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
+      const ownerRows = calculateTextRows(context, maxWidth, owner, ownerFontSize)
+      this.drawContent(width, height, ownerFontSize, 100, ownerRows)
+    } else {
+      this.drawContent(width, height, fontSize, 110, contentRows)
+    }
+
     context.restore()
   }
 
