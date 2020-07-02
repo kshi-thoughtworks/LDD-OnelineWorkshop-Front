@@ -75,6 +75,7 @@ export default class Stage {
       const image = new Image()
       const url = cardImagesMap[key]
       image.src = url
+      image.onload = this.draw
       this.cardImages[key] = image
     }
   }
@@ -193,7 +194,7 @@ export default class Stage {
     this.canvas.height = stageBox.height
   }
 
-  draw(){
+  draw = () => {
     this.context!.clearRect(0, 0, stageBox.width, stageBox.height)
     const orderSprites = this.getOrderSpritesByZIndex()
     forEach(orderSprites, (sprite: Sprite<SpriteBox>) => {
