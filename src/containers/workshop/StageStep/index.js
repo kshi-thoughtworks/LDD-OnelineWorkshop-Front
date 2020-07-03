@@ -82,7 +82,7 @@ export default class StageStep extends Vue{
     }
   }
   onUpdateError(error){
-    const updateError = '402'
+    const updateError = '422'
     if(error === updateError) {
       this.$message.error('内容己过期.')
     }
