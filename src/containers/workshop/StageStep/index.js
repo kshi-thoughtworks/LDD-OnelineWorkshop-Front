@@ -79,6 +79,12 @@ export default class StageStep extends Vue{
       this.selectedCard = card
     }
   }
+  onUpdateError(error){
+    const updateError = '402'
+    if(error === updateError) {
+      this.$message.error('内容己过期.')
+    }
+  }
   onEditSticker(content, color, editable){
     if(editable) {
       const { id, content: oldContent, version, ...meta} = this.selectedSprite
@@ -86,7 +92,7 @@ export default class StageStep extends Vue{
       updateElement(id, content, meta, version).then(() => {
         this.toggleStickerModalVisibility = false
         this.loadElementsInterval()
-      })
+      }).catch(this.onUpdateError)
     } else {
       const meta = {
         color,
@@ -138,7 +144,7 @@ export default class StageStep extends Vue{
       } = this.selectedSprite
       updateElement(id, info, meta, version).then( () => {
         this.loadElementsInterval()
-      })
+      }).catch(this.onUpdateError)
     } else {
       const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
       createCard(this.stepId, info, meta, this.selectedCard.id).then(({ element_id }) => {
@@ -152,7 +158,7 @@ export default class StageStep extends Vue{
       const { id, content: oldContent, version, ...meta} = this.selectedSprite
       updateElement(id, content, meta, version).then( () => {
         this.loadElementsInterval()
-      })
+      }).catch(this.onUpdateError)
     } else {
       const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
       createCard(this.stepId, content, meta, this.selectedCard.id).then(({ element_id }) => {

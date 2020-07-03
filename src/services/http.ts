@@ -59,6 +59,8 @@ export default class Http {
         location.href = `${routePrefix}/login`
       } else if (status >= 500 || status === 404) {
         errorMessage = `服务器异常，错误码：${response.status}, 地址：${response.config.url}`
+      } else if(status === 422){
+        errorMessage = '422'
       } else {
         errorMessage = data
       }
