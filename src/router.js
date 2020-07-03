@@ -14,9 +14,13 @@ const routes = [
     { path: '*', component: NotFount}
 ]
 
+
+const isProduction = process.env.NODE_ENV == 'production'
+export const routePrefix = isProduction ? '/workshop' : '';
+
 const router = new VueRouter({
     mode: 'history',
-    base: process.env.NODE_ENV == 'production' ? '/workshop' : '/',
+    base: routePrefix,
     routes
 })
 

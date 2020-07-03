@@ -1,4 +1,4 @@
-process.env.NODE_ENV = 'devlopment'
+process.env.NODE_ENV = 'development'
 const webpack = require('webpack')
 const merge = require('webpack-merge')
 const baseWebpack = require('./base.config.js')

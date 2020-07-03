@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { forEach } from 'lodash'
+import { routePrefix } from '../router'
 
 const methods = ['get', 'post', 'put', 'delete', 'patch']
 export default class Http {
@@ -54,7 +55,9 @@ export default class Http {
     } else {
       const { response = {} } = error
       const { status, data } = response
-      if (status >= 500 || status === 404) {
+      if(status === 401) {
+        location.href = `${routePrefix}/login`
+      } else if (status >= 500 || status === 404) {
         errorMessage = `服务器异常，错误码：${response.status}, 地址：${response.config.url}`
       } else {
         errorMessage = data
