@@ -35,6 +35,7 @@ export default class StageStep extends Vue{
   toggleStickerModalVisibility = false
   cards = null
   selectedCard = null
+  selectedSpriteVersion = undefined
   selectedSprite = null
   operateCardType = null
   operateStickyType = null
@@ -68,6 +69,7 @@ export default class StageStep extends Vue{
     const { type, card } = this.selectedSprite
     const isSticky = type === 'sticky'
 
+    this.selectedSpriteVersion = this.selectedSprite.version
     if(isSticky) {
       this.operateStickyType = 'edit'
       this.toggleStickerModalVisibility = true
@@ -87,9 +89,9 @@ export default class StageStep extends Vue{
   }
   onEditSticker(content, color, editable){
     if(editable) {
-      const { id, content: oldContent, version, ...meta} = this.selectedSprite
+      const { id, content: oldContent, ...meta} = this.selectedSprite
       meta.color = color
-      updateElement(id, content, meta, version).then(() => {
+      updateElement(id, content, meta, this.selectedSpriteVersion).then(() => {
         this.toggleStickerModalVisibility = false
         this.loadElementsInterval()
       }).catch(this.onUpdateError)
@@ -139,10 +141,9 @@ export default class StageStep extends Vue{
         content: oldContent, 
         owner: oldOwner, 
         rate: oldRate, 
-        version,
         ...meta 
       } = this.selectedSprite
-      updateElement(id, info, meta, version).then( () => {
+      updateElement(id, info, meta, this.selectedSpriteVersion).then( () => {
         this.loadElementsInterval()
       }).catch(this.onUpdateError)
     } else {
@@ -155,8 +156,8 @@ export default class StageStep extends Vue{
   }
   onEditCard(content, editable){
     if(editable) {
-      const { id, content: oldContent, version, ...meta} = this.selectedSprite
-      updateElement(id, content, meta, version).then( () => {
+      const { id, content: oldContent, ...meta} = this.selectedSprite
+      updateElement(id, content, meta, this.selectedSpriteVersion).then( () => {
         this.loadElementsInterval()
       }).catch(this.onUpdateError)
     } else {
@@ -212,6 +213,7 @@ export default class StageStep extends Vue{
   onClickSpriteMenu(event) {
     const { key } = event
     const { type, card } = this.selectedSprite
+    this.selectedSpriteVersion = this.selectedSprite.version
     const isSticky = type === 'sticky'
     switch(key) {
       case 'edit':
