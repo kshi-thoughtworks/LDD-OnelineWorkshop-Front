@@ -72,8 +72,8 @@ export const createCard = (stepId, content, meta, card_id) => {
   return http.post(`/api/elements/card`, element)
 }
 
-export const updateElement = (elementId, content, meta) => {
-  return http.put(`/api/elements/${elementId}`, { title: '', content, meta })
+export const updateElement = (elementId, content, meta, version) => {
+  return http.put(`/api/elements/${elementId}`, { title: '', content, meta, version })
 }
 
 export const deleteElement = elementId => {

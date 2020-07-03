@@ -81,9 +81,9 @@ export default class StageStep extends Vue{
   }
   onEditSticker(content, color, editable){
     if(editable) {
-      const { id, content: oldContent, ...meta} = this.selectedSprite
+      const { id, content: oldContent, version, ...meta} = this.selectedSprite
       meta.color = color
-      updateElement(id, content, meta).then(() => {
+      updateElement(id, content, meta, version).then(() => {
         this.toggleStickerModalVisibility = false
         this.loadElementsInterval()
       })
@@ -133,9 +133,10 @@ export default class StageStep extends Vue{
         content: oldContent, 
         owner: oldOwner, 
         rate: oldRate, 
+        version,
         ...meta 
       } = this.selectedSprite
-      updateElement(id, info, meta).then( () => {
+      updateElement(id, info, meta, version).then( () => {
         this.loadElementsInterval()
       })
     } else {
@@ -148,8 +149,8 @@ export default class StageStep extends Vue{
   }
   onEditCard(content, editable){
     if(editable) {
-      const { id, content: oldContent, ...meta} = this.selectedSprite
-      updateElement(id, content, meta).then( () => {
+      const { id, content: oldContent, version, ...meta} = this.selectedSprite
+      updateElement(id, content, meta, version).then( () => {
         this.loadElementsInterval()
       })
     } else {
