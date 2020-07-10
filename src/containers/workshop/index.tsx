@@ -11,6 +11,7 @@ import { loadWorkshop, updateWorkshop, loadWorkshopUsers, addUsersToWorkshop, re
 import './index.scss'
 
 enum TypeEnum {
+  businessVision = 'businessVision',
   dataPanorama = 'dataPanorama',
   technologyCard = 'technologyCard',
   divergenceScene = 'divergenceScene',
@@ -51,13 +52,14 @@ export default class Workshop extends Vue{
   constructor(props){
     super(props)
     this.types = [
+      { type: TypeEnum.businessVision, name: '业务愿景' },
       { type: TypeEnum.dataPanorama, name: '数据全景图' },
       { type: TypeEnum.technologyCard, name: '工具卡' },
       { type: TypeEnum.divergenceScene, name: '发散场景' },
       { type: TypeEnum.convergenceScene, name: '收敛场景' },
       { type: TypeEnum.generateReport, name: '生成报告' },
     ]
-    this.currentType = TypeEnum.dataPanorama
+    this.currentType = TypeEnum.businessVision
   }
   onChangeType(typeItem) {
     return () => {
@@ -87,12 +89,14 @@ export default class Workshop extends Vue{
   renderByType(h){
     const { currentType } = this
     switch(currentType) {
-      case TypeEnum.dataPanorama:
+      case TypeEnum.businessVision:
         return this.renderStageByIndex(h, 0)
+      case TypeEnum.dataPanorama:
+        return this.renderStageByIndex(h, 1)
       case TypeEnum.divergenceScene:
-        return this.renderStageByIndex(h, 2)
-      case TypeEnum.convergenceScene:
         return this.renderStageByIndex(h, 3)
+      case TypeEnum.convergenceScene:
+        return this.renderStageByIndex(h, 4)
       case TypeEnum.technologyCard:
         return <tool-cards/>
       case TypeEnum.generateReport:
