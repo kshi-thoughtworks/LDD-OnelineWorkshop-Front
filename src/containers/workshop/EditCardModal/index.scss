@@ -21,9 +21,6 @@
         }
       }
     }
-    .ant-input{
-      margin-top: 12px;
-    }
     .card-content{
       position: relative;
       height: 260px;
@@ -66,6 +63,8 @@
 
   .data-card-input {
     margin-bottom: 24px;
+    width: 100%;
+    margin-top: 12px;
   }
 
   .ant-rate {
