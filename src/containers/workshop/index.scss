@@ -91,6 +91,9 @@
         height: 24px;
         background-size: contain;
         background-repeat: no-repeat;
+        &.businessVision{
+          background-image: url(../../assets/images/icons/business-vision.svg);
+        }
         &.dataPanorama{
           background-image: url(../../assets/images/icons/data-panorama.svg);
         }
