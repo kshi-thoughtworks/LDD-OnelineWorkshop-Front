@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { Input, Rate, Select } from 'ant-design-vue';
 import { Component, Prop } from 'vue-property-decorator'
 import { CardType } from '../../../common/Card'
+import { loadDataCardsInDataPanorama } from '../../service'
 import './index.scss'
 
 @Component({
@@ -87,6 +88,7 @@ export default class EditCardModal extends Vue{
 
   renderSceneCard(h) {
     const { close } = this.$listeners
+    loadDataCardsInDataPanorama(this.$route.params.workshopId).then(data => {console.log(data)})
     return (
       <a-modal
       width={620}

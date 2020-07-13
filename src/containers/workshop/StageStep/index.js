@@ -61,9 +61,10 @@ export default class StageStep extends Vue{
 
     const isDataCard = card && card.type === CardType.DATA
     if(isDataCard) {
+      title = content
       content = JSON.stringify({owner, rate, content})
     }
-    updateElement(id, content, metaProps).then(() => this.loadElementsInterval())
+    updateElement(id, content, metaProps, undefined, title).then(() => this.loadElementsInterval())
   }
   onDblClickSprite() {
     const { type, card } = this.selectedSprite
@@ -143,12 +144,12 @@ export default class StageStep extends Vue{
         rate: oldRate, 
         ...meta 
       } = this.selectedSprite
-      updateElement(id, info, meta, this.selectedSpriteVersion).then( () => {
+      updateElement(id, info, meta, this.selectedSpriteVersion, content).then( () => {
         this.loadElementsInterval()
       }).catch(this.onUpdateError)
     } else {
       const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
-      createCard(this.stepId, info, meta, this.selectedCard.id).then(({ element_id }) => {
+      createCard(this.stepId, info, meta, this.selectedCard.id, content).then(({ element_id }) => {
         this.loadElementsInterval()
       })
     }

@@ -67,17 +67,21 @@ export const createStickyNote = (stepId, content, meta, ) => {
   return http.post(`/api/elements/sticker`, element)
 }
 
-export const createCard = (stepId, content, meta, card_id) => {
-  const element = { step_id: stepId, title: '', content, meta, card_id } 
+export const createCard = (stepId, content, meta, card_id, title='') => {
+  const element = { step_id: stepId, title, content, meta, card_id } 
   return http.post(`/api/elements/card`, element)
 }
 
-export const updateElement = (elementId, content, meta, version) => {
-  return http.put(`/api/elements/${elementId}`, { title: '', content, meta, version })
+export const updateElement = (elementId, content, meta, version, title='') => {
+  return http.put(`/api/elements/${elementId}`, { title, content, meta, version })
 }
 
 export const deleteElement = elementId => {
   return http.delete(`/api/elements/${elementId}`)
+}
+
+export const loadDataCardsInDataPanorama = workshopId => {
+  return http.get(`/api/workbenches/${workshopId}/steps/dataPanorama/elements/types/data`)
 }
 
 export const loadCards = () => {
