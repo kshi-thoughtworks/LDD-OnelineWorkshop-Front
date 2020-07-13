@@ -155,7 +155,28 @@ export default class StageStep extends Vue{
     }
     this.selectedCard = null
   }
-  onEditCard(content, editable){
+  onEditSceneCard(data, editable) {
+    const info = JSON.stringify(data)
+    if(editable) {
+      const meta = { 
+        x: this.selectedSprite.x, 
+        y: this.selectedSprite.y, 
+        width: this.selectedSprite.width, 
+        height: this.selectedSprite.height, 
+        scale: this.selectedSprite.scale
+      }
+      updateElement(this.selectedSprite.id, info, meta, this.selectedSpriteVersion).then( () => {
+        this.loadElementsInterval()
+      }).catch(this.onUpdateError)
+    } else {
+      const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
+      createCard(this.stepId, info, meta, this.selectedCard.id).then(() => {
+        this.loadElementsInterval()
+      })
+    }
+    this.selectedCard = null
+  }
+  onEditOtherCard(content, editable){
     if(editable) {
       const { id, content: oldContent, ...meta} = this.selectedSprite
       updateElement(id, content, meta, this.selectedSpriteVersion).then( () => {
@@ -168,6 +189,15 @@ export default class StageStep extends Vue{
       })
     }
     this.selectedCard = null
+  }
+  onEditCard() {
+    if (this.selectedCard.type === CardType.DATA) {
+      return this.onEditDataCard
+    } else if (this.selectedCard.type === CardType.SCENE) {
+      return this.onEditSceneCard
+    } else {
+      return this.onEditOtherCard
+    }
   }
   onSelector(){}
   onText(){}
@@ -210,6 +240,7 @@ export default class StageStep extends Vue{
     } else {
       this.operateCardType = 'create'
     }
+    this.selectedSprite = null
   }
   onClickSpriteMenu(event) {
     const { key } = event
@@ -356,10 +387,9 @@ export default class StageStep extends Vue{
                   ? this.selectedSprite.content
                   : this.selectedCard.name
                 }
-                owner={this.selectedSprite && this.selectedSprite.owner}
-                rate={this.selectedSprite && this.selectedSprite.rate}
+                sprite={this.selectedSprite || {}}
                 cardType={this.selectedCard.type}
-                onConfirm={this.selectedCard.type === CardType.DATA ? this.onEditDataCard : this.onEditCard} 
+                onConfirm={this.onEditCard()} 
                 onClose={()=> this.selectedCard = null} />
         }
       </div>

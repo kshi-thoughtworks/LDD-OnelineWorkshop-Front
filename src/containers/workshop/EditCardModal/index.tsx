@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { Input, Rate, Select } from 'ant-design-vue';
 import { Component, Prop } from 'vue-property-decorator'
 import { CardType } from '../../../common/Card'
+import SelectDropdown from '../../../components/SelectDropdown.vue'
 import { loadDataCardsInDataPanorama } from '../../service'
 import './index.scss'
 
@@ -10,17 +11,14 @@ import './index.scss'
     'ant-input': Input,
     'a-rate': Rate,
     'a-select': Select,
+    'select-dropdown': SelectDropdown
   }
 })
 export default class EditCardModal extends Vue{
   @Prop() editable!: boolean
-  @Prop({default: ''}) content!: string
-  @Prop({default: ''}) owner!: string
-  @Prop({default: 0}) rate!: number
-  @Prop({default: ''}) description!: string
-  @Prop({default: ()=>[]}) relatedDataCards!: Array<string>
   @Prop({default: ()=>[]}) relatedToolCards!: Array<string>
   @Prop() cardType!: string
+  @Prop({default: {}}) sprite!: object
 
   name!: string
   currentOwner!: string
@@ -28,17 +26,25 @@ export default class EditCardModal extends Vue{
   sceneDescription!: string
   sceneRelatedDataCards!: Array<string>
   sceneRelatedToolCards!: Array<string>
+  allDataCards!: Array<Object>
 
   data(){
-    const { content, owner, rate, description, relatedDataCards, relatedToolCards } = this.$props
+    const { sprite } = this.$props
     return {
-      name: content,
-      currentOwner: owner,
-      currentRate: rate,
-      sceneDescription: description,
-      sceneRelatedDataCards: relatedDataCards,
-      sceneRelatedToolCards: relatedToolCards
+      name: sprite.content || '',
+      currentOwner: sprite.owner || '',
+      currentRate: sprite.rate || 0,
+      sceneDescription: sprite.description || '',
+      sceneRelatedDataCards: sprite.relatedDataCards || [],
+      sceneRelatedToolCards: sprite.relatedToolCards || [],
+      allDataCards: []
     }
+  }
+
+  created() {
+    loadDataCardsInDataPanorama(this.$route.params.workshopId).then(data => {
+      this.allDataCards = data
+    })
   }
 
   onConfirm(){
@@ -62,6 +68,17 @@ export default class EditCardModal extends Vue{
       return
     }
     confirm({content: name, owner, rate }, this.editable)
+  }
+
+  onSceneConfirm() {
+    const { confirm } = this.$listeners as 
+      { confirm: (info: { content: string; description: string; relatedDataCards: string[]; }, editable: boolean) => void }
+    const data = {
+      content: this.name,
+      description: this.sceneDescription,
+      relatedDataCards: this.sceneRelatedDataCards
+    }
+    confirm(data, this.editable)
   }
 
   renderDataCard(h) {
@@ -88,7 +105,6 @@ export default class EditCardModal extends Vue{
 
   renderSceneCard(h) {
     const { close } = this.$listeners
-    loadDataCardsInDataPanorama(this.$route.params.workshopId).then(data => {console.log(data)})
     return (
       <a-modal
       width={620}
@@ -96,7 +112,7 @@ export default class EditCardModal extends Vue{
       title={ this.editable ? '修改卡牌' : '添加卡牌'} 
       visible={true} 
       onChange={close}
-      onOk={this.onConfirm}
+      onOk={this.onSceneConfirm}
       okText={this.editable ? '保存' : '添加'} 
       cancelText="取消">
         <label>场景卡</label>
@@ -104,7 +120,7 @@ export default class EditCardModal extends Vue{
         <label>场景描述</label>
         <ant-input maxLength={16} v-model={this.sceneDescription} class="data-card-input"/>
         <label>关联数据卡</label>
-        <a-select mode="multiple" v-model={this.sceneRelatedDataCards} class="data-card-input"/>
+        <select-dropdown items={this.allDataCards}  v-model={this.sceneRelatedDataCards}/>
         <label>关联工具卡</label>
         <a-select mode="multiple" v-model={this.sceneRelatedToolCards} class="data-card-input"/>
     </a-modal>

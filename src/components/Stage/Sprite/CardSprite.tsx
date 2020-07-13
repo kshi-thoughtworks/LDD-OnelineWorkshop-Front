@@ -25,6 +25,8 @@ export class CardProps implements SpriteBox {
   version?: string
   owner?: string
   rate?: number
+  description?: string
+  relatedDataCards?: Array<string>
 
   compare<CardProps>(props): boolean{
     const { x, y, content, color, scale, version, owner, rate } = props
@@ -58,6 +60,8 @@ export class CardProps implements SpriteBox {
     cardProps.rate = props.rate
     cardProps.card = props.card
     cardProps.version = props.version
+    cardProps.description = props.description
+    cardProps.relatedDataCards = props.relatedDataCards
     return cardProps
   }
 }

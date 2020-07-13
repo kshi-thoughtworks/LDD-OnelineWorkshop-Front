@@ -39,3 +39,7 @@ export const isToolkitCard = (type: string): boolean => {
 export const isDataCard = (type: string):boolean =>{
   return type === CardType.DATA
 }
+
+export const isSceneCard = (type: string):boolean =>{
+  return type === CardType.SCENE
+}
