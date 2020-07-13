@@ -3,7 +3,7 @@ import { Input, Rate, Select } from 'ant-design-vue';
 import { Component, Prop } from 'vue-property-decorator'
 import { CardType } from '../../../common/Card'
 import SelectDropdown from '../../../components/SelectDropdown.vue'
-import { loadDataCardsInDataPanorama } from '../../service'
+import { loadDataCardsInDataPanorama, loadToolCards } from '../../service'
 import './index.scss'
 
 @Component({
@@ -27,6 +27,7 @@ export default class EditCardModal extends Vue{
   sceneRelatedDataCards!: Array<string>
   sceneRelatedToolCards!: Array<string>
   allDataCards!: Array<Object>
+  allToolCards!: Array<Object>
 
   data(){
     const { sprite } = this.$props
@@ -37,14 +38,20 @@ export default class EditCardModal extends Vue{
       sceneDescription: sprite.description || '',
       sceneRelatedDataCards: sprite.relatedDataCards || [],
       sceneRelatedToolCards: sprite.relatedToolCards || [],
-      allDataCards: []
+      allDataCards: [],
+      allToolCards: []
     }
   }
 
   created() {
-    loadDataCardsInDataPanorama(this.$route.params.workshopId).then(data => {
-      this.allDataCards = data
-    })
+    if (this.cardType == CardType.SCENE) {
+      loadDataCardsInDataPanorama(this.$route.params.workshopId).then(data => {
+        this.allDataCards = data.map(card => card.title)
+      })
+      loadToolCards().then(data => {
+        this.allToolCards = data.map(card => card.name)
+      })
+    }
   }
 
   onConfirm(){
@@ -76,7 +83,8 @@ export default class EditCardModal extends Vue{
     const data = {
       content: this.name,
       description: this.sceneDescription,
-      relatedDataCards: this.sceneRelatedDataCards
+      relatedDataCards: this.sceneRelatedDataCards,
+      relatedToolCards: this.sceneRelatedToolCards
     }
     confirm(data, this.editable)
   }
@@ -118,11 +126,14 @@ export default class EditCardModal extends Vue{
         <label>场景卡</label>
         <ant-input maxLength={16} ref="name" v-model={this.name} class="data-card-input"/>
         <label>场景描述</label>
-        <ant-input maxLength={16} v-model={this.sceneDescription} class="data-card-input"/>
+        <div class="textarea-container">
+          <ant-input maxLength={16} v-model={this.sceneDescription} type="textarea" class="data-card-input"/>
+          <span>{this.sceneDescription ? this.sceneDescription.length : 0}/200</span>
+        </div>
         <label>关联数据卡</label>
-        <select-dropdown items={this.allDataCards}  v-model={this.sceneRelatedDataCards}/>
+        <select-dropdown items={this.allDataCards} v-model={this.sceneRelatedDataCards}/>
         <label>关联工具卡</label>
-        <a-select mode="multiple" v-model={this.sceneRelatedToolCards} class="data-card-input"/>
+        <select-dropdown items={this.allToolCards} v-model={this.sceneRelatedToolCards}/>
     </a-modal>
     )
   }

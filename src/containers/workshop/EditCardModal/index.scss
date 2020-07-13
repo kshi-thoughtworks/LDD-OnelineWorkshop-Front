@@ -76,3 +76,10 @@
     color: var(--midnight-purple);
   }
 }
+
+.textarea-container {
+  position: relative;
+  span {
+    bottom: 32px;
+  }
+}

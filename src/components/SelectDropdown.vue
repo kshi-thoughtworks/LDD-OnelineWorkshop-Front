@@ -3,7 +3,7 @@
         a-select(mode="multiple" :value="selectedList" @change="handleChange" @search="searchItems" ref="select").select-input
         ul(@click="onDropdownClick").select-dropdown
             li(v-for="item in filteredtems" @click="selectChange(item)").select-item
-                p.select-item-name {{item.title}}
+                p.select-item-name {{item}}
 </template>
 
 <script>
@@ -36,8 +36,8 @@
         },
         methods: {
             selectChange(selectedItem) {
-                if (!(this.selectedList.includes(selectedItem.title))) {
-                    this.selectedList.push(selectedItem.title)
+                if (!(this.selectedList.includes(selectedItem))) {
+                    this.selectedList.push(selectedItem)
                 }
             },
             handleChange(value) {
