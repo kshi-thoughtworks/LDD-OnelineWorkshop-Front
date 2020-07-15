@@ -57,10 +57,14 @@ export default {
         }
     },
     created() {
+        const initName = this.initName
         loadValueCardsInConvergenceScene(this.$route.params.workshopId).then(data => {
             const weights = data.reduce((totalWeight, card) => {
                 const {content} = card
                 const contentObject = JSON.parse(content)
+                if (contentObject.content == initName) {
+                    return totalWeight
+                }
                 return contentObject.weight + totalWeight
             }, 0)
             this.availableWeight = 100 - weights

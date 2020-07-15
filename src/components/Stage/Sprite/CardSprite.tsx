@@ -108,6 +108,7 @@ export default class CardSprite extends Sprite<CardProps>{
     const maxWidth = width - padding * 2
     const fontSize = 48
     const ownerFontSize = 24
+    const numberFontSize = 36
 
     context.save()
     context.textAlign = 'left'
@@ -121,13 +122,17 @@ export default class CardSprite extends Sprite<CardProps>{
       context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
       const ownerRows = calculateTextRows(context, maxWidth, owner, ownerFontSize)
       this.drawContent(width, height, ownerFontSize, 100, ownerRows)
+      this.drawRoundRect(300, 30, 174, 60, '#30c49e')
       this.drawStarGroup(rate)
     } else if(isValueCard(cardType) && weight) {
       this.drawContent(width, height, fontSize, 140, contentRows, -10)
 
       context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
       const ownerRows = calculateTextRows(context, maxWidth, weight+' %', ownerFontSize)
-      this.drawContent(width*2-100, height, ownerFontSize, 700, ownerRows)
+      this.drawRoundRect(364, 26, 110, 60, '#c9b535')
+      context.fillStyle = '#ffffff'
+      context.font = `bold ${numberFontSize}px Montserrat, sans-serif`
+      this.drawContent(width*2-100, height, numberFontSize, 700, ownerRows)
     } else {
       this.drawContent(width, height, fontSize, 110, contentRows, -10)
     }
@@ -146,8 +151,8 @@ export default class CardSprite extends Sprite<CardProps>{
   drawStar(cx, cy, color){
     const context = this.stage!.context!
     const spikes = 5
-    const outerRadius = 8
-    const innerRadius = 4
+    const outerRadius = 12
+    const innerRadius = 6
     var rot=Math.PI/2*3
     var x=cx
     var y=cy
@@ -168,11 +173,26 @@ export default class CardSprite extends Sprite<CardProps>{
     }
     context.lineTo(cx,cy-outerRadius)
     context.closePath()
-    context.lineWidth=5
-    context.strokeStyle=color
-    context.stroke()
     context.fillStyle=color
     context.fill()
+  }
+
+  drawRoundRect(x, y, width, height, fill) {
+    const context = this.stage!.context!
+    const radius = {tl: 32, tr: 0, br: 0, bl: 32};
+    context.beginPath();
+    context.moveTo(x + radius.tl, y);
+    context.lineTo(x + width - radius.tr, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+    context.lineTo(x + width, y + height - radius.br);
+    context.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+    context.lineTo(x + radius.bl, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+    context.lineTo(x, y + radius.tl);
+    context.quadraticCurveTo(x, y, x + radius.tl, y);
+    context.closePath();
+    context.fillStyle=fill
+    context.fill();
   }
 
   draw(){
