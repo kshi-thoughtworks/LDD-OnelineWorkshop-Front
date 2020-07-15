@@ -4,6 +4,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import { CardType } from '../../../common/Card'
 import SelectDropdown from '../../../components/SelectDropdown.vue'
 import { loadDataCardsInDataPanorama, loadToolCards } from '../../service'
+import ValueCard from './ValueCard.vue'
 import './index.scss'
 
 @Component({
@@ -11,7 +12,8 @@ import './index.scss'
     'ant-input': Input,
     'a-rate': Rate,
     'a-select': Select,
-    'select-dropdown': SelectDropdown
+    'select-dropdown': SelectDropdown,
+    'value-card': ValueCard
   }
 })
 export default class EditCardModal extends Vue{
@@ -26,6 +28,7 @@ export default class EditCardModal extends Vue{
   sceneDescription!: string
   sceneRelatedDataCards!: Array<string>
   sceneRelatedToolCards!: Array<string>
+  weight!: number
   allDataCards!: Array<Object>
   allToolCards!: Array<Object>
 
@@ -38,6 +41,7 @@ export default class EditCardModal extends Vue{
       sceneDescription: sprite.description || '',
       sceneRelatedDataCards: sprite.relatedDataCards || [],
       sceneRelatedToolCards: sprite.relatedToolCards || [],
+      weight: sprite.weight || 0,
       allDataCards: [],
       allToolCards: []
     }
@@ -139,13 +143,22 @@ export default class EditCardModal extends Vue{
   }
 
   render(h) {
-    const { close } = this.$listeners
+    const { close, confirm } = this.$listeners
     const { name } = this
     if (this.cardType == CardType.DATA) {
       return this.renderDataCard(h)
     }
     if (this.cardType == CardType.SCENE) {
       return this.renderSceneCard(h)
+    }
+    if (this.cardType == CardType.VALUE) {
+      return <value-card
+        editable={this.editable}
+        onConfirm={confirm}
+        onClose={close}
+        initName={this.name}
+        initWeight={this.weight}
+      />
     }
     return (
       <a-modal

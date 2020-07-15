@@ -43,3 +43,7 @@ export const isDataCard = (type: string):boolean =>{
 export const isSceneCard = (type: string):boolean =>{
   return type === CardType.SCENE
 }
+
+export const isValueCard = (type: string):boolean =>{
+  return type === CardType.VALUE
+}

@@ -1,7 +1,7 @@
 import { map } from 'lodash'
 import axios, { Canceler } from 'axios'
 import { http } from '../services/http'
-import { isDataCard, isToolkitCard, isSceneCard } from '../common/Card'
+import { isDataCard, isToolkitCard, isSceneCard, isValueCard } from '../common/Card'
 
 const { CancelToken } = axios
 
@@ -19,6 +19,9 @@ const getCardExternalInfo = element => {
     } else if (isSceneCard(cardType)) {
       const { content, description, relatedDataCards, relatedToolCards } = JSON.parse(contentString)
       return { content, description, relatedDataCards, relatedToolCards }    
+    } else if (isValueCard(cardType)) {
+      const { content, weight } = JSON.parse(contentString)
+      return { content, weight }    
     } else {
       return { content: contentString }
     }

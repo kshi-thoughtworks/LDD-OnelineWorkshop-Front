@@ -1,10 +1,13 @@
-input.ant-input {
+input.ant-input, div.ant-input-number {
     width: 100%;
     height: 50px;
     border-radius: 4px;
     background-color: #f5f3f6;
     border: none;
     color: var(--midnight-purple);
+}
+input.ant-input-number-input {
+    height: 50px;
 }
 
 .ant-modal-content {
@@ -108,7 +111,7 @@ input.ant-input {
     padding-top: 8px;
 }
 
-.ant-input + span {
+textarea + span {
     position: absolute;
     right: 14px;
     bottom: -8px;

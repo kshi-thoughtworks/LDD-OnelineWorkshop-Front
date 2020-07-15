@@ -28,9 +28,10 @@ export class CardProps implements SpriteBox {
   description?: string
   relatedDataCards?: Array<string>
   relatedToolCards?: Array<string>
+  weight?: number
 
   compare<CardProps>(props): boolean{
-    const { x, y, content, color, scale, version, owner, rate } = props
+    const { x, y, content, color, scale, version, owner, rate, weight } = props
     const scaleX = scale && scale.x ? scale.x : 1
     const scaleY = scale && scale.y ? scale.y : 1
     const thisScaleX = this.scale && this.scale.x ? this.scale.x : 1
@@ -42,7 +43,8 @@ export class CardProps implements SpriteBox {
             && thisScaleY === scaleY
             && this.version === version
             && this.owner === owner
-            && this.rate === rate;
+            && this.rate === rate
+            && this.weight === weight;
   }
 
   static build(props: CardProps): CardProps {
@@ -64,6 +66,7 @@ export class CardProps implements SpriteBox {
     cardProps.description = props.description
     cardProps.relatedDataCards = props.relatedDataCards
     cardProps.relatedToolCards = props.relatedToolCards
+    cardProps.weight = props.weight
     return cardProps
   }
 }
