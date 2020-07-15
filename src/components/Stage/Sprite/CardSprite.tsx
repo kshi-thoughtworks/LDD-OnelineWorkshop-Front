@@ -1,6 +1,6 @@
 import Sprite, { SpriteBox } from './index';
 import { calculateTextRows } from './text'
-import { CardType, CardColors, isDataCard } from '../../../common/Card'
+import { CardType, CardColors, isDataCard, isValueCard } from '../../../common/Card'
 
 type CardInfoType = {
   id: number
@@ -101,7 +101,7 @@ export default class CardSprite extends Sprite<CardProps>{
 
   drawText(){
     const context = this.stage!.context!
-    const { width, height, card, content, owner } = this.props
+    const { width, height, card, content, owner, weight } = this.props
     const cardType = card?.type || CardColors[CardType.VISION]
     const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
     const padding = 48
@@ -121,6 +121,12 @@ export default class CardSprite extends Sprite<CardProps>{
       context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
       const ownerRows = calculateTextRows(context, maxWidth, owner, ownerFontSize)
       this.drawContent(width, height, ownerFontSize, 100, ownerRows)
+    } else if(isValueCard(cardType) && weight) {
+      this.drawContent(width, height, fontSize, 140, contentRows, -10)
+
+      context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
+      const ownerRows = calculateTextRows(context, maxWidth, weight+' %', ownerFontSize)
+      this.drawContent(width*2-100, height, ownerFontSize, 700, ownerRows)
     } else {
       this.drawContent(width, height, fontSize, 110, contentRows, -10)
     }
