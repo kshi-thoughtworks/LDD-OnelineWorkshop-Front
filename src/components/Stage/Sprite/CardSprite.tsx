@@ -101,7 +101,7 @@ export default class CardSprite extends Sprite<CardProps>{
 
   drawText(){
     const context = this.stage!.context!
-    const { width, height, card, content, owner, weight } = this.props
+    const { width, height, card, content, owner, weight, rate } = this.props
     const cardType = card?.type || CardColors[CardType.VISION]
     const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
     const padding = 48
@@ -121,6 +121,7 @@ export default class CardSprite extends Sprite<CardProps>{
       context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
       const ownerRows = calculateTextRows(context, maxWidth, owner, ownerFontSize)
       this.drawContent(width, height, ownerFontSize, 100, ownerRows)
+      this.drawStarGroup(rate)
     } else if(isValueCard(cardType) && weight) {
       this.drawContent(width, height, fontSize, 140, contentRows, -10)
 
@@ -132,6 +133,46 @@ export default class CardSprite extends Sprite<CardProps>{
     }
 
     context.restore()
+  }
+
+  drawStarGroup(rate) {
+    const xAxisList = [330, 360, 390, 420, 450]
+    for (let index in xAxisList) {
+      let color = index < rate ? '#ffffff' : '#a2dfc6'
+      this.drawStar(xAxisList[index], 60, color)
+    }
+  }
+
+  drawStar(cx, cy, color){
+    const context = this.stage!.context!
+    const spikes = 5
+    const outerRadius = 8
+    const innerRadius = 4
+    var rot=Math.PI/2*3
+    var x=cx
+    var y=cy
+    var step=Math.PI/spikes
+
+    context.beginPath()
+    context.moveTo(cx,cy-outerRadius)
+    for(let i=0;i<spikes;i++){
+      x=cx+Math.cos(rot)*outerRadius
+      y=cy+Math.sin(rot)*outerRadius
+      context.lineTo(x,y)
+      rot+=step
+
+      x=cx+Math.cos(rot)*innerRadius
+      y=cy+Math.sin(rot)*innerRadius
+      context.lineTo(x,y)
+      rot+=step
+    }
+    context.lineTo(cx,cy-outerRadius)
+    context.closePath()
+    context.lineWidth=5
+    context.strokeStyle=color
+    context.stroke()
+    context.fillStyle=color
+    context.fill()
   }
 
   draw(){
