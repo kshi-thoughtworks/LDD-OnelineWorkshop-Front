@@ -9,16 +9,18 @@
         @ok="submitCard"
         @cancel="cancelCard"
     )
-        label 业务价值卡
-        a-input(:maxLength="16" placeholder="请输入标题" v-model="name").data-card-input
-        label 业务价值权重
-        div.data-card-input
-            a-input-number(:maxLength="16" placeholder="请输入权重" v-model="weight" :min="1" :max="100").data-card-input-inside
-            span.data-card-input-suffix %
+        a-form-model(ref="ruleForm" :model="form" :rules="rules" hide-required-mark=true)
+            a-form-model-item(label="业务价值卡" prop="name")
+                a-input(placeholder="请输入标题" v-model="form.name")
+            a-form-model-item(label="业务价值权重" prop="weight")
+                div
+                    a-input-number(placeholder="请输入权重" v-model.number="form.weight" :min="1" :max="100").data-card-input-inside
+                    span.data-card-input-suffix %
 </template>
 
 <script>
 import { Input, InputNumber } from 'ant-design-vue'
+import { loadValueCardsInConvergenceScene } from '../../service'
 
 export default {
     name: 'ValueCard',
@@ -28,19 +30,58 @@ export default {
     },
     props: ['editable', 'initName', 'initWeight'],
     data() {
-        return {
-            name: this.initName,
-            weight: this.initWeight
+        let checkWeight = (rule, value, callback) => {
+            if (!value) {
+                return callback(new Error('请输入业务权重'));
+            }
+            if (value > this.availableWeight) {
+                return callback(new Error(`请输入正确的业务权重，总值不能超过100%，剩余权重${this.availableWeight}%`));
+            }
+            callback()
         }
+        return {
+            form: {
+                name: this.initName,
+                weight: this.initWeight || 1,
+            },
+            availableWeight: 100,
+            rules: {
+                name: [
+                        {required: true, message: '请输入业务价值卡名称', trigger: 'change', whitespace: true},
+                        {max: 16, message: '工作坊名称不可超过16个字符', trigger: 'change'}
+                    ],
+                weight: [
+                        {validator: checkWeight, trigger: 'change'}
+                    ]
+            }
+        }
+    },
+    created() {
+        loadValueCardsInConvergenceScene(this.$route.params.workshopId).then(data => {
+            const weights = data.reduce((totalWeight, card) => {
+                const {content} = card
+                const contentObject = JSON.parse(content)
+                return contentObject.weight + totalWeight
+            }, 0)
+            this.availableWeight = 100 - weights
+        })
     },
     methods: {
         submitCard() {
             const { confirm } = this.$listeners
-            const data = {
-                content: this.name,
-                weight: this.weight
-            }
-            confirm(JSON.stringify(data), this.editable)
+            const { name, weight } = this.form
+            const { editable} = this.$props
+            this.$refs.ruleForm.validate(valid => {
+                if (valid) {
+                    const data = {
+                        content: name,
+                        weight: weight
+                    }                    
+                    confirm(JSON.stringify(data), editable)
+                } else {
+                    return false;
+                }
+            });
         },
         cancelCard() {
             const { close } = this.$listeners

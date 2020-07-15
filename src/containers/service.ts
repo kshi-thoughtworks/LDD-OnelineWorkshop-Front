@@ -90,6 +90,10 @@ export const loadDataCardsInDataPanorama = workshopId => {
   return http.get(`/api/workbenches/${workshopId}/steps/dataPanorama/elements/types/data`)
 }
 
+export const loadValueCardsInConvergenceScene = workshopId => {
+  return http.get(`/api/workbenches/${workshopId}/steps/convergenceScene/elements/types/value`)
+}
+
 export const loadCards = () => {
   return http.get('/api/cards')
 }

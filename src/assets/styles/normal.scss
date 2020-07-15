@@ -99,7 +99,7 @@ input.ant-input-number-input {
 }
 
 .has-error {
-    input.ant-input, textarea.ant-input {
+    input.ant-input, textarea.ant-input, .ant-input-number-input {
         background-color: #f5f3f6;
         border: 1px solid var(--pastel-red);
     }
