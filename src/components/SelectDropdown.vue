@@ -58,8 +58,6 @@
 <style lang="scss">
 .select-container {
     position: relative;
-    margin-bottom: 24px;
-    margin-top: 12px;
 }
 .select-input {
     width: 100%;

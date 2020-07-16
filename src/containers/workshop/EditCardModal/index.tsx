@@ -1,19 +1,17 @@
 import Vue from 'vue'
-import { Input, Rate, Select } from 'ant-design-vue';
+import { Input, Rate } from 'ant-design-vue';
 import { Component, Prop } from 'vue-property-decorator'
 import { CardType } from '../../../common/Card'
-import SelectDropdown from '../../../components/SelectDropdown.vue'
-import { loadDataCardsInDataPanorama, loadToolCards } from '../../service'
 import ValueCard from './ValueCard.vue'
+import SceneCard from './SceneCard.vue'
 import './index.scss'
 
 @Component({
   components: {
     'ant-input': Input,
     'a-rate': Rate,
-    'a-select': Select,
-    'select-dropdown': SelectDropdown,
-    'value-card': ValueCard
+    'value-card': ValueCard,
+    'scene-card': SceneCard
   }
 })
 export default class EditCardModal extends Vue{
@@ -29,8 +27,6 @@ export default class EditCardModal extends Vue{
   sceneRelatedDataCards!: Array<string>
   sceneRelatedToolCards!: Array<string>
   weight!: number
-  allDataCards!: Array<Object>
-  allToolCards!: Array<Object>
 
   data(){
     const { sprite } = this.$props
@@ -42,19 +38,6 @@ export default class EditCardModal extends Vue{
       sceneRelatedDataCards: sprite.relatedDataCards || [],
       sceneRelatedToolCards: sprite.relatedToolCards || [],
       weight: sprite.weight || 0,
-      allDataCards: [],
-      allToolCards: []
-    }
-  }
-
-  created() {
-    if (this.cardType == CardType.SCENE) {
-      loadDataCardsInDataPanorama(this.$route.params.workshopId).then(data => {
-        this.allDataCards = data.map(card => card.title)
-      })
-      loadToolCards().then(data => {
-        this.allToolCards = data.map(card => card.name)
-      })
     }
   }
 
@@ -81,18 +64,6 @@ export default class EditCardModal extends Vue{
     confirm({content: name, owner, rate }, this.editable)
   }
 
-  onSceneConfirm() {
-    const { confirm } = this.$listeners as 
-      { confirm: (info: { content: string; description: string; relatedDataCards: string[]; }, editable: boolean) => void }
-    const data = {
-      content: this.name,
-      description: this.sceneDescription,
-      relatedDataCards: this.sceneRelatedDataCards,
-      relatedToolCards: this.sceneRelatedToolCards
-    }
-    confirm(data, this.editable)
-  }
-
   renderDataCard(h) {
     const { close } = this.$listeners
     return (
@@ -115,33 +86,6 @@ export default class EditCardModal extends Vue{
     )
   }
 
-  renderSceneCard(h) {
-    const { close } = this.$listeners
-    return (
-      <a-modal
-      width={620}
-      wrapClassName="edit-card-modal"
-      title={ this.editable ? '修改卡牌' : '添加卡牌'} 
-      visible={true} 
-      onChange={close}
-      onOk={this.onSceneConfirm}
-      okText={this.editable ? '保存' : '添加'} 
-      cancelText="取消">
-        <label>场景卡</label>
-        <ant-input maxLength={16} ref="name" v-model={this.name} class="data-card-input"/>
-        <label>场景描述</label>
-        <div class="textarea-container">
-          <ant-input maxLength={16} v-model={this.sceneDescription} type="textarea" class="data-card-input"/>
-          <span>{this.sceneDescription ? this.sceneDescription.length : 0}/200</span>
-        </div>
-        <label>关联数据卡</label>
-        <select-dropdown items={this.allDataCards} v-model={this.sceneRelatedDataCards}/>
-        <label>关联工具卡</label>
-        <select-dropdown items={this.allToolCards} v-model={this.sceneRelatedToolCards}/>
-    </a-modal>
-    )
-  }
-
   render(h) {
     const { close, confirm } = this.$listeners
     const { name } = this
@@ -149,7 +93,15 @@ export default class EditCardModal extends Vue{
       return this.renderDataCard(h)
     }
     if (this.cardType == CardType.SCENE) {
-      return this.renderSceneCard(h)
+      return <scene-card
+        editable={this.editable}
+        onConfirm={confirm}
+        onClose={close}
+        initName={this.name}
+        initDescription={this.sceneDescription}
+        initRelatedDataCards={this.sceneRelatedDataCards}
+        initRelatedToolCards={this.sceneRelatedToolCards}
+      />
     }
     if (this.cardType == CardType.VALUE) {
       return <value-card
