@@ -17,8 +17,8 @@ const getCardExternalInfo = element => {
       const { content, owner, rate } = JSON.parse(contentString)
       return { content, owner, rate }
     } else if (isSceneCard(cardType)) {
-      const { content, description, relatedDataCards, relatedToolCards } = JSON.parse(contentString)
-      return { content, description, relatedDataCards, relatedToolCards }    
+      const { content, description, relatedDataCards, relatedToolCards, relatedValueCards} = JSON.parse(contentString)
+      return { content, description, relatedDataCards, relatedToolCards, relatedValueCards }    
     } else if (isValueCard(cardType)) {
       const { content, weight } = JSON.parse(contentString)
       return { content, weight }    

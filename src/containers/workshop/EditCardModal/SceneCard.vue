@@ -20,12 +20,14 @@
                 select-dropdown(:items="allDataCards" v-model="form.relatedDataCards")
             a-form-model-item(label="关联工具卡" prop="sceneRelatedToolCards")
                 select-dropdown(:items="allToolCards" v-model="form.relatedToolCards")
+            a-form-model-item(label="关联业务价值卡" prop="sceneRelatedValueCards")
+                select-dropdown(:items="allValueCards" v-model="form.relatedValueCards")
 </template>
 
 <script>
 import { Input } from 'ant-design-vue'
 import SelectDropdown from '../../../components/SelectDropdown.vue'
-import { loadDataCardsInDataPanorama, loadToolCards } from '../../service'
+import { loadDataCardsInDataPanorama, loadToolCards, loadValueCardsInConvergenceScene } from '../../service'
 
 export default {
     name: 'SceneCard',
@@ -33,17 +35,20 @@ export default {
         'a-input': Input,
         'select-dropdown': SelectDropdown,
     },
-    props: ['editable', 'initName', 'initDescription', 'initRelatedDataCards', 'initRelatedToolCards'],
+    props: ['editable', 'initName', 'initDescription', 
+        'initRelatedDataCards', 'initRelatedToolCards', 'initRelatedValueCards'],
     data() {
         return {
             form: {
                 name: this.initName,
                 description: this.initDescription,
                 relatedDataCards: this.initRelatedDataCards,
-                relatedToolCards: this.initRelatedToolCards
+                relatedToolCards: this.initRelatedToolCards,
+                relatedValueCards: this.initRelatedValueCards,
             },
             allDataCards: [],
-            allToolCards: []
+            allToolCards: [],
+            allValueCards: []
         }
     },
     created() {
@@ -53,6 +58,13 @@ export default {
         loadToolCards().then(data => {
             this.allToolCards = data.map(card => card.name)
         })
+        loadValueCardsInConvergenceScene(this.$route.params.workshopId).then(data => {
+            this.allValueCards = data.map(card => {
+                const {content} = card
+                const contentObject = JSON.parse(content)
+                return contentObject.content
+            })
+        })
     },
     methods: {
         submitCard() {
@@ -61,14 +73,15 @@ export default {
                 content: this.form.name,
                 description: this.form.description,
                 relatedDataCards: this.form.relatedDataCards,
-                relatedToolCards: this.form.relatedToolCards
+                relatedToolCards: this.form.relatedToolCards,
+                relatedValueCards: this.form.relatedValueCards
             }
             confirm(data, this.editable)
         },
         cancelCard() {
             const { close } = this.$listeners
             close()
-        } 
+        }
     }
 }
 </script>

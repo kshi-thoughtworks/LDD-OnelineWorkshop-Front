@@ -28,6 +28,7 @@ export class CardProps implements SpriteBox {
   description?: string
   relatedDataCards?: Array<string>
   relatedToolCards?: Array<string>
+  relatedValueCards?: Array<string>
   weight?: number
 
   compare<CardProps>(props): boolean{
@@ -66,6 +67,7 @@ export class CardProps implements SpriteBox {
     cardProps.description = props.description
     cardProps.relatedDataCards = props.relatedDataCards
     cardProps.relatedToolCards = props.relatedToolCards
+    cardProps.relatedValueCards = props.relatedValueCards
     cardProps.weight = props.weight
     return cardProps
   }

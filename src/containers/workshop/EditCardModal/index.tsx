@@ -26,6 +26,7 @@ export default class EditCardModal extends Vue{
   sceneDescription!: string
   sceneRelatedDataCards!: Array<string>
   sceneRelatedToolCards!: Array<string>
+  sceneRelatedValueCards!: Array<string>
   weight!: number
 
   data(){
@@ -37,6 +38,7 @@ export default class EditCardModal extends Vue{
       sceneDescription: sprite.description || '',
       sceneRelatedDataCards: sprite.relatedDataCards || [],
       sceneRelatedToolCards: sprite.relatedToolCards || [],
+      sceneRelatedValueCards: sprite.relatedValueCards || [],
       weight: sprite.weight || 0,
     }
   }
@@ -101,6 +103,7 @@ export default class EditCardModal extends Vue{
         initDescription={this.sceneDescription}
         initRelatedDataCards={this.sceneRelatedDataCards}
         initRelatedToolCards={this.sceneRelatedToolCards}
+        initRelatedValueCards={this.sceneRelatedValueCards}
       />
     }
     if (this.cardType == CardType.VALUE) {
