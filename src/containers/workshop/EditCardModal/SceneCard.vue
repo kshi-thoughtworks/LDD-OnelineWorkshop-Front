@@ -17,15 +17,22 @@
                     a-input(placeholder="请输入描述" v-model.number="form.description" type="textarea")
                     span {{form.description ? form.description.length : 0}}/200
             a-form-model-item(label="关联数据卡" prop="sceneRelatedDataCards")
-                select-dropdown(:items="allDataCards" v-model="form.relatedDataCards")
+                select-dropdown(:items="allDataCards" v-model="form.relatedDataCards" mode="multiple")
             a-form-model-item(label="关联工具卡" prop="sceneRelatedToolCards")
-                select-dropdown(:items="allToolCards" v-model="form.relatedToolCards")
-            a-form-model-item(label="关联业务价值卡" prop="sceneRelatedValueCards")
-                select-dropdown(:items="allValueCards" v-model="form.relatedValueCards")
+                select-dropdown(:items="allToolCards" v-model="form.relatedToolCards" mode="multiple")
+            div(v-for="(value, index) in form.relatedValueCards" :key="index").item-container
+                a-form-model-item(label="关联业务价值卡").short-input
+                    select-dropdown(:items="allValueCards" v-model="form.relatedValueCards[index]['name']" mode="single")
+                a-form-model-item(label="业务价值分数").short-input
+                    a-input(v-model="form.relatedValueCards[index]['value']")
+                a-icon(type="minus-circle" @click="removeValueCard(index)" theme="filled").delete-input
+            div(@click="addValueCard").add-input
+                a-icon(type="plus-circle" theme="filled")
+                span 关联业务价值卡
 </template>
 
 <script>
-import { Input } from 'ant-design-vue'
+import { Input, Select } from 'ant-design-vue'
 import SelectDropdown from '../../../components/SelectDropdown.vue'
 import { loadDataCardsInDataPanorama, loadToolCards, loadValueCardsInConvergenceScene } from '../../service'
 
@@ -81,7 +88,45 @@ export default {
         cancelCard() {
             const { close } = this.$listeners
             close()
+        },
+        addValueCard() {
+            this.form.relatedValueCards.push({
+                'name': [],
+                'value': ''
+            })
+        },
+        removeValueCard(index) {
+            this.form.relatedValueCards.splice(index, 1)
         }
     }
 }
 </script>
+
+<style lang="scss">
+.edit-card-modal {
+    .short-input {
+        width: 46%;
+        display: inline-block;
+    }
+}
+.item-container {
+    display: flex;
+    width: 560px;
+    justify-content: space-between;
+    .delete-input {
+        font-size: 16px;
+        color: var(--violet-blue);
+        cursor: pointer;
+        padding-top: 54px;
+    }
+}
+.add-input {
+    font-size: 16px; 
+    color: var(--violet-blue);
+    cursor: pointer;
+    width: fit-content;
+    span {
+        padding-left: 6px;
+    }
+}
+</style>

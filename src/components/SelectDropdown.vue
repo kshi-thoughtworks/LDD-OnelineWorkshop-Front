@@ -1,6 +1,7 @@
 <template lang="pug">
     div.select-container
-        a-select(mode="multiple" :value="selectedList" @change="handleChange" @search="searchItems" ref="select").select-input
+        a-select(mode="multiple" :value="selectedList" @change="handleChange" @search="searchItems" 
+            ref="select" :class="mode == 'single' ? 'select-dropdown-single' : ''").select-input
         ul(@click="onDropdownClick").select-dropdown
             li(v-for="item in filteredtems" @click="selectChange(item)").select-item
                 p.select-item-name {{item}}
@@ -14,12 +15,12 @@
         components: {
             'a-select': Select,
         },
-        props: ['items', 'value'],
+        props: ['items', 'value', 'mode'],
         data() {
             return {
                 allItems: this.$props.items,
                 filteredtems: this.$props.items,
-                selectedList: this.$props.value 
+                selectedList: this.$props.value
             }
         },
         watch: {
@@ -36,7 +37,9 @@
         },
         methods: {
             selectChange(selectedItem) {
-                if (!(this.selectedList.includes(selectedItem))) {
+                if (this.mode == 'single') {
+                    this.selectedList = selectedItem
+                } else if (this.mode == 'multiple' && !(this.selectedList.includes(selectedItem))) {
                     this.selectedList.push(selectedItem)
                 }
             },
@@ -58,6 +61,11 @@
 <style lang="scss">
 .select-container {
     position: relative;
+    .select-dropdown-single {
+        .ant-select-selection__choice__remove {
+            display: none;
+        }
+    }
 }
 .select-input {
     width: 100%;
