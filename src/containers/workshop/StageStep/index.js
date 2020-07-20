@@ -148,7 +148,7 @@ export default class StageStep extends Vue{
         this.loadElementsInterval()
       }).catch(this.onUpdateError)
     } else {
-      const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
+      const meta = { x: 100, y: 100, width: 288, height: 460, scale: { x: 1, y: 1 } }
       createCard(this.stepId, info, meta, this.selectedCard.id, content).then(({ element_id }) => {
         this.loadElementsInterval()
       })
@@ -169,7 +169,7 @@ export default class StageStep extends Vue{
         this.loadElementsInterval()
       }).catch(this.onUpdateError)
     } else {
-      const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
+      const meta = { x: 100, y: 100, width: 288, height: 460, scale: { x: 1, y: 1 } }
       createCard(this.stepId, info, meta, this.selectedCard.id).then(() => {
         this.loadElementsInterval()
       })
@@ -183,7 +183,7 @@ export default class StageStep extends Vue{
         this.loadElementsInterval()
       }).catch(this.onUpdateError)
     } else {
-      const meta = { x: 100, y: 100, width: 480, height: 768, scale: { x: 1, y: 1 } }
+      const meta = { x: 100, y: 100, width: 288, height: 460, scale: { x: 1, y: 1 } }
       createCard(this.stepId, content, meta, this.selectedCard.id).then(({ element_id }) => {
         this.loadElementsInterval()
       })
