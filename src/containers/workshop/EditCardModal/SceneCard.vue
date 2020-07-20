@@ -22,9 +22,9 @@
                 select-dropdown(:items="allToolCards" v-model="form.relatedToolCards" mode="multiple")
             div(v-for="(value, index) in form.relatedValueCards" :key="index").item-container
                 a-form-model-item(label="关联业务价值卡").short-input
-                    select-dropdown(:items="allValueCards" v-model="form.relatedValueCards[index]['name']" mode="single")
+                    select-dropdown(:items="Object.keys(allValueCards)" v-model="form.relatedValueCards[index]['name']" mode="single")
                 a-form-model-item(label="业务价值分数").short-input
-                    a-input(v-model="form.relatedValueCards[index]['value']")
+                    a-input-number(v-model="form.relatedValueCards[index]['value']" :min="0" :max="100")
                 a-icon(type="minus-circle" @click="removeValueCard(index)" theme="filled").delete-input
             div(@click="addValueCard").add-input
                 a-icon(type="plus-circle" theme="filled")
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { Input, Select } from 'ant-design-vue'
+import { Input, Select, InputNumber } from 'ant-design-vue'
 import SelectDropdown from '../../../components/SelectDropdown.vue'
 import { loadDataCardsInDataPanorama, loadToolCards, loadValueCardsInConvergenceScene } from '../../service'
 
@@ -41,6 +41,7 @@ export default {
     components: {
         'a-input': Input,
         'select-dropdown': SelectDropdown,
+        'a-input-number': InputNumber
     },
     props: ['editable', 'initName', 'initDescription', 
         'initRelatedDataCards', 'initRelatedToolCards', 'initRelatedValueCards'],
@@ -55,7 +56,7 @@ export default {
             },
             allDataCards: [],
             allToolCards: [],
-            allValueCards: []
+            allValueCards: {}
         }
     },
     created() {
@@ -66,22 +67,29 @@ export default {
             this.allToolCards = data.map(card => card.name)
         })
         loadValueCardsInConvergenceScene(this.$route.params.workshopId).then(data => {
-            this.allValueCards = data.map(card => {
+            const valueCards = data.reduce((cards, card) => {   
                 const {content} = card
                 const contentObject = JSON.parse(content)
-                return contentObject.content
-            })
+                cards[contentObject.content] = contentObject.weight
+                return cards
+            }, {})
+            this.allValueCards = valueCards
         })
     },
     methods: {
         submitCard() {
             const { confirm } = this.$listeners
+            const score = this.form.relatedValueCards.reduce((total, card) => {
+                const weight = this.allValueCards[card.name]
+                return total + weight * card.value / 100
+            }, 0)
             const data = {
                 content: this.form.name,
                 description: this.form.description,
                 relatedDataCards: this.form.relatedDataCards,
                 relatedToolCards: this.form.relatedToolCards,
-                relatedValueCards: this.form.relatedValueCards
+                relatedValueCards: this.form.relatedValueCards,
+                score: score
             }
             confirm(data, this.editable)
         },

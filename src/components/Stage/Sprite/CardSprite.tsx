@@ -1,6 +1,8 @@
 import Sprite, { SpriteBox } from './index';
 import { calculateTextRows } from './text'
-import { CardType, CardColors, isDataCard, isValueCard } from '../../../common/Card'
+import { CardType, CardColors, isDataCard, isValueCard, isSceneCard } from '../../../common/Card'
+import DataSvg from '../../../assets/images/icons/data.svg'
+import ToolSvg from '../../../assets/images/icons/tool.svg'
 
 type CardInfoType = {
   id: number
@@ -30,6 +32,7 @@ export class CardProps implements SpriteBox {
   relatedToolCards?: Array<string>
   relatedValueCards?: Array<string>
   weight?: number
+  score?: number
 
   compare<CardProps>(props): boolean{
     const { x, y, content, color, scale, version, owner, rate, weight } = props
@@ -69,17 +72,24 @@ export class CardProps implements SpriteBox {
     cardProps.relatedToolCards = props.relatedToolCards
     cardProps.relatedValueCards = props.relatedValueCards
     cardProps.weight = props.weight
+    cardProps.score = props.score
     return cardProps
   }
 }
 
 export default class CardSprite extends Sprite<CardProps>{
   static type: string = 'card'
+  dataIcon: HTMLImageElement
+  toolIcon: HTMLImageElement
 
   constructor(props: CardProps) {
     super(props)
     this.id = props.id!
     this.props = props
+    this.dataIcon = new Image()
+    this.dataIcon.src = DataSvg
+    this.toolIcon = new Image()
+    this.toolIcon.src = ToolSvg
   }
 
   drawContent(width, height, fontSize, bottom, rows, textOffset = 20) {
@@ -103,7 +113,7 @@ export default class CardSprite extends Sprite<CardProps>{
 
   drawText(){
     const context = this.stage!.context!
-    const { width, height, card, content, owner, weight, rate } = this.props
+    const { width, height, card, content, owner, weight, rate, score, relatedDataCards, relatedToolCards } = this.props
     const cardType = card?.type || CardColors[CardType.VISION]
     const cardColor = CardColors[cardType] ? CardColors[cardType] : CardColors[cardType]
     const padding = 48
@@ -129,12 +139,30 @@ export default class CardSprite extends Sprite<CardProps>{
     } else if(isValueCard(cardType) && weight) {
       this.drawContent(width, height, fontSize, 140, contentRows, -10)
 
-      context.font = `bold ${ownerFontSize}px Montserrat, sans-serif`
-      const ownerRows = calculateTextRows(context, maxWidth, weight+' %', ownerFontSize)
+      const weightRows = calculateTextRows(context, maxWidth, weight+' %', numberFontSize)
       this.drawRoundRect(364, 26, 110, 60, '#c9b535')
       context.fillStyle = '#ffffff'
       context.font = `bold ${numberFontSize}px Montserrat, sans-serif`
-      this.drawContent(width*2-100, height, numberFontSize, 700, ownerRows)
+      this.drawContent(width*2-100, height, numberFontSize, 700, weightRows)
+    } else if(isSceneCard(cardType)) {
+      this.drawContent(width, height, fontSize, 110, contentRows, -10)
+      
+      this.drawStar(width/2, 0, cardColor, '#f2a47c', 12, 40, 50, 10)
+      const scoreRows = calculateTextRows(context, maxWidth, score, ownerFontSize)
+      context.fillStyle = '#ffffff'
+      context.font = `normal ${numberFontSize}px Montserrat, sans-serif`
+      this.drawContent(width, height, fontSize, height-14, scoreRows)
+      
+      this.drawRoundRect(364, 26, 110, 60, '#d4764f')
+      this.drawSvg(426, 40, this.dataIcon)
+      const dataRows = calculateTextRows(context, maxWidth, relatedDataCards?.length, ownerFontSize)
+      context.fillStyle = '#ffffff'
+      this.drawContent(width*2-160, height, numberFontSize, height-66, dataRows)
+      this.drawRoundRect(364, 106, 110, 60, '#d4764f')
+      this.drawSvg(426, 120, this.toolIcon)
+      const toolRows = calculateTextRows(context, maxWidth, relatedToolCards?.length, ownerFontSize)
+      context.fillStyle = '#ffffff'
+      this.drawContent(width*2-160, height, numberFontSize, height-146, toolRows)
     } else {
       this.drawContent(width, height, fontSize, 110, contentRows, -10)
     }
@@ -142,19 +170,21 @@ export default class CardSprite extends Sprite<CardProps>{
     context.restore()
   }
 
+  drawSvg(cx, cy, image) {
+    const context = this.stage!.context!
+    context.drawImage(image, cx, cy, 30, 30);
+  }
+
   drawStarGroup(rate) {
     const xAxisList = [330, 360, 390, 420, 450]
     for (let index in xAxisList) {
       let color = index < rate ? '#ffffff' : '#a2dfc6'
-      this.drawStar(xAxisList[index], 60, color)
+      this.drawStar(xAxisList[index], 60, color, color, 5, 6, 12)
     }
   }
 
-  drawStar(cx, cy, color){
+  drawStar(cx, cy, color, strokeColor, spikes, innerRadius, outerRadius, lineWidth=0){
     const context = this.stage!.context!
-    const spikes = 5
-    const outerRadius = 12
-    const innerRadius = 6
     var rot=Math.PI/2*3
     var x=cx
     var y=cy
@@ -175,6 +205,9 @@ export default class CardSprite extends Sprite<CardProps>{
     }
     context.lineTo(cx,cy-outerRadius)
     context.closePath()
+    context.strokeStyle=strokeColor;
+    context.lineWidth = lineWidth;
+    context.stroke();
     context.fillStyle=color
     context.fill()
   }
