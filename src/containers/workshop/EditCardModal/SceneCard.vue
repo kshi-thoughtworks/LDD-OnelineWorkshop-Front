@@ -9,16 +9,16 @@
         @ok="submitCard"
         @cancel="cancelCard"
     )
-        a-form-model(ref="ruleForm" :model="form" hide-required-mark=true)
+        a-form-model(ref="ruleForm" :model="form" :rules="rules" hide-required-mark=true)
             a-form-model-item(label="场景卡" prop="name")
                 a-input(placeholder="请输入标题" v-model="form.name")
-            a-form-model-item(label="场景描述" prop="weight")
+            a-form-model-item(label="场景描述" prop="description")
                 div.textarea-container
                     a-input(placeholder="请输入描述" v-model.number="form.description" type="textarea")
                     span {{form.description ? form.description.length : 0}}/200
-            a-form-model-item(label="关联数据卡" prop="sceneRelatedDataCards")
+            a-form-model-item(label="关联数据卡")
                 select-dropdown(:items="allDataCards" v-model="form.relatedDataCards" mode="multiple")
-            a-form-model-item(label="关联工具卡" prop="sceneRelatedToolCards")
+            a-form-model-item(label="关联工具卡")
                 select-dropdown(:items="allToolCards" v-model="form.relatedToolCards" mode="multiple")
             div(v-for="(value, index) in form.relatedValueCards" :key="index").item-container
                 a-form-model-item(label="关联业务价值卡").short-input
@@ -56,7 +56,17 @@ export default {
             },
             allDataCards: [],
             allToolCards: [],
-            allValueCards: {}
+            allValueCards: {},
+            rules: {
+                name: [
+                        {required: true, message: '请输入场景卡名称', trigger: 'change', whitespace: true},
+                        {max: 16, message: '场景卡名称不可超过16个字符', trigger: 'change'}
+                    ],
+                description: [
+                        {required: true, message: '请输入场景卡描述', trigger: 'change', whitespace: true},
+                        {max: 200, message: '场景卡描述不可超过200个字符', trigger: 'change'}
+                    ]
+            }
         }
     },
     created() {
@@ -78,20 +88,27 @@ export default {
     },
     methods: {
         submitCard() {
-            const { confirm } = this.$listeners
-            const score = this.form.relatedValueCards.reduce((total, card) => {
-                const weight = this.allValueCards[card.name]
-                return total + weight * card.value / 100
-            }, 0)
-            const data = {
-                content: this.form.name,
-                description: this.form.description,
-                relatedDataCards: this.form.relatedDataCards,
-                relatedToolCards: this.form.relatedToolCards,
-                relatedValueCards: this.form.relatedValueCards,
-                score: score
-            }
-            confirm(data, this.editable)
+            this.$refs.ruleForm.validate(valid => {
+                if (valid) {
+                    const { confirm } = this.$listeners
+                    const score = this.form.relatedValueCards.reduce((total, card) => {
+                        const weight = this.allValueCards[card.name]
+                        const currentValue = weight * card.value / 100
+                        return currentValue ? total + currentValue : total
+                    }, 0)
+                    const data = {
+                        content: this.form.name,
+                        description: this.form.description,
+                        relatedDataCards: this.form.relatedDataCards,
+                        relatedToolCards: this.form.relatedToolCards,
+                        relatedValueCards: this.form.relatedValueCards,
+                        score: score
+                    }
+                    confirm(data, this.editable)
+                } else {
+                    return false;
+                }
+            })
         },
         cancelCard() {
             const { close } = this.$listeners
